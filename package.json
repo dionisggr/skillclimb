@@ -1,5 +1,5 @@
 {
-  "name": "vite-template",
+  "name": "skillclimb",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,7 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "^3.3.4"
+    "vue": "^3.3.4",
+    "vue-material-design-icons": "^5.2.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.3",
