@@ -14,16 +14,24 @@
           d="M7 0h2v24H7zm8 0h2v24h-2zm-6 4h6v2h-6zm6 5H9v-2h6zm-6 5h6v2h-6zm6 5H9v-2h6z"
         />
       </svg>
-      <h1 class="text-xl font-semibold">SkillClimb</h1>
+      <h1
+        class="text-xl font-semibold cursor-pointer"
+        @click="selectedNavItem = 'home'"
+      >
+        SkillClimb
+      </h1>
     </div>
-    <nav class="flex items-center space-x-16">
+    <nav class="flex items-center space-x-20">
       <div
         class="flex py-1"
-        v-for="link in ['Home', 'Courses', 'Certifications', 'About']"
+        v-for="link in ['Home', 'Courses', 'Certifications', 'Pricing']"
       >
-        <a href="#" class="rounded text-gray-700 hover:bg-gray-200">{{
-          link
-        }}</a>
+        <a
+          href="#"
+          class="rounded text-gray-700 hover:bg-gray-200 p-1"
+          @click="selectedNavItem = link.toLowerCase()"
+          >{{ link }}</a
+        >
       </div>
       <div class="flex items-center">
         <input
@@ -40,350 +48,517 @@
     </nav>
   </header>
 
-  <!-- Main Content -->
-  <main class="flex p-4">
-    <!-- Sidebar -->
-    <aside
-      class="h-screen min-w-[350px] max-w-sm overflow-y-auto rounded bg-white p-4 shadow-md"
-    >
-      <h2
-        class="mb-6 text-center text-lg font-bold border border-solid rounded-md p-1"
-      >
-        Course Lessons
-      </h2>
+  <!-- Home -->
+  <Home
+    v-if="selectedNavItem === 'home'"
+    @open-learning-path="selectedNavItem = 'learning-path'"
+    @open-dashboard="selectedNavItem = 'dashboard'"
+  />
 
-      <!-- Sidebar Video Lessons -->
-      <a href="#" class="video-lesson mt-5 flex items-center">
-        <!-- Thumbnail with Duration Overlay -->
-        <div class="relative mr-2 inline-block w-16">
-          <img
-            src="https://via.placeholder.com/150"
-            alt="Thumbnail"
-            class="rounded-md"
-          />
-          <!-- Absolutely positioned video duration -->
-          <p
-            class="absolute bottom-0 left-0 right-0 text-center bg-black bg-opacity-50 text-white rounded-b-md px-1 text-[11px]"
-          >
-            5m 20s
-          </p>
-        </div>
+  <!-- Courses -->
+    <Courses
+    v-else-if="selectedNavItem === 'courses'"
+    @preview-course="selectedNavItem = 'course-preview'"
+  />
 
-        <div class="inline-block w-2/3 py-2">
-          <p class="text-sm font-bold text-center">What is ChatGPT?</p>
-          <div class="relative h-4 w-full rounded-full bg-gray-200 mt-2">
-            <div
-              class="absolute left-0 h-full rounded-full bg-green-400"
-              style="width: 100%"
-            ></div>
-            <div
-              class="absolute bottom-0 left-0 right-0 top-0 flex items-center justify-center text-xs"
+  <!-- Course Preview -->
+    <CoursePreview
+    v-else-if="selectedNavItem === 'course-preview'"
+    @open-course="selectedNavItem = 'course'"
+  />
+
+  <!-- Course -->
+  <Course
+    v-else-if="selectedNavItem === 'course'"
+    @open-practice="selectedNavItem = 'practice'"
+  />
+
+  <!-- Certifications -->
+  <Certifications
+    v-else-if="selectedNavItem === 'certifications'"
+    @go-back="selectedNavItem = 'certifications'"
+    @view-learning-path="selectedNavItem = 'learning-path'"
+    @view-certification="selectedNavItem = 'certification'"
+  />
+
+  <!-- Certification -->
+  <Certification
+    v-else-if="selectedNavItem === 'certification'"
+    @go-back="selectedNavItem = 'certifications'"
+  />
+
+  <!-- Pricing -->
+  <Pricing v-else-if="selectedNavItem === 'pricing'" />
+
+  <!-- Learning Path -->
+  <LearningPath
+    v-else-if="selectedNavItem === 'learning-path'"
+    @preview-course="selectedNavItem = 'course-preview'"
+  />
+
+  <!-- Video Platform -->
+  <VideoPlatform
+    v-else-if="selectedNavItem === 'video-platform'"
+    @open-course="selectedNavItem = 'course'"
+  />
+
+  <!-- Dashboard -->
+  <Dashboard
+    v-else-if="selectedNavItem === 'dashboard'"
+    @open-course="selectedNavItem = 'course'"
+    @open-video-platform="selectedNavItem = 'video-platform'"
+  />
+
+  <!-- Footer Section -->
+  <section class="bg-gray-100 py-12 mt-16">
+    <div class="container mx-auto px-8 lg:flex">
+      <!-- Column 1: Information & Navigation Links -->
+      <div class="lg:w-1/3 mb-8 lg:mb-0">
+        <h2 class="text-lg font-bold mb-4">Information</h2>
+        <ul class="text-sm">
+          <li class="mb-2">
+            <a href="#" class="text-gray-600 hover:text-gray-800">About Us</a>
+          </li>
+          <li class="mb-2">
+            <a href="#" class="text-gray-600 hover:text-gray-800">Blog</a>
+          </li>
+          <li class="mb-2">
+            <a href="#" class="text-gray-600 hover:text-gray-800">Partners</a>
+          </li>
+          <li class="mb-2">
+            <a href="#" class="text-gray-600 hover:text-gray-800"
+              >Privacy Policy</a
             >
-              100%
-            </div>
-          </div>
-        </div>
-      </a>
-      <a href="#" class="video-lesson mt-5 flex items-center">
-        <!-- Thumbnail with Duration Overlay -->
-        <div class="relative mr-2 inline-block w-16">
-          <img
-            src="https://via.placeholder.com/150"
-            alt="Thumbnail"
-            class="rounded-md"
-          />
-          <!-- Absolutely positioned video duration -->
-          <p
-            class="absolute bottom-0 left-0 right-0 text-center bg-black bg-opacity-50 text-white rounded-b-md px-1 text-[11px]"
-          >
-            7m 10s
-          </p>
-        </div>
-
-        <div class="inline-block w-2/3">
-          <p class="text-sm font-bold text-center">
-            ChatGPT And The Job Market
-          </p>
-          <div class="relative h-4 w-full rounded-full bg-gray-200 mt-2">
-            <div
-              class="absolute left-0 h-full rounded-full bg-green-400"
-              style="width: 20%"
-            ></div>
-            <div
-              class="absolute bottom-0 left-0 right-0 top-0 flex items-center justify-center text-xs"
+          </li>
+          <li>
+            <a href="#" class="text-gray-600 hover:text-gray-800"
+              >Terms of Service</a
             >
-              20%
-            </div>
-          </div>
-        </div>
-      </a>
-
-      <a href="#" class="video-lesson mt-5 flex items-center">
-        <!-- Thumbnail with Duration Overlay -->
-        <div class="relative mr-2 inline-block w-16">
-          <img
-            src="https://via.placeholder.com/150"
-            alt="Thumbnail"
-            class="rounded-md"
-          />
-          <!-- Absolutely positioned video duration -->
-          <p
-            class="absolute bottom-0 left-0 right-0 text-center bg-black bg-opacity-50 text-white rounded-b-md px-1 text-[11px]"
-          >
-            8m 40s
-          </p>
-        </div>
-
-        <div class="inline-block w-2/3">
-          <p class="text-sm font-bold text-center">
-            Crafting Effective Prompts
-          </p>
-          <div class="relative h-4 w-full rounded-full bg-gray-200 mt-2">
-            <div
-              class="absolute left-0 h-full rounded-full bg-green-400"
-              style="width: 0"
-            ></div>
-            <div
-              class="absolute bottom-0 left-0 right-0 top-0 flex items-center justify-center text-xs italic text-slate-700"
-            >
-              Not yet started
-            </div>
-          </div>
-        </div>
-      </a>
-
-      <a href="#" class="video-lesson mt-5 flex items-center">
-        <!-- Thumbnail with Duration Overlay -->
-        <div class="relative mr-2 inline-block w-16">
-          <img
-            src="https://via.placeholder.com/150"
-            alt="Thumbnail"
-            class="rounded-md"
-          />
-          <!-- Absolutely positioned video duration -->
-          <p
-            class="absolute bottom-0 left-0 right-0 text-center bg-black bg-opacity-50 text-white rounded-b-md px-1 text-[11px]"
-          >
-            6m 55s
-          </p>
-        </div>
-
-        <div class="inline-block w-2/3">
-          <p class="text-sm font-bold text-center">Prompt Examples</p>
-          <div class="relative h-4 w-full rounded-full bg-gray-200 mt-2">
-            <div
-              class="absolute left-0 h-full rounded-full bg-green-400"
-              style="width: 0"
-            ></div>
-            <div
-              class="absolute bottom-0 left-0 right-0 top-0 flex items-center justify-center text-xs italic text-slate-700"
-            >
-              Not yet started
-            </div>
-          </div>
-        </div>
-      </a>
-
-      <!-- ... More video lessons ... -->
-    </aside>
-
-    <!-- Course Content -->
-    <section class="ml-4 w-3/4 rounded bg-white p-5 pb-20 shadow-md relative">
-
-    <!-- Course Progress -->
-    <div class="absolute rounded-full bg-blue-500 text-white p-2 w-fit ml-auto right-[35%]">
-        Course Progress: 10%
-    </div>
-    
-    <div class="flex items-center text-sm mb-2">
-        <a href="#" class="hover:underline hover:text-blue-500">ChatGPT and AI Prompts</a>
-        <chevron-right class="mx-2" />
-    </div>
-    
-    <h2 class="text-2xl font-bold">ChatGPT And The Job Market</h2>
-
-    <!-- Course Video and Right Section -->
-    <div class="mb-6 flex min-w-[700px]">
-        <video controls class="w-2/3 rounded-lg">
-            <source src="https://www.sample-videos.com/video123/mp4/480/big_buck_bunny_480p_5mb.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-        </video>
-
-        <!-- Right Section: Video Description and Topics -->
-        <div class="ml-4 flex w-1/3 flex-col space-y-4">
-            <p class="mb-4 mt-2 text-sm italic">
-                Supplementary text and details about the course, with more information and insights about the ongoing content.
-            </p>
-
-            <!-- Video Topics -->
-            <div class="mt-2 max-h-[200px] flex-grow overflow-y-auto">
-                <p class="my-2 font-semibold">Topics discussed:</p>
-                <!-- Mini-section 1 -->
-                <div @click="showSection1 = !showSection1" class="cursor-pointer mb-2">
-                    Mini-section 1 <chevron-down />
-                </div>
-                <div v-if="showSection1">
-                    <p>Topic 1.1</p>
-                    <p>Topic 1.2</p>
-                    <p>Topic 1.3</p>
-                </div>
-
-                <!-- Mini-section 2 -->
-                <div @click="showSection2 = !showSection2" class="cursor-pointer mb-2">
-                    Mini-section 2 <chevron-down />
-                </div>
-                <div v-if="showSection2">
-                    <p>Topic 2.1</p>
-                    <p>Topic 2.2</p>
-                    <p>Topic 2.3</p>
-                </div>
-
-                <!-- Mini-section 3 -->
-                <div @click="showSection3 = !showSection3" class="cursor-pointer mb-2">
-                    Mini-section 3 <chevron-down />
-                </div>
-                <div v-if="showSection3">
-                    <p>Topic 3.1</p>
-                    <p>Topic 3.2</p>
-                    <p>Topic 3.3</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-      <!-- Notes Section -->
-      <div class="mt-6">
-        <label class="mb-2 block text-lg font-semibold">Notes</label>
-        <textarea class="w-full rounded-lg border p-2" rows="4"></textarea>
-        <button
-          class="rounded bg-blue-500 px-4 py-2 text-white"
-          style="display: none"
-        >
-          New Section
-        </button>
+          </li>
+        </ul>
       </div>
 
-      <!-- Collapsable Practice Section -->
-      <div class="my-12 cursor-pointer">
-        <div
-          class="flex items-center justify-between border-b-2 mt-6 pb-2"
-          @click="showPractice = !showPractice"
-        >
-          <h3 class="ml-2 text-2xl font-semibold">Mini-Practice</h3>
-          <arrow-down lass="rotate-0 transform transition-transform" />
-        </div>
-
-        <div v-if="showPractice" class="mt-4 grid grid-cols-3 gap-4">
-          <div
-            class="h-fit w-full rounded-lg border p-4 shadow-sm transition-shadow duration-300 hover:shadow-md"
-          >
-            <h4 class="text-sm font-bold">Intent or Structure?</h4>
-            <p class="text-xs my-2 italic">
-              Identify the location where suggestions fit best in the prompt
-            </p>
-            <p class="text-xs font-bold">5 exercises</p>
-          </div>
-
-          <div
-            class="h-fit w-full rounded-lg border p-4 shadow-sm transition-shadow duration-300 hover:shadow-md"
-          >
-            <h4 class="text-sm font-bold">Bias Busters</h4>
-            <p class="text-xs my-2 italic">
-              Identify potentially strong biases in provided prompts
-            </p>
-            <p class="text-xs font-bold">3 exercises</p>
-          </div>
-
-          <div
-            class="h-fit w-full rounded-lg border p-4 shadow-sm transition-shadow duration-300 hover:shadow-md"
-          >
-            <h4 class="text-sm font-bold">Parts Of A Prompt</h4>
-            <p class="text-xs my-2 italic">
-              Identify the location where suggestions fit the prompt best
-            </p>
-            <p class="text-xs font-bold">5 exercises</p>
-          </div>
-
-          <div
-            class="h-fit w-full rounded-lg border p-4 shadow-sm transition-shadow duration-300 hover:shadow-md"
-          >
-            <h4 class="text-sm font-bold">Prompt Puzzles</h4>
-            <p class="text-xs my-2 italic">
-              Identify the location where suggestions fit the prompt best
-            </p>
-            <p class="text-xs font-bold">5 exercises</p>
-          </div>
-
-          <div
-            class="h-fit w-full rounded-lg border p-4 shadow-sm transition-shadow duration-300 hover:shadow-md"
-          >
-            <h4 class="text-sm font-bold">Prompt-Off</h4>
-            <p class="text-xs my-2 italic">
-              Identify the location where suggestions fit the prompt best
-            </p>
-            <p class="text-xs font-bold">5 exercises</p>
-          </div>
-
-          <div
-            class="h-fit w-full rounded-lg border p-4 shadow-sm transition-shadow duration-300 hover:shadow-md"
-          >
-            <h4 class="text-sm font-bold">Prompt Crafting</h4>
-            <p class="text-xs my-2 italic">
-              Identify the location where suggestions fit the prompt best
-            </p>
-            <p class="text-xs font-bold">5 exercises</p>
-          </div>
-        </div>
+      <!-- Column 2: Contact & Support -->
+      <div class="lg:w-1/3 mb-8 lg:mb-0">
+        <h2 class="text-lg font-bold mb-4">Contact & Support</h2>
+        <ul class="text-sm">
+          <li class="mb-2">
+            <span class="text-gray-600">Email: </span
+            ><a href="mailto:support@skillclimb.com" class="hover:text-gray-800"
+              >support@skillclimb.com</a
+            >
+          </li>
+          <li class="mb-2">
+            <span class="text-gray-600">Phone: </span
+            ><a href="tel:+1234567890" class="hover:text-gray-800"
+              >+1 234 567 890</a
+            >
+          </li>
+          <li>
+            <a href="#" class="text-gray-600 hover:text-gray-800 underline"
+              >Help Center</a
+            >
+          </li>
+        </ul>
       </div>
 
-      <!-- Collapsable Assessments Section -->
-      <div class="mb-4 cursor-pointer">
-        <div
-          class="flex items-center justify-between border-b-2 mt-6 pb-2"
-          @click="showAssessments = !showAssessments"
-        >
-          <h3 class="ml-2 text-2xl font-semibold">Quiz</h3>
-          <arrow-down lass="rotate-0 transform transition-transform" />
-        </div>
-
-        <div v-if="showAssessments" class="mt-4 grid grid-cols-3 gap-4">
-          <div
-            class="h-fit w-full rounded-lg border p-4 shadow-sm transition-shadow duration-300 hover:shadow-md"
+      <!-- Column 3: Social & Subscribe -->
+      <div class="lg:w-1/3">
+        <h2 class="text-lg font-bold mb-4">Stay Connected</h2>
+        <ul class="mb-4 text-sm">
+          <li class="inline-block mx-2">
+            <a href="#" class="text-gray-600 hover:text-gray-800"
+              ><i class="fab fa-facebook"></i
+            ></a>
+          </li>
+          <li class="inline-block mx-2">
+            <a href="#" class="text-gray-600 hover:text-gray-800"
+              ><i class="fab fa-twitter"></i
+            ></a>
+          </li>
+          <li class="inline-block mx-2">
+            <a href="#" class="text-gray-600 hover:text-gray-800"
+              ><i class="fab fa-linkedin"></i
+            ></a>
+          </li>
+          <li class="inline-block mx-2">
+            <a href="#" class="text-gray-600 hover:text-gray-800"
+              ><i class="fab fa-instagram"></i
+            ></a>
+          </li>
+        </ul>
+        <form @submit.prevent="subscribe">
+          <input
+            type="email"
+            placeholder="Your email"
+            class="p-2 rounded w-2/3 border"
+            v-model="subscriberEmail"
+            required
+          />
+          <button
+            type="submit"
+            class="bg-gray-800 text-white py-2 px-4 ml-2 rounded hover:bg-gray-700 transition"
           >
-            <h4 class="text-sm font-bold">Practice Quiz</h4>
-            <p class="text-xs my-2">
-              The content covers all the topics from the video lessons
-            </p>
-            <p class="text-xs font-bold">10 questions</p>
-            <p class="text-xs font-bold">No time limit</p>
-          </div>
-        </div>
+            Subscribe
+          </button>
+        </form>
       </div>
-    </section>
-  </main>
-
-  <!-- Footer -->
-  <footer class="mt-20 bg-gray-800 py-6 text-center text-white">
-    &copy; 2023 SkillClimb. All rights reserved.
-  </footer>
+    </div>
+    <div class="text-center text-gray-500 text-sm mt-4">
+      &copy; 2023 SkillClimb. All rights reserved.
+    </div>
+  </section>
 </template>
 
 <script>
 import AccountCircle from 'vue-material-design-icons/AccountCircle.vue';
 import ArrowDown from 'vue-material-design-icons/ArrowDown.vue';
 import ChevronRight from 'vue-material-design-icons/ChevronRight.vue';
+import Home from './components/Home.vue';
+import CoursePreview from './components/CoursePreview.vue';
+import Course from './components/Course.vue';
+import Certifications from './components/Certifications.vue';
+import Certification from './components/Certification.vue';
+import Pricing from './components/Pricing.vue';
+import Courses from './components/Courses.vue';
+import LearningPath from './components/LearningPath.vue';
+import VideoPlatform from './components/VideoPlatform.vue';
+import Dashboard from './components/Dashboard.vue';
 
 export default {
   components: {
     AccountCircle,
     ChevronRight,
     ArrowDown,
+    Home,
+    CoursePreview,
+    Course,
+    Certification,
+    Certifications,
+    Pricing,
+    Courses,
+    LearningPath,
+    VideoPlatform,
+    Dashboard,
   },
   data() {
     return {
+      selectedNavItem: 'home',
+      supplementalInfo:
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sodales ullamcorper vehicula.'.repeat(
+          10
+        ),
+      selectedSubtopic: null,
+      miniVideos: [
+        // sample data
+        {
+          id: 1,
+          title: 'Topic 1',
+          thumbnail: 'https://via.placeholder.com/150',
+          duration: '5:20',
+          isSelected: false,
+        },
+        {
+          id: 2,
+          title: 'Topic 2',
+          thumbnail: 'https://via.placeholder.com/150',
+          duration: '7:10',
+          isSelected: false,
+        },
+        // ... more mini-videos
+      ],
       showPractice: false,
       showAssessments: false,
+      course: {
+        name: 'ChatGPT and AI Prompts',
+        lessons: [
+          {
+            id: 1,
+            title: 'What is ChatGPT?',
+            thumbnail: 'https://via.placeholder.com/150',
+            duration: '5m 20s',
+            progress: 100,
+            progressText: '100%',
+          },
+          {
+            id: 2,
+            title: 'ChatGPT And The Job Market',
+            thumbnail: 'https://via.placeholder.com/150',
+            duration: '7m 10s',
+            progress: 20,
+            progressText: '20%',
+          },
+        ],
+      },
+      generatedSubtopics: [
+        {
+          id: 1,
+          name: 'AI-Generated Subtopic 1',
+          supplementalInfo: 'Lorem ipsum',
+        },
+        {
+          id: 2,
+          name: 'AI-Generated Subtopic 2',
+          supplementalInfo: 'Lorem ipsum',
+        },
+        // ... more generated subtopics
+      ],
+      sections: [
+        {
+          title: 'Mock Video Title',
+          thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg',
+          duration: '3:32',
+          show: false,
+          progress: 70,
+          topics: [
+            {
+              name: 'Topic 1',
+              discussed: true,
+              subTopics: [
+                {
+                  name: 'Subtopic 1',
+                  supplementalInfo:
+                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sodales ullamcorper vehicula.',
+                },
+                {
+                  name: 'Subtopic 2',
+                  supplementalInfo:
+                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sodales ullamcorper vehicula.',
+                },
+              ],
+            },
+            {
+              name: 'Topic 2',
+              discussed: false,
+              subTopics: [
+                {
+                  name: 'Subtopic 1',
+                  supplementalInfo:
+                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sodales ullamcorper vehicula.',
+                },
+                {
+                  name: 'Subtopic 2',
+                  supplementalInfo:
+                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sodales ullamcorper vehicula.',
+                },
+              ],
+            },
+            {
+              name: 'Topic 3',
+              discussed: false,
+              subTopics: [
+                {
+                  name: 'Subtopic 1',
+                  supplementalInfo:
+                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sodales ullamcorper vehicula.',
+                },
+                {
+                  name: 'Subtopic 2',
+                  supplementalInfo:
+                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sodales ullamcorper vehicula.',
+                },
+              ],
+            },
+            {
+              name: 'Topic 4',
+              discussed: false,
+              subTopics: [
+                {
+                  name: 'Subtopic 1',
+                  supplementalInfo: 'Lorem',
+                },
+              ],
+            },
+            {
+              name: 'Topic 5',
+              discussed: false,
+              subTopics: [
+                {
+                  name: 'Subtopic 1',
+                  supplementalInfo: 'Lorem',
+                },
+              ],
+            },
+          ],
+          supplementalInfo:
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sodales ullamcorper vehicula.',
+        },
+        {
+          title: 'Mock Video Title',
+          thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg',
+          duration: '2:32',
+          show: false,
+          progress: 0,
+          topics: [
+            {
+              name: 'Topic 1',
+              discussed: false,
+              subTopics: ['Subtopic 1', 'Subtopic 2'],
+            },
+            {
+              name: 'Topic 2',
+              discussed: false,
+              subTopics: ['Subtopic 1', 'Subtopic 2'],
+            },
+            {
+              name: 'Topic 3',
+              discussed: false,
+              subTopics: ['Subtopic 1', 'Subtopic 2'],
+            },
+            {
+              name: 'Topic 4',
+              discussed: false,
+              subTopics: ['Subtopic 1', 'Subtopic 2'],
+            },
+            {
+              name: 'Topic 5',
+              discussed: false,
+              subTopics: ['Subtopic 1', 'Subtopic 2'],
+            },
+          ],
+          supplementalInfo:
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sodales ullamcorper vehicula.',
+        },
+        {
+          title: 'Mock Video Title',
+          thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg',
+          duration: '4:32',
+          show: false,
+          progress: 0,
+          topics: [
+            {
+              name: 'Topic 1',
+              discussed: false,
+              subTopics: ['Subtopic 1', 'Subtopic 2'],
+            },
+            {
+              name: 'Topic 2',
+              discussed: false,
+              subTopics: ['Subtopic 1', 'Subtopic 2'],
+            },
+            {
+              name: 'Topic 3',
+              discussed: false,
+              subTopics: ['Subtopic 1', 'Subtopic 2'],
+            },
+            {
+              name: 'Topic 4',
+              discussed: false,
+              subTopics: ['Subtopic 1', 'Subtopic 2'],
+            },
+            {
+              name: 'Topic 5',
+              discussed: false,
+              subTopics: ['Subtopic 1', 'Subtopic 2'],
+            },
+          ],
+          supplementalInfo:
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sodales ullamcorper vehicula.',
+        },
+      ],
+      practices: [
+        {
+          title: 'Intent or Structure?',
+          description:
+            'Identify the location where suggestions fit best in the prompt',
+          exerciseCount: 5,
+        },
+        {
+          title: 'Bias Busters',
+          description: 'Identify potentially strong biases in provided prompts',
+          exerciseCount: 3,
+        },
+        {
+          title: 'Parts Of A Prompt',
+          description:
+            'Identify the location where suggestions fit the prompt best',
+          exerciseCount: 5,
+        },
+        {
+          title: 'Prompt Puzzles',
+          description:
+            'Identify the location where suggestions fit the prompt best',
+          exerciseCount: 5,
+        },
+        {
+          title: 'Prompt-Off',
+          description:
+            'Identify the location where suggestions fit the prompt best',
+          exerciseCount: 5,
+        },
+        {
+          title: 'Prompt Crafting',
+          description:
+            'Identify the location where suggestions fit the prompt best',
+          exerciseCount: 5,
+        },
+      ],
+      selectedSubtopic: {},
+      selectedTopic: {},
+      selectedOption: null,
+      selectedLessonIndex: null,
     };
+  },
+  computed: {
+    currentLesson() {
+      return this.course.lessons[0];
+    },
+    currentSection() {
+      return this.sections[0];
+    },
+    currentTopic() {
+      return this.currentSection.topics[0];
+    },
+    currentSubTopic() {
+      return this.currentTopic.subTopics[0];
+    },
+    currentSupplementalInfo() {
+      return this.supplementalInfo;
+    },
+  },
+  methods: {
+    toggleSection(index) {
+      this.sections[index].show = !this.sections[index].show;
+    },
+    hoverMiniVideo(id) {
+      // Do something on hover if required
+    },
+    unhoverMiniVideo(id) {
+      // Reset hover effects if required
+    },
+    selectMiniVideo(id) {
+      this.miniVideos = this.miniVideos.map((video) => {
+        video.isSelected = video.id === id;
+        return video;
+      });
+    },
+    activateVideo(index) {
+      this.sections = this.sections.map((section, idx) => ({
+        ...section,
+        show: idx === index && !section.show,
+      }));
+
+      this.activeVideoIndex = index;
+    },
+    selectTopic(topic) {
+      this.selectedTopic = topic;
+    },
+    selectSubtopic(subtopic) {
+      this.selectedSubtopic = subtopic;
+    },
+    goBack() {
+      this.selectedSubtopic = {};
+    },
+    selectOption(option) {
+      this.selectedOption = 'Lorem ipsum dolor sit amet option ' + option;
+      // ... any other logic ...
+    },
+    selectLesson(index) {
+      this.selectedLessonIndex = index; // Update the selected lesson index
+    },
+    isSelectedLesson(index) {
+      return this.selectedLessonIndex === index; // Check if the lesson is selected
+    },
   },
 };
 </script>
@@ -399,5 +574,62 @@ export default {
   transform: translateY(-5px);
   background-color: #f9f9f9;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.mini-video {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.mini-video:hover {
+  background-color: #f5f5f5;
+}
+
+.mini-video.selected {
+  background-color: #e0e0e0;
+}
+
+.thumbnail {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+  border-radius: 5px;
+}
+
+.duration {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #ffffff;
+  padding: 2px 4px;
+  text-align: center;
+  font-size: 10px;
+  border-radius: 0 0 5px 5px;
+}
+
+.video-topic:hover {
+  background-color: #f7f7f7;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.video-topic:hover {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.video-topic.bg-blue-100 {
+  border-color: blue;
+}
+
+.line-through {
+  text-decoration: line-through;
 }
 </style>

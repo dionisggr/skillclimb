@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@mdi/font": "^7.2.96",
+    "@shopify/draggable": "^1.1.1",
     "vue": "^3.3.4",
     "vue-material-design-icons": "^5.2.0"
   },
