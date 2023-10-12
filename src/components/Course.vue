@@ -58,10 +58,7 @@
 
       <!-- Course Video and Right Section -->
       <div class="mb-6 flex min-w-[700px]">
-        <video controls class="w-2/3 rounded-lg">
-          <source src="" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+        <iframe src="https://www.youtube.com/embed/o5MutYFWsM8?si=fgz694AFm8ol7rae" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen class="w-full h-auto"></iframe>
 
         <!-- Right Section: Video Description and Topics -->
         <div class="ml-4 flex w-1/3 flex-col space-y-4">
@@ -382,7 +379,7 @@ export default {
           {
             id: 1,
             title: 'What is ChatGPT?',
-            thumbnail: 'https://via.placeholder.com/150',
+            thumbnail: 'https://d-cb.jc-cdn.com/sites/crackberry.com/files/styles/large/public/article_images/2023/08/openai-logo.jpg',
             duration: '5m 20s',
             progress: 100,
             progressText: '100%',
@@ -390,7 +387,7 @@ export default {
           {
             id: 2,
             title: 'ChatGPT And The Job Market',
-            thumbnail: 'https://via.placeholder.com/150',
+            thumbnail: 'https://d-cb.jc-cdn.com/sites/crackberry.com/files/styles/large/public/article_images/2023/08/openai-logo.jpg',
             duration: '7m 10s',
             progress: 20,
             progressText: '20%',

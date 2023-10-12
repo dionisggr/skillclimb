@@ -41,17 +41,14 @@
       </transition>
     </section>
 
-    <!-- Video Introduction Section -->
-    <section class="py-16 w-4/6 mx-auto">
-      <h2 class="text-4xl font-bold text-center mb-8">Who We Are</h2>
-      <video controls class="w-full mb-8">
-        <source src="" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-      <p class="text-center text-gray-600">
-        Dive deep into our platform's capabilities and see what makes SkillClimb unique.
-      </p>
-    </section>
+<!-- Video Introduction Section -->
+<section class="py-16 w-3/5 mx-auto">
+  <h2 class="text-4xl font-bold text-center mb-8">Who We Are</h2>
+  <iframe width="100%" height="450" src="https://www.youtube.com/embed/4jjhWcWfCyE" frameborder="0" allowfullscreen></iframe>
+  <p class="text-center text-gray-600 mt-4">
+    Dive deep into our platform's capabilities and see what makes SkillClimb unique.
+  </p>
+</section>
 
     <!-- Roadmaps Section -->
     <section class="py-16 w-full px-12 mx-auto bg-white" id="popular-learning-paths">
@@ -146,77 +143,77 @@ export default {
           id: 1,
           title: 'Web Development',
           description: 'Master the art of web development...',
-          thumbnail: 'https://via.placeholder.com/150',
+          thumbnail: 'https://i.ytimg.com/vi/gQojMIhELvM/hqdefault.jpg?sqp=-oaymwEXCNACELwBSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLD7gwoOXxTW38khre_34WIRlyngDg',
         },
         {
           id: 2,
           title: 'Solutions Engineering',
           description: 'Learn how to evaluate and deploy software solutions',
-          thumbnail: 'https://via.placeholder.com/150',
+          thumbnail: 'https://th.bing.com/th/id/OIG.2r6EZ7PYvfej0iVeIwcM?pid=ImgGn',
         },
         {
           id: 3,
           title: 'ChatGPT',
           description: 'Learn about generative AI and prompt engineering',
-          thumbnail: 'https://via.placeholder.com/150',
+          thumbnail: 'https://d-cb.jc-cdn.com/sites/crackberry.com/files/styles/large/public/article_images/2023/08/openai-logo.jpg',
         },
         {
           id: 4,
           title: 'Job Search',
           description: 'Learn how to find and land your dream job.',
-          thumbnail: 'https://via.placeholder.com/150',
+          thumbnail: 'https://th.bing.com/th/id/OIG.Vtt8ARwvcktN5J8tR5CW?pid=ImgGn',
         },
         {
           id: 5,
           title: 'Artificial Intelligence',
           description: 'Learn about the future of AI and its applications.',
-          thumbnail: 'https://via.placeholder.com/150',
+          thumbnail: 'https://th.bing.com/th/id/OIG.p2wMsbWVtkSzuBvCuAYV?pid=ImgGn',
         },
         {
           id: 6,
           title: 'Machine Learning',
           description: 'Learn to build intelligent systems.',
-          thumbnail: 'https://via.placeholder.com/150',
+          thumbnail: 'https://th.bing.com/th/id/OIG.KAQROkJX9soTEZ7i_N_w?pid=ImgGn',
         },
         {
           id: 8,
           title: 'Prompt Engineering',
           description: 'Learn how to communicate with generative AI',
-          thumbnail: 'https://via.placeholder.com/150',
+          thumbnail: 'https://th.bing.com/th/id/OIG.ppWopHWbrsfbgrzJhe_2?pid=ImgGn',
         },
         {
           id: 7,
           title: 'Data Science',
           description: 'Learn to extract insights from data.',
-          thumbnail: 'https://via.placeholder.com/150',
+          thumbnail: 'https://th.bing.com/th/id/OIG.6Ju.JlNuDRwzMEEA4qYT?pid=ImgGn',
         },
       ],
       reviews: [
         {
           id: 1,
           userName: 'John Doe',
-          userThumbnail: 'https://via.placeholder.com/50',
+          userThumbnail: 'https://th.bing.com/th/id/OIG.kMOdQ0SnPAAMGkSvGmNh?pid=ImgGn',
           stars: 5,
           text: 'Amazing platform! I have learned so much in just a few weeks. Highly recommended!',
         },
         {
           id: 2,
           userName: 'Jane Smith',
-          userThumbnail: 'https://via.placeholder.com/50',
+          userThumbnail: 'https://i.pinimg.com/736x/59/55/e2/5955e250ff4e50edd16371952d30ee8b.jpg',
           stars: 4,
           text: 'Great courses. I love the structure and the quality of the instructors.',
         },
         {
           id: 3,
           userName: 'Jill Johnson',
-          userThumbnail: 'https://via.placeholder.com/50',
+          userThumbnail: 'https://corundumgroup.com/wp-content/uploads/2022/12/b.jpg',
           stars: 5,
           text: 'I have been using SkillClimb for a few months now and I am very happy with the progress I have made.',
         },
         {
           id: 4,
           userName: 'Jack Williams',
-          userThumbnail: 'https://via.placeholder.com/50',
+          userThumbnail: 'https://www.profilebakery.com/wp-content/uploads/2023/03/AI-Profile-Picture.jpg',
           stars: 5,
           text: 'I have been using SkillClimb for a few months now and I am very happy with the progress I have made.',
         },

@@ -11,14 +11,7 @@
       class="relative rounded-lg shadow-lg overflow-hidden w-5/6 mx-auto"
       style="height: 500px"
     >
-      <video
-        controls
-        class="w-full h-full object-cover"
-        poster="//placekitten.com/800/450"
-      >
-        <source :src="course.videoUrl" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
+    <iframe src="https://www.youtube.com/embed/1GNsWa_EZdw?si=cXiwSUe1odIDdUAM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen class="w-full h-full"></iframe>
       <div
         class="absolute top-0 left-0 bg-gradient-to-b from-black to-transparent text-white p-4 w-full"
       >
