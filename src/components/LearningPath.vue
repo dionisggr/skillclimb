@@ -48,32 +48,45 @@
         <div
           v-for="(course, index) in learningPath.courses"
           :key="index"
-          class="rounded-lg shadow-sm bg-gray-100 p-4 hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+          class="flex flex-col justify-between rounded-lg shadow-sm bg-gray-100 p-4 hover:shadow-lg transition-shadow duration-300 cursor-pointer"
           @click="$emit('preview-course')"
         >
           <!-- Course Header with Thumbnail and Duration -->
-          <div class="flex items-center mb-4">
-            <!-- Increased mb-2 to mb-4 for more gap -->
-            <div class="w-16 h-16 p-1 bg-white shadow-lg rounded-lg mr-3">
-              <img
-                src="https://via.placeholder.com/150"
-                :alt="course.title"
-                class="w-full h-full object-cover rounded-lg"
-              />
+          <div class="flex justify-between mb-4">
+            <div class="flex">
+              <div class="w-12 h-12 bg-white shadow-lg rounded-lg mr-3">
+                <img
+                  src="https://source.unsplash.com/random/201x126?course"
+                  :alt="course.title"
+                  class="w-full h-full object-cover rounded-lg"
+                />
+              </div>
+              <div class="flex-1 flex items-center">
+                <h3 class="text-lg font-semibold mb-1 line-clamp-2">
+                  {{ course.title }}
+                </h3>
+              </div>
             </div>
-            <div class="flex-1">
-              <h3 class="text-lg font-semibold mb-2">{{ course.title }}</h3>
-              <!-- Increased mb-1 to mb-2 for more gap -->
-              <span class="text-gray-600 text-sm"
-                >{{ course.duration }} weeks</span
+            <!-- Course Duration -->
+            <div class="duration-block flex items-end border-solid ml-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 mr-1"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
               >
+                <path d="M12 6v6l4 2" />
+                <path d="M12 4a8 8 0 100 16 8 8 0 000-16z" />
+              </svg>
+              <span class="text-xs min-w-fit">{{ course.duration }} weeks</span>
             </div>
           </div>
 
           <!-- Course Topics -->
-          <div class="mb-4">
+          <div class="mb-6">
             <ul class="flex flex-wrap gap-3">
-              <!-- Increased gap-2 to gap-3 for more spacing between topics -->
               <li
                 v-for="topic in course.topics"
                 :key="topic"
@@ -84,14 +97,14 @@
             </ul>
           </div>
 
-          <!-- Instructor & Additional Info -->
-          <div class="flex items-center justify-between text-sm">
+          <!-- Instructor, Additional Info -->
+          <div class="flex items-center justify-between text-sm mb-2">
             <div>
               <span class="font-bold">{{ course.lessons }}</span> lessons
               <span class="ml-2 font-bold">{{ course.assessments }}</span>
               assessments
             </div>
-            <span class="text-gray-600">{{ course.instructor.name }}</span>
+            <span class="text-gray-600 font-semibold">{{ course.instructor.name }}</span>
           </div>
         </div>
       </div>
@@ -154,7 +167,7 @@
           <!-- User Info -->
           <div class="flex items-center mb-3">
             <img
-              src="https://via.placeholder.com/150"
+              src="https://source.unsplash.com/random/201x126?course"
               :alt="'Image of ' + testimonial.author"
               class="w-8 h-8 rounded-full mr-2"
             />
@@ -185,12 +198,11 @@ export default {
   data() {
     return {
       learningPath: {
-        title: 'Frontend Mastery Path',
+        title: 'ChatGPT Mastery Path',
         students: 2050,
         rating: 4.5,
         assessments: 15,
-        description:
-          'A comprehensive path to mastering frontend development, from the basics of HTML and CSS to the intricacies of modern JavaScript frameworks.',
+        description: '',
         courses: [
           {
             title: 'Advanced React Techniques',
@@ -205,7 +217,7 @@ export default {
             ],
             instructor: {
               name: 'Alex Kent',
-              imageUrl: 'https://via.placeholder.com/150',
+              imageUrl: 'https://source.unsplash.com/random/201x126?course',
             },
           },
           {
@@ -221,7 +233,7 @@ export default {
             ],
             instructor: {
               name: 'Mia Wong',
-              imageUrl: 'https://via.placeholder.com/150',
+              imageUrl: 'https://source.unsplash.com/random/201x126?course',
             },
           },
           {
@@ -237,7 +249,7 @@ export default {
             ],
             instructor: {
               name: 'Leo Fitz',
-              imageUrl: 'https://via.placeholder.com/150',
+              imageUrl: 'https://source.unsplash.com/random/201x126?course',
             },
           },
           {
@@ -253,7 +265,7 @@ export default {
             ],
             instructor: {
               name: 'Isabelle Choi',
-              imageUrl: 'https://via.placeholder.com/150',
+              imageUrl: 'https://source.unsplash.com/random/201x126?course',
             },
           },
           {
@@ -269,7 +281,7 @@ export default {
             ],
             instructor: {
               name: 'Samuel Jackson',
-              imageUrl: 'https://via.placeholder.com/150',
+              imageUrl: 'https://source.unsplash.com/random/201x126?course',
             },
           },
           {
@@ -285,7 +297,7 @@ export default {
             ],
             instructor: {
               name: 'Lydia Hall',
-              imageUrl: 'https://via.placeholder.com/150',
+              imageUrl: 'https://source.unsplash.com/random/201x126?course',
             },
           },
           {
@@ -301,7 +313,7 @@ export default {
             ],
             instructor: {
               name: 'Raul Vega',
-              imageUrl: 'https://via.placeholder.com/150',
+              imageUrl: 'https://source.unsplash.com/random/201x126?course',
             },
           },
           {
@@ -317,7 +329,7 @@ export default {
             ],
             instructor: {
               name: 'Nina Bhatia',
-              imageUrl: 'https://via.placeholder.com/150',
+              imageUrl: 'https://source.unsplash.com/random/201x126?course',
             },
           },
         ],
@@ -364,28 +376,28 @@ export default {
             id: 1,
             description: 'Basic understanding of HTML, CSS, and JavaScript',
             completed: false,
-            icon: 'https://via.placeholder.com/150',
+            icon: 'https://source.unsplash.com/random/201x126?course',
             resourceLink: 'https://some-resource-to-learn-html.com',
           },
           {
             id: 2,
             description: 'Familiarity with the command line',
             completed: false,
-            icon: 'https://via.placeholder.com/150',
+            icon: 'https://source.unsplash.com/random/201x126?course',
             resourceLink: 'https://some-resource-to-learn-command-line.com',
           },
           {
             id: 5,
             description: 'Understanding of Basic Web Design Principles',
             completed: false,
-            icon: 'https://via.placeholder.com/150',
+            icon: 'https://source.unsplash.com/random/201x126?course',
             resourceLink: 'https://some-resource-to-learn-web-design.com',
           },
           {
             id: 6,
             description: 'Experience with Version Control (Git)',
             completed: false,
-            icon: 'https://via.placeholder.com/150',
+            icon: 'https://source.unsplash.com/random/201x126?course',
             resourceLink: 'https://some-resource-to-learn-git.com',
           },
         ],

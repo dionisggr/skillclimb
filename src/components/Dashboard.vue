@@ -1,9 +1,9 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gray-50 pb-8">
     <!-- Dashboard Header -->
-    <div class="text-center py-12 bg-indigo-600 text-white">
+    <div class="text-center py-12 bg-blue-500 text-white">
       <h1 class="text-4xl font-extrabold">Creator Dashboard</h1>
-      <p class="text-indigo-200">Harness the power of AI for your courses</p>
+      <p class="text-blue-200">Harness the power of AI for your courses</p>
     </div>
 
     <!-- Dashboard Content -->
@@ -11,8 +11,8 @@
       <!-- Insights Section -->
       <div class="bg-white p-6 shadow-lg grid grid-cols-3 gap-4 mb-8">
         <div class="bg-white p-6 rounded-xl shadow-md flex items-center">
-          <div class="mr-4 bg-indigo-200 p-4 rounded-full">
-            <i class="fas fa-video text-indigo-600 text-xl"></i>
+          <div class="mr-4 bg-blue-200 p-4 rounded-full">
+            <i class="fas fa-video text-blue-600 text-xl"></i>
             <!-- Using Font Awesome icons -->
           </div>
           <div>
@@ -22,8 +22,8 @@
         </div>
 
         <div class="bg-white p-6 rounded-xl shadow-md flex items-center">
-          <div class="mr-4 bg-indigo-200 p-4 rounded-full">
-            <i class="fas fa-eye text-indigo-600 text-xl"></i>
+          <div class="mr-4 bg-blue-200 p-4 rounded-full">
+            <i class="fas fa-eye text-blue-600 text-xl"></i>
           </div>
           <div>
             <h2 class="text-xl font-semibold">Total Views</h2>
@@ -32,8 +32,8 @@
         </div>
 
         <div class="bg-white p-6 rounded-xl shadow-md flex items-center">
-          <div class="mr-4 bg-indigo-200 p-4 rounded-full">
-            <i class="fas fa-comments text-indigo-600 text-xl"></i>
+          <div class="mr-4 bg-blue-200 p-4 rounded-full">
+            <i class="fas fa-comments text-blue-600 text-xl"></i>
           </div>
           <div>
             <h2 class="text-xl font-semibold">Total Comments</h2>
@@ -47,7 +47,7 @@
         <div class="flex justify-between items-center mb-6">
           <h2 class="text-2xl font-semibold text-gray-700">Your Courses</h2>
           <button
-            class="bg-indigo-500 text-white rounded-lg px-5 py-2 shadow-md hover:bg-indigo-700 transition-colors"
+            class="bg-blue-500 text-white rounded-lg px-5 py-2 shadow-md hover:bg-blue-700 transition-colors"
             @click="$emit('open-video-platform')"
           >
             Create New Course
@@ -59,12 +59,14 @@
             :key="course.id"
             class="border p-6 rounded-lg"
           >
-            <img
-              :src="course.thumbnail"
-              alt="Course Thumbnail"
-              class="w-full mb-4"
-            />
-            <h3 class="text-lg font-medium mb-2">{{ course.title }}</h3>
+            <div class="flex items-center space-x-4 mb-4">
+              <img
+                :src="course.thumbnail"
+                alt="Course Thumbnail"
+                class="w-12 rounded-md"
+              />
+              <h3 class="text-xl font-semibold">{{ course.title }}</h3>
+            </div>
             <p class="text-sm text-gray-500 mb-2 truncate">
               {{ course.description }}
             </p>
@@ -75,7 +77,7 @@
               <i class="fas fa-clock"></i> {{ course.duration }} hours
             </p>
             <button
-              class="bg-indigo-500 text-white rounded-lg px-4 py-1 shadow-md hover:bg-indigo-700 transition-colors"
+              class="bg-blue-500 text-white rounded-lg px-4 py-1 shadow-md hover:bg-blue-700 transition-colors"
             >
               Add Lesson
             </button>
@@ -95,9 +97,16 @@
             class="border-b pb-4 mb-4"
           >
             <p class="text-gray-700 mb-2">{{ feedback.comment }}</p>
-            <span class="text-sm text-indigo-500">{{ feedback.course }}</span>
+            <span class="text-sm text-blue-500">{{ feedback.course }}</span>
           </li>
         </ul>
+        <!-- Show More Button -->
+        <button
+          @click="loadMoreFeedback"
+          class="mx-auto block mt-8 px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-500 transition duration-300"
+        >
+          Show More
+        </button>
       </div>
 
       <!-- Recommendations Section -->
@@ -112,9 +121,7 @@
             class="mb-4"
           >
             <p>
-              <strong class="text-indigo-600">{{
-                recommendation.title
-              }}</strong>
+              <strong class="text-blue-600">{{ recommendation.title }}</strong>
             </p>
             <p class="text-gray-600">{{ recommendation.detail }}</p>
           </li>
@@ -136,7 +143,7 @@ export default {
           id: 1,
           title: 'Mastering Vue.js',
           description: 'Deep dive into Vue.js and its ecosystem.',
-          thumbnail: '',
+          thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg',
           enrolled: 1500,
           duration: 5,
         },
@@ -145,7 +152,7 @@ export default {
           title: 'AI for Beginners',
           description:
             'Introduction to AI, machine learning, and neural networks.',
-          thumbnail: '',
+          thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg',
           enrolled: 2300,
           duration: 8,
         },

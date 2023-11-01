@@ -3,25 +3,25 @@
   <main class="flex p-4" v-if="selectedNavItem === 'home'">
     <!-- Sidebar -->
     <aside
-      class="h-screen min-w-[350px] max-w-sm overflow-y-auto rounded bg-white p-4 shadow-md"
+      class="h-screen max-w-[350px] overflow-y-auto rounded bg-white p-4 shadow-md"
     >
       <h2
         class="mb-6 text-center text-lg font-bold border border-solid rounded-md p-1"
       >
-        Course Lessons
+        Course Modules
       </h2>
 
       <!-- Sidebar Video Lessons -->
       <a
         href="#"
         class="video-lesson mt-5 flex items-center"
-        v-for="(lesson, index) in course.lessons"
+        v-for="(lesson, index) in course.modules"
         :key="index"
         :class="{ yourSelectedStyle: isSelectedLesson(index) }"
         @click.prevent="selectLesson(index)"
       >
         <div class="relative mr-2 inline-block w-16">
-          <img :src="lesson.thumbnail" :alt="lesson.title" class="rounded-md" />
+          <img :src="lesson.thumbnail" :alt="lesson.name" class="rounded-md" />
           <p
             class="absolute bottom-0 left-0 right-0 text-center bg-black bg-opacity-50 text-white rounded-b-md px-1 text-[11px]"
           >
@@ -29,7 +29,7 @@
           </p>
         </div>
         <div class="inline-block w-2/3">
-          <p class="text-sm font-bold text-center">{{ lesson.title }}</p>
+          <p class="text-sm font-bold text-center">{{ lesson.name }}</p>
           <div class="relative h-4 w-full rounded-full bg-gray-200 mt-2">
             <div
               class="absolute left-0 h-full rounded-full bg-green-400"
@@ -51,55 +51,59 @@
         <a href="#" class="hover:underline hover:text-blue-500">{{
           course.name
         }}</a>
-        <chevron-right class="mx-2" />
+        <chevron-right size="20" class="mx-1" />
       </div>
 
-      <h2 class="text-2xl font-bold">{{ currentLesson.title }}</h2>
+      <h2 class="text-2xl font-bold m-1 mt-4">{{ currentLesson.title }}</h2>
 
       <!-- Course Video and Right Section -->
       <div class="mb-6 flex min-w-[700px]">
-        <iframe src="https://www.youtube.com/embed/o5MutYFWsM8?si=fgz694AFm8ol7rae" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen class="w-full h-auto"></iframe>
+        <iframe
+          src="https://www.youtube.com/embed/o5MutYFWsM8?si=fgz694AFm8ol7rae"
+          title="YouTube video player"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          class="w-full h-auto"
+        ></iframe>
 
         <!-- Right Section: Video Description and Topics -->
-        <div class="ml-4 flex w-1/3 flex-col space-y-4">
-          <p class="mb-2 mt-2 text-sm italic">
-            Supplementary text and details about the course, with more
-            information and insights about the ongoing content.
-          </p>
-
+        <div class="ml-4 flex w-2/5 flex-col space-y-4">
           <!-- Video Topics -->
-          <div class="mt-2 max-h-[250px] flex-grow overflow-y-auto">
-            <p class="mb-2 font-semibold">Topics discussed:</p>
+          <div class="h-[400px] flex-grow overflow-y-auto">
+            <p class="mb-2 font-semibold text-lg text-gray-800">
+              Module Lessons:
+            </p>
 
-            <div v-for="(section, index) in sections" :key="index">
+            <div v-for="(lesson, index) in selectedModule.lessons" :key="index">
               <!-- Video Entry -->
               <div
-                class="video-topic mt-2 flex items-center p-3 border rounded-md hover:shadow-lg hover:border-opacity-60"
-                @click="activateVideo(index)"
+                class="video-lesson mt-3 flex items-center p-3 border border-blue-700 rounded-md shadow-md hover:shadow-lg border-opacity-30"
+                @click="toggleVideo(index)"
                 :class="{ 'bg-blue-100': activeVideoIndex === index }"
               >
                 <div class="relative mr-2 inline-block w-16">
                   <img
-                    :src="section.thumbnail"
-                    :alt="section.title"
+                    :src="lesson.thumbnail"
+                    :alt="lesson.title"
                     class="rounded-md"
                   />
                   <p
                     class="absolute bottom-0 left-0 right-0 text-center bg-black bg-opacity-50 text-white rounded-b-md px-1 text-[11px]"
                   >
-                    {{ section.duration }}
+                    {{ lesson.duration }}
                   </p>
                 </div>
                 <div class="inline-block w-2/3">
                   <p class="text-sm font-bold text-center">
-                    {{ section.title }}
+                    {{ lesson.title }}
                   </p>
                   <div
-                    class="relative h-2 w-full rounded-full bg-gray-200 mt-2 mb-2"
+                    class="relative h-2 w-full rounded-full bg-gray-300 mt-2 mb-2"
                   >
                     <div
                       class="absolute left-0 h-full rounded-full bg-green-400"
-                      :style="{ width: section.progress + '%' }"
+                      :style="{ width: lesson.progress + '%' }"
                     ></div>
                   </div>
                 </div>
@@ -108,15 +112,15 @@
               <!-- Expanded Details Section for the current Video Entry -->
               <div
                 v-if="activeVideoIndex === index"
-                class="mt-2 p-3 bg-gray-50 border rounded-md"
+                class="p-3 bg-gray-50 border rounded-md"
               >
-                <p class="text-xs italic">{{ section.description }}</p>
-                <ul class="mt-2 space-y-2">
+                <p class="text-xs italic">{{ lesson.description }}</p>
+                <ul class="space-y-2">
                   <li
-                    v-for="topic in section.topics"
+                    v-for="topic in currentLesson.topics"
                     :key="topic"
                     @click="selectTopic(topic)"
-                    class="cursor-pointer border rounded-lg px-4 py-2 flex items-center hover:bg-blue-100 hover:text-blue-700 transition-all duration-300"
+                    class="cursor-pointer border rounded-lg px-4 py-2 flex text-sm font-medium items-center hover:bg-blue-100 hover:text-blue-700 transition-all duration-300"
                     :class="{
                       'bg-blue-200 text-blue-800 border-blue-500':
                         selectedSubtopic === topic,
@@ -124,10 +128,10 @@
                     }"
                   >
                     <!-- Mocked timestamp -->
-                    <span class="mr-2 text-xs text-gray-500">{{
+                    <span class="mr-4 text-xs text-gray-500">{{
                       topic.timestamp || '00:00'
                     }}</span>
-                    {{ topic.name }}
+                    {{ topic.title }}
                   </li>
                 </ul>
               </div>
@@ -160,7 +164,7 @@
 
         <template v-if="!selectedSubtopic.name">
           <p class="text-gray-700 leading-relaxed mb-4">
-            {{ currentSection.supplementalInfo.repeat(10) }}
+            {{ currentTopic.supplementalInfo?.repeat(10) }}
           </p>
         </template>
 
@@ -312,9 +316,7 @@
               'bg-blue-100 border-blue-300 shadow-md':
                 selectedPractice?.title === practice.title,
             }"
-            @click="
-              selectedPractice = practice;
-            "
+            @click="selectedPractice = practice"
           >
             <h4 class="text-sm font-bold">{{ practice.title }}</h4>
             <p class="text-xs my-2 italic">{{ practice.description }}</p>
@@ -324,7 +326,7 @@
           </div>
         </div>
 
-        <Practice :name="selectedPractice?.title"/>
+        <Practice :name="selectedPractice?.title" />
       </div>
     </section>
   </main>
@@ -342,6 +344,9 @@ export default {
     ChevronRight,
     ArrowDown,
     Practice,
+  },
+  mounted() {
+    this.selectedModule = this.course.modules[0];
   },
   data() {
     return {
@@ -374,24 +379,1087 @@ export default {
       showPractice: false,
       showAssessments: false,
       course: {
-        name: 'ChatGPT and AI Prompts',
-        lessons: [
+        name: 'ChatGPT for Job Searching & Interview Prep',
+        modules: [
           {
             id: 1,
-            title: 'What is ChatGPT?',
-            thumbnail: 'https://d-cb.jc-cdn.com/sites/crackberry.com/files/styles/large/public/article_images/2023/08/openai-logo.jpg',
-            duration: '5m 20s',
-            progress: 100,
-            progressText: '100%',
+            name: 'Intro to ChatGPT and AI Prompts',
+            thumbnail: 'https://via.placeholder.com/150',
+            lessons: [
+              {
+                id: 1,
+                title: 'AI, LLMS and ChatGPT',
+                thumbnail:
+                  'https://d-cb.jc-cdn.com/sites/crackberry.com/files/styles/large/public/article_images/2023/08/openai-logo.jpg',
+                duration: '5m 20s',
+                progress: 100,
+                progressText: '100%',
+                topics: [
+                  {
+                    id: 1,
+                    title: 'Overview of AI and LLMS',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      {
+                        id: 1,
+                        name: 'What is Artificial Intelligence',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 2,
+                        name: 'What are Large Language Models?',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 3,
+                        name: 'OpenAI, GPT and ChatGPT',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 4,
+                        name: 'What ChatGPT Can and Can\t Do',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 5,
+                        name: 'General Use Cases',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 6,
+                        name: 'GPT 3.5-Turbo vs GPT-4',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 7,
+                        name: 'Other LLM Options and Tools',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                    ],
+                  },
+                  {
+                    id: 2,
+                    title: 'Biases, Inaccuracies & Responsible Use',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '4:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      {
+                        id: 1,
+                        name: 'What is a Bias?',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 2,
+                        name: 'Biases in AI-Generated Content',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 3,
+                        name: 'Hallucinations and How to Avoid Them',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 4,
+                        name: 'General Recommendations',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                    ],
+                  },
+                  {
+                    id: 3,
+                    title: 'Ethical Considerations & Privacy',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '5:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      {
+                        id: 1,
+                        name: 'ChatGPT & Your Privacy',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 2,
+                        name: 'What Data is Collected?',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 3,
+                        name: 'How You Can Protect Your Privacy',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 4,
+                        name: 'AI Assistance vs AI Dependence',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                id: 2,
+                title: 'ChatGPT And The (Modern) Job Market',
+                thumbnail:
+                  'https://d-cb.jc-cdn.com/sites/crackberry.com/files/styles/large/public/article_images/2023/08/openai-logo.jpg',
+                duration: '7m 10s',
+                progress: 20,
+                progressText: '20%',
+                topics: [
+                  {
+                    id: 6,
+                    title: 'How Recruiters Are Leveraging ChatGPT',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      {
+                        id: 1,
+                        name: 'Screening Applications',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 2,
+                        name: 'Communication & Networking',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 3,
+                        name: 'Deepening Interviews',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 4,
+                        name: 'Automation & "Efficiency"',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                    ],
+                  },
+                  {
+                    id: 7,
+                    title: 'The New Problem With Job Searching',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      {
+                        id: 1,
+                        name: 'Job Searching & AI',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 2,
+                        name: 'Applicant Expectations vs Hiring Realities',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 3,
+                        name: 'Metric-Obsessed "Human" Resources',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 4,
+                        name: 'Skill Evaluation vs Depth of Knowledge',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                    ],
+                  },
+                  {
+                    id: 8,
+                    title: 'How Applicants Are Taking Advantage of ChatGPT',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '4:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      {
+                        id: 1,
+                        name: 'Writing Resumes & Cover Letters',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 2,
+                        name: 'Optimizing for ATS',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 3,
+                        name: 'Communication & Networking',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 4,
+                        name: 'Company & Role Research',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 5,
+                        name: 'Comprehensive Interview Prep',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 6,
+                        name: 'Generating High-Quality Questions',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 7,
+                        name: 'Salary Negotation Strategies',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 8,
+                        name: 'Personal Brand Building',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                id: 3,
+                title: 'Crafting Effective Prompts',
+                thumbnail:
+                  'https://d-cb.jc-cdn.com/sites/crackberry.com/files/styles/large/public/article_images/2023/08/openai-logo.jpg',
+                duration: '7m 10s',
+                progress: 20,
+                progressText: '20%',
+                subtopics: [
+                  {
+                    id: 1,
+                    name: 'Prompt Psychology: Intent, Context & Structure',
+                    supplementalInfo: 'Lorem ipsum',
+                  },
+                  {
+                    id: 1,
+                    name: 'Leveraging & Avoiding Biases',
+                    supplementalInfo: 'Lorem ipsum',
+                  },
+                  {
+                    id: 2,
+                    name: 'Refining & Iterating Prompts',
+                    supplementalInfo: 'Lorem ipsum',
+                  },
+                  {
+                    id: 3,
+                    name: 'Prompt Engineering Basics',
+                    supplementalInfo: 'Lorem ipsum',
+                  },
+                ],
+              },
+              {
+                id: 4,
+                title: 'Exploring Common Prompts',
+                thumbnail:
+                  'https://d-cb.jc-cdn.com/sites/crackberry.com/files/styles/large/public/article_images/2023/08/openai-logo.jpg',
+                duration: '7m 10s',
+                progress: 20,
+                progressText: '20%',
+                subtopics: [
+                  {
+                    id: 1,
+                    name: 'Role Prompting',
+                    supplementalInfo: 'Lorem ipsum',
+                  },
+                  {
+                    id: 2,
+                    name: 'Context & Reference',
+                    supplementalInfo: 'Lorem ipsum',
+                  },
+                  {
+                    id: 3,
+                    name: 'Specifying Audience',
+                    supplementalInfo: 'Lorem ipsum',
+                  },
+                  {
+                    id: 4,
+                    name: 'Providing Examples',
+                    supplementalInfo: 'Lorem ipsum',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            id: 3,
+            name: 'Crafting Compelling Cover Letters with ChatGPT',
+            thumbnail: 'https://via.placeholder.com/150',
+            lessons: [
+              {
+                id: 1,
+                title: 'Purpose & Structure of Cover Letters',
+                thumbnail:
+                  'https://d-cb.jc-cdn.com/sites/crackberry.com/files/styles/large/public/article_images/2023/08/openai-logo.jpg',
+                duration: '5m 20s',
+                progress: 100,
+                progressText: '100%',
+                topics: [
+                  {
+                    id: 1,
+                    title: 'Aligning to Job Description',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      // Subtopics here
+                    ],
+                  },
+                  {
+                    id: 2,
+                    title: 'Demonstrating Passion & Fit',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      // Subtopics here
+                    ],
+                  },
+                  {
+                    id: 3,
+                    title: 'Evaluating Ideal Length',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      // Subtopics here
+                    ],
+                  },
+                ],
+              },
+              {
+                id: 2,
+                title: 'Using ChatGPT for personalized cover letters',
+                thumbnail:
+                  'https://d-cb.jc-cdn.com/sites/crackberry.com/files/styles/large/public/article_images/2023/08/openai-logo.jpg',
+                duration: '5m 20s',
+                progress: 100,
+                progressText: '100%',
+                topics: [
+                  {
+                    id: 1,
+                    title: 'Avoding Generic Templates',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      // Subtopics here
+                    ],
+                  },
+                  {
+                    id: 2,
+                    title: 'Input Parameters for Personalization',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      // Subtopics here
+                    ],
+                  },
+                ],
+              },
+              {
+                id: 3,
+                title: 'Using ChatGPT for Email & Communication',
+                thumbnail:
+                  'https://d-cb.jc-cdn.com/sites/crackberry.com/files/styles/large/public/article_images/2023/08/openai-logo.jpg',
+                duration: '5m 20s',
+                progress: 100,
+                progressText: '100%',
+                topics: [
+                  {
+                    id: 1,
+                    title: 'Writing Effective Emails',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      {
+                        id: 1,
+                        name: 'Power Words',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 2,
+                        name: 'Curiosity Hooks',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                    ],
+                  },
+                  {
+                    id: 2,
+                    title: 'Crafting Concise Subjecet Lines',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      {
+                        id: 1,
+                        name: 'Avoiding Spam Triggers',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                    ],
+                  },
+                  {
+                    id: 3,
+                    title: 'Crafting Professional Intro & Body Content',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                    {
+                        id: 1,
+                        name: 'Maintaining a Personalized Professional Tone',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 2,
+                        name: 'Ending with a Call to Action',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
           },
           {
             id: 2,
-            title: 'ChatGPT And The Job Market',
-            thumbnail: 'https://d-cb.jc-cdn.com/sites/crackberry.com/files/styles/large/public/article_images/2023/08/openai-logo.jpg',
-            duration: '7m 10s',
-            progress: 20,
-            progressText: '20%',
+            name: 'Resume Optimization with ChatGPT',
+            thumbnail: 'https://via.placeholder.com/150',
+            lessons: [
+              {
+                id: 1,
+                title: 'Resume Optimization with ChatGPT',
+                thumbnail:
+                  'https://d-cb.jc-cdn.com/sites/crackberry.com/files/styles/large/public/article_images/2023/08/openai-logo.jpg',
+                duration: '5m 20s',
+                progress: 100,
+                progressText: '100%',
+                topics: [
+                  {
+                    id: 1,
+                    title: 'Analyzing Job Descriptions',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      {
+                        id: 1,
+                        name: 'Parsing Key Skills & Requirements',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 2,
+                        name: 'Translating Requirements Into Skills & Achievements',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 3,
+                        name: 'Recognizing Industry-Specific Jargon',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                    ],
+                  },
+                  {
+                    id: 2,
+                    title: 'Optimizing Resume for ATS Systems',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '4:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      {
+                        id: 1,
+                        name: 'Tailoring Summary & Objective Statements',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 2,
+                        name: 'Structuring Resume Sectionsn for Maximum Impact',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 2,
+                        name: 'Quantifying Achievements',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 2,
+                        name: 'Incorporating Keywords',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 2,
+                        name: 'Strategic Placement Without Overstuffing',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 2,
+                        name: 'Integrating Feedback and Iterating Drafts',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                    ],
+                  },
+                  {
+                    id: 2,
+                    title: 'Guided Exercises',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '4:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      {
+                        id: 1,
+                        name: 'Matching Candidates to Job Descriptions',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 2,
+                        name: 'Optimizing Sample Resume Sections',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 2,
+                        name: 'Feedback Integration',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 2,
+                        name: 'Selecting the Strongest Resumes',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 2,
+                        name: 'Strategic Placement Without Overstuffing',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
           },
+          {
+            id: 3,
+            name: 'Networking Strategies with LinkedIn & ChatGPT',
+            thumbnail: 'https://via.placeholder.com/150',
+            lessons: [
+              {
+                id: 1,
+                title: 'LinkedIn, Networking & ChatGPT',
+                thumbnail:
+                  'https://d-cb.jc-cdn.com/sites/crackberry.com/files/styles/large/public/article_images/2023/08/openai-logo.jpg',
+                duration: '5m 20s',
+                progress: 100,
+                progressText: '100%',
+                topics: [
+                  {
+                    id: 1,
+                    title: 'Why LinkedIn?',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      // Subtopics here
+                    ],
+                  },
+                  {
+                    id: 1,
+                    title: "The Power of LinkedIn's Algorithm",
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      // Subtopics here
+                    ],
+                  },
+                  {
+                    id: 2,
+                    title: 'Using ChatGPT for Posts & Interacting with Others',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '4:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      // Subtopics here
+                    ],
+                  },
+                ],
+              },
+              {
+                id: 2,
+                title: 'Creating a Compelling LinkedIn Profile',
+                thumbnail:
+                  'https://d-cb.jc-cdn.com/sites/crackberry.com/files/styles/large/public/article_images/2023/08/openai-logo.jpg',
+                duration: '7m 10s',
+                progress: 20,
+                progressText: '20%',
+                topics: [
+                  {
+                    id: 1,
+                    title: 'Crafting an AI-Driven Summary',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      // Subtopics here
+                    ],
+                  },
+                  {
+                    id: 1,
+                    title: 'Summarizing Experience',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      // Subtopics here
+                    ],
+                  },
+                  {
+                    id: 1,
+                    title: 'Expanding Skills & Achievements',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      // Subtopics here
+                    ],
+                  },
+                ],
+              },
+              {
+                id: 3,
+                title: 'Researching Connections',
+                thumbnail:
+                  'https://d-cb.jc-cdn.com/sites/crackberry.com/files/styles/large/public/article_images/2023/08/openai-logo.jpg',
+                duration: '7m 10s',
+                progress: 20,
+                progressText: '20%',
+                topics: [
+                  {
+                    id: 1,
+                    title: 'Identifying Shared Experiences',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      // Subtopics here
+                    ],
+                  },
+                  {
+                    id: 2,
+                    title: 'Crafting Requests & Messages with ChatGPT',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      // Subtopics here
+                    ],
+                  },
+                  {
+                    id: 3,
+                    title: 'Crafting Personalized Invites with ChatGPT',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      // Subtopics here
+                    ],
+                  },
+                ],
+              },
+              {
+                id: 4,
+                title: 'Templates for Outreach',
+                thumbnail: 'https://via.placeholder.com/150',
+                duration: '7:10',
+                progress: 100,
+                progressText: '100%',
+                topics: [
+                  {
+                    id: 1,
+                    title: 'Following Up On Invites',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      // Subtopics here
+                    ],
+                  },
+                  {
+                    id: 2,
+                    title: 'Asking for Informational Interviews',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      // Subtopics here
+                    ],
+                  },
+                  {
+                    id: 3,
+                    title: 'Personalize Without Overstepping',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      // Subtopics here
+                    ],
+                  },
+                  {
+                    id: 4,
+                    title: 'Timing & Frequency',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      // Subtopics here
+                    ],
+                  },
+                ],
+              },
+              {
+                id: 5,
+                title: 'Exploring Other Strategies',
+                thumbnail: 'https://via.placeholder.com/150',
+                duration: '7:10',
+                progress: 100,
+                progressText: '100%',
+                topics: [
+                  {
+                    id: 1,
+                    title: 'Slack Groups',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      {
+                        id: 1,
+                        name: 'Finding Slack Groups',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 2,
+                        name: 'Participating in Slack Groups',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 3,
+                        name: 'Networking in Slack Groups',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                    ],
+                  },
+                  {
+                    id: 2,
+                    title: 'Local & Virtual Networking Events',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      {
+                        id: 1,
+                        name: 'Finding Networking Events',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 2,
+                        name: 'Preparing to Participate in Networking Events',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                    ],
+                  },
+                  {
+                    id: 3,
+                    title: 'Seminars & Conferences',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      {
+                        id: 1,
+                        name: 'Finding Seminars & Conferences',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 2,
+                        name: 'Preparing to Participate in Seminars & Conferences',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            id: 4,
+            name: 'Navigating Interviews with Confidence',
+            thumbnail: 'https://via.placeholder.com/150',
+            lessons: [
+              {
+                id: 1,
+                title: 'Preparing for Different Types of Interviews',
+                thumbnail:
+                  'https://d-cb.jc-cdn.com/sites/crackberry.com/files/styles/large/public/article_images/2023/08/openai-logo.jpg',
+                duration: '5m 20s',
+                progress: 100,
+                progressText: '100%',
+                topics: [
+                  {
+                    id: 1,
+                    title: 'Phone, Video & In-Person Interviews',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                  },
+                  {
+                    id: 2,
+                    title: 'Screenings & First-Rounds',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '4:10',
+                    progress: 100,
+                    isSelected: false,
+                  },
+                  {
+                    id: 3,
+                    title: 'Follow-Up & Panel Interviews',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '5:10',
+                    progress: 100,
+                    isSelected: false,
+                  },
+                  {
+                    id: 4,
+                    title:
+                      'Understanding Behavioral, Situational & Competency-Based Questions',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '5:10',
+                    progress: 100,
+                    isSelected: false,
+                  },
+                ],
+              },
+              {
+                id: 2,
+                title: 'Using ChatGPT for Interview Prep',
+                thumbnail:
+                  'https://d-cb.jc-cdn.com/sites/crackberry.com/files/styles/large/public/article_images/2023/08/openai-logo.jpg',
+                duration: '7m 10s',
+                progress: 20,
+                progressText: '20%',
+                topics: [
+                  {
+                    id: 1,
+                    title: 'Anticipating & Preparing for Common Questions',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      // Subtopics here
+                    ],
+                  },
+                  {
+                    id: 2,
+                    title:
+                      'Crafting Concise & Impactful Responses with ChatGPT',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      // Subtopics here
+                    ],
+                  },
+                  {
+                    id: 3,
+                    title:
+                      'Structuring STAR Model Answers for Behavioral Questions',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      // Subtopics here
+                    ],
+                  },
+                  {
+                    id: 4,
+                    title:
+                      'Crafting High-Quality Questions for the Interviewer',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      // Subtopics here
+                    ],
+                  },
+                  {
+                    id: 5,
+                    title: 'How to Negotiate Salary & Benefits',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      // Subtopics here
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            id: 5,
+            name: 'Virtual Interview Etiquette & Follow-Up',
+            thumbnail: 'https://via.placeholder.com/150',
+            lessons: [
+              {
+                id: 1,
+                title: 'Mastering the Virtual Interview',
+                thumbnail: 'https://via.placeholder.com/150',
+                duration: '7:10',
+                progress: 100,
+                progressText: '100%',
+                topics: [
+                  {
+                    id: 1,
+                    title: 'Setting Up Your Virtual Interview Space',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                  },
+                  {
+                    id: 2,
+                    title: 'Appearance, Body Langugage & Eye Contact',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                  },
+                  {
+                    id: 3,
+                    title: 'Voice, Tone & Pace',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                  },
+                  {
+                    id: 4,
+                    title: 'Handling Interruptions & Distractions',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                  },
+                ],
+              },
+              {
+                id: 2,
+                title: 'Using ChatGPT for Thank-You Notes & Follow-Up',
+                thumbnail: 'https://via.placeholder.com/150',
+                duration: '7:10',
+                progress: 100,
+                progressText: '100%',
+                topics: [
+                  {
+                    id: 1,
+                    title: 'The Art of Expressing Gratitude',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                  },
+                  {
+                    id: 2,
+                    title: 'Appreciation, Recap, Reinforcement',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                  },
+                  {
+                    id: 3,
+                    title: 'Timing Considerations',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                  },
+                ],
+              },
+              {
+                id: 3,
+                title: 'Following Up Post-Interviews',
+                thumbnail: 'https://via.placeholder.com/150',
+                duration: '7:10',
+                progress: 100,
+                progressText: '100%',
+                topics: [
+                {
+                    id: 1,
+                    title: 'Tailoring Follow-Up Messages From Feedback',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                  },
+                  {
+                    id: 2,
+                    title: 'Positioning For Feedback Or Next Steps',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                  },
+                  {
+                    id: 3,
+                    title: 'Addressing Concerns to Interviewer',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                  },
+                ],
+              },
+            ],
+          }
         ],
       },
       generatedSubtopics: [
@@ -614,20 +1682,18 @@ export default {
       isCorrect: false,
       feedbackText: '',
       submittedOption: null,
+      selectedModule: {},
     };
   },
   computed: {
     currentLesson() {
-      return this.course.lessons[0];
-    },
-    currentSection() {
-      return this.sections[0];
+      return this.course.modules?.[0].lessons?.[0];
     },
     currentTopic() {
-      return this.currentSection.topics[0];
+      return this.currentLesson.topics?.[0];
     },
     currentSubTopic() {
-      return this.currentTopic.subTopics[0];
+      return this.currentTopic.subtopics?.[0];
     },
     currentSupplementalInfo() {
       return this.supplementalInfo;
@@ -649,13 +1715,14 @@ export default {
         return video;
       });
     },
-    activateVideo(index) {
-      this.sections = this.sections.map((section, idx) => ({
-        ...section,
-        show: idx === index && !section.show,
-      }));
+    toggleVideo(index) {
+      if (this.activeVideoIndex === index) {
+        this.activeVideoIndex = null;
+      } else {
+        this.activeVideoIndex = index;
+      }
 
-      this.activeVideoIndex = index;
+      this.$forceUpdate();
     },
     selectTopic(topic) {
       this.selectedTopic = topic;
@@ -765,20 +1832,16 @@ export default {
   border-radius: 0 0 5px 5px;
 }
 
-.video-topic:hover {
+.video-lesson:hover {
   background-color: #f7f7f7;
   cursor: pointer;
   border-radius: 5px;
   transition: background-color 0.3s ease;
 }
 
-.video-topic:hover {
+.video-lesson:hover {
   cursor: pointer;
   transition: all 0.3s ease;
-}
-
-.video-topic.bg-blue-100 {
-  border-color: blue;
 }
 
 .line-through {

@@ -5,7 +5,7 @@
     <div class="flex items-center">
       <!-- Simple SVG ladder icon as a placeholder -->
       <svg
-        class="h-6 w-6 mr-2"
+        class="h-6 w-6 mr-1"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="currentColor"
@@ -28,7 +28,7 @@
       >
         <a
           href="#"
-          class="rounded text-gray-700 hover:bg-gray-200 p-1"
+          class="rounded text-gray-700 hover:bg-gray-200 p-1 font-semibold"
           @click="selectedNavItem = link.toLowerCase()"
           >{{ link }}</a
         >
