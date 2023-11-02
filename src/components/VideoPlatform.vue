@@ -152,11 +152,21 @@
             </div>
 
             <button
+              v-if="!stream && !recording"
               @click="startRecording"
               class="mt-4 px-5 py-2 w-1/3 mx-auto block bg-green-500 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors"
             >
               Start Recording
             </button>
+
+            <button
+              v-if="recording"
+              @click="pauseRecording"
+              class="mt-4 px-5 py-2 w-1/3 mx-auto block bg-yellow-500 text-white rounded-lg shadow-md hover:bg-yellow-700 transition-colors"
+            >
+              {{ paused ? 'Resume Recording' : 'Pause Recording' }}
+            </button>
+
             <!-- Add Stop Recording button -->
             <button
               v-if="stream"
@@ -573,9 +583,23 @@ export default {
       courseMode: 'lesson',
       backgroundImageURL: null,
       activeColor: '#000000',
+      paused: false,
+      recording: false,
     };
   },
   methods: {
+    async pauseRecording() {
+      if (!this.mediaRecorder) return;
+
+      if (this.paused) {
+        this.mediaRecorder.resume();
+        this.paused = false;
+      } else {
+        this.mediaRecorder.pause();
+        this.paused = true;
+      }
+    },
+
     async startRecording() {
       if (this.stream) {
         this.stream.getTracks().forEach((track) => track.stop());
@@ -605,6 +629,9 @@ export default {
           await this.$nextTick();
           this.recordCanvas();
         }
+
+        this.recording = true;
+        this.paused = false;
       } catch (error) {
         console.error('Error accessing camera:', error);
       }
@@ -625,7 +652,12 @@ export default {
         clearInterval(this.drawInterval);
         this.drawInterval = null;
       }
+
+      this.previousChunks = [...this.previousChunks, ...this.chunks]; // Append new chunks to previous chunks
+      this.chunks = []; // Clear the current chunks as they've been appended to the previous chunks
+      this.recording = false;
     },
+
     recordCanvas() {
       const composedCanvas = document.createElement('canvas');
       const composedContext = composedCanvas.getContext('2d');
@@ -722,27 +754,34 @@ export default {
 
       this.mediaRecorder.start(); // Start recording
     },
-    changeMode(newMode) {
-      this.recordingMode = newMode;
+    async changeMode(newMode) {
+  if (this.recordingMode === newMode) {
+    // No mode change needed, just return
+    return;
+  }
 
-      if (this.stream) {
-        const videoElem =
-          this.recordingMode === 'user'
-            ? this.$refs.fullFrameVideo
-            : this.$refs.whiteboardVideo;
-        videoElem.srcObject = this.stream;
-      }
+  this.recordingMode = newMode;
 
-      if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
-        // If we are currently recording, switch the recording to the new mode
-        this.stopRecording(); // Stop the current recording
-        this.startRecording(); // Start a new recording in the new mode
-      }
+  if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
+    await this.pauseRecording(); // Pause the recording before changing the mode
 
-      if (newMode === 'whiteboard') {
-        this.$nextTick(this.updateCanvasSize);
-      }
-    },
+    if (this.stream) {
+      const videoElem =
+        this.recordingMode === 'user'
+          ? this.$refs.fullFrameVideo
+          : this.$refs.whiteboardVideo;
+      videoElem.srcObject = this.stream;
+    }
+
+    if (this.recordingMode === 'whiteboard') {
+      this.$nextTick(this.updateCanvasSize);
+      await this.$nextTick();
+      this.recordCanvas();
+    }
+
+    await this.pauseRecording(); // Resume the recording after changing the mode
+  }
+},
 
     toggleLesson(index) {
       this.isLessonCollapsed[index] = !this.isLessonCollapsed[index];
@@ -891,6 +930,13 @@ export default {
     },
     onImageLoad() {
       this.imageLoaded = true;
+    },
+    generateFinalVideo() {
+      const blob = new Blob(this.chunks, { type: 'video/mp4' });
+      this.videoURL = URL.createObjectURL(blob);
+      // Reset the chunks for the next series of recordings
+      this.chunks = [];
+      this.isFirstRecording = true; // Reset the first recording flag
     },
   },
 };
