@@ -71,13 +71,19 @@
               autoplay
               playsinline
             ></video>
-
             <!-- Whiteboard Mode -->
             <div
               v-show="recordingMode === 'whiteboard' && stream"
               class="w-full h-96 bg-white rounded-xl relative"
               ref="whiteboardContainer"
             >
+              <img
+                :src="backgroundImageURL"
+                class="absolute top-0 left-0 w-full h-full object-cover rounded-xl opacity-50"
+                ref="backgroundImage"
+                @load="onImageLoad"
+              />
+
               <canvas
                 ref="whiteboardCanvas"
                 class="absolute top-0 left-0"
@@ -121,6 +127,28 @@
               >
                 Whiteboard
               </button>
+              <!-- Upload Background Button -->
+              <div class="flex items-center space-x-2">
+                <label
+                  class="block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer"
+                >
+                  Upload Background
+                  <input
+                    type="file"
+                    accept="image/*"
+                    @change="uploadImage"
+                    class="hidden"
+                  />
+                </label>
+
+                <!-- Color Picker -->
+                <input
+                  type="color"
+                  v-model="activeColor"
+                  @change="changeColor"
+                  class="w-8 h-8 cursor-pointer rounded-full border-2 border-gray-300 p-1"
+                />
+              </div>
             </div>
 
             <button
@@ -156,6 +184,13 @@
                 :src="whiteboardURL"
               ></video>
             </div>
+
+            <input
+              type="file"
+              accept="image/*"
+              @change="uploadImage"
+              class="mt-4"
+            />
           </div>
 
           <!-- AI-related Features and Options -->
@@ -224,9 +259,13 @@
             Add Lesson
           </button>
           <h2
-            class="text-3xl font-bold tracking-wider text-gray-700 mb-6 border-b pb-3 flex items-center"
+            class="ml-1 text-3xl font-bold tracking-wider text-gray-700 mb-6 border-b pb-3 flex items-center"
           >
-            <i class="fas fa-video mr-3 text-blue-500"></i> Lessons & Topics
+            <i
+              class="fas fa-video mr-4 text-blue-500"
+              style="font-size: 1.6rem"
+            ></i>
+            Lessons & Topics
           </h2>
 
           <div class="space-y-6">
@@ -532,6 +571,8 @@ export default {
       whiteboardURL: null,
       isLessonCollapsed: {},
       courseMode: 'lesson',
+      backgroundImageURL: null,
+      activeColor: '#000000',
     };
   },
   methods: {
@@ -562,7 +603,6 @@ export default {
 
         if (this.recordingMode === 'whiteboard') {
           await this.$nextTick();
-          
           this.recordCanvas();
         }
       } catch (error) {
@@ -591,6 +631,7 @@ export default {
       const composedContext = composedCanvas.getContext('2d');
       const whiteboardCanvas = this.$refs.whiteboardCanvas;
       const whiteboardVideo = this.$refs.whiteboardVideo;
+      const backgroundImageElem = this.$refs.backgroundImage; // Reference to the image element
 
       composedCanvas.width = whiteboardCanvas.width;
       composedCanvas.height = whiteboardCanvas.height;
@@ -603,7 +644,48 @@ export default {
           composedCanvas.width,
           composedCanvas.height
         );
-        composedContext.drawImage(whiteboardCanvas, 0, 0); // Draw the whiteboard
+
+        // Draw the background image
+        if (
+          this.imageLoaded &&
+          backgroundImageElem &&
+          backgroundImageElem.naturalWidth
+        ) {
+          // Get the aspect ratios
+          const canvasAspectRatio =
+            composedCanvas.width / composedCanvas.height;
+          const imgAspectRatio =
+            backgroundImageElem.naturalWidth /
+            backgroundImageElem.naturalHeight;
+
+          let drawWidth,
+            drawHeight,
+            drawX = 0,
+            drawY = 0;
+
+          if (canvasAspectRatio > imgAspectRatio) {
+            // Canvas is wider
+            drawWidth = composedCanvas.width;
+            drawHeight = drawWidth / imgAspectRatio;
+            drawY = (composedCanvas.height - drawHeight) / 2;
+          } else {
+            // Image is wider or equal
+            drawHeight = composedCanvas.height;
+            drawWidth = drawHeight * imgAspectRatio;
+            drawX = (composedCanvas.width - drawWidth) / 2;
+          }
+
+          composedContext.drawImage(
+            backgroundImageElem,
+            drawX,
+            drawY,
+            drawWidth,
+            drawHeight
+          );
+        }
+
+        // Draw the whiteboard
+        composedContext.drawImage(whiteboardCanvas, 0, 0);
 
         // Calculate position and size for the webcam video
         const videoWidth = whiteboardCanvas.width / 4;
@@ -640,6 +722,27 @@ export default {
 
       this.mediaRecorder.start(); // Start recording
     },
+    changeMode(newMode) {
+      this.recordingMode = newMode;
+
+      if (this.stream) {
+        const videoElem =
+          this.recordingMode === 'user'
+            ? this.$refs.fullFrameVideo
+            : this.$refs.whiteboardVideo;
+        videoElem.srcObject = this.stream;
+      }
+
+      if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
+        // If we are currently recording, switch the recording to the new mode
+        this.stopRecording(); // Stop the current recording
+        this.startRecording(); // Start a new recording in the new mode
+      }
+
+      if (newMode === 'whiteboard') {
+        this.$nextTick(this.updateCanvasSize);
+      }
+    },
 
     toggleLesson(index) {
       this.isLessonCollapsed[index] = !this.isLessonCollapsed[index];
@@ -656,21 +759,6 @@ export default {
             this.isLessonCollapsed[lessonIndex];
           this.isLessonCollapsed[lessonIndex] = aboveLessonCollapsed;
         }
-      }
-    },
-    changeMode(newMode) {
-      this.recordingMode = newMode;
-
-      if (this.stream) {
-        const videoElem =
-          this.recordingMode === 'user'
-            ? this.$refs.fullFrameVideo
-            : this.$refs.whiteboardVideo;
-        videoElem.srcObject = this.stream;
-      }
-
-      if (newMode === 'whiteboard') {
-        this.$nextTick(this.updateCanvasSize);
       }
     },
     moveLessonDown(lessonIndex) {
@@ -692,21 +780,6 @@ export default {
       this.videoURL = URL.createObjectURL(blob);
       this.chunks = [];
     },
-    changeMode(newMode) {
-      this.recordingMode = newMode;
-
-      if (this.stream) {
-        const videoElem =
-          this.recordingMode === 'user'
-            ? this.$refs.fullFrameVideo
-            : this.$refs.whiteboardVideo;
-        videoElem.srcObject = this.stream;
-      }
-
-      if (newMode === 'whiteboard') {
-        this.$nextTick(this.updateCanvasSize);
-      }
-    },
 
     autoEnhance() {
       // Add your AI auto enhance logic here
@@ -717,21 +790,38 @@ export default {
     aiInsights() {
       // Add your AI Insights logic here
     },
+    changeColor() {
+      const ctx = this.$refs.whiteboardCanvas.getContext('2d');
+      ctx.strokeStyle = this.activeColor;
+    },
+
+    // Modify your startDrawing method
     startDrawing(event) {
       this.drawing = true;
-      this.points.push({ x: event.offsetX, y: event.offsetY });
+      this.points.push({
+        x: event.offsetX,
+        y: event.offsetY,
+        color: this.activeColor,
+      });
       const ctx = this.$refs.whiteboardCanvas.getContext('2d');
+      ctx.beginPath();
+      ctx.strokeStyle = this.activeColor; // Set the stroke style to the active color
       ctx.moveTo(event.offsetX, event.offsetY);
     },
 
     draw(event) {
       if (!this.drawing) return;
-      this.points.push({ x: event.offsetX, y: event.offsetY });
-      this.continueDrawing(event.offsetX, event.offsetY);
+      this.points.push({
+        x: event.offsetX,
+        y: event.offsetY,
+        color: this.activeColor,
+      });
+      this.continueDrawing(event.offsetX, event.offsetY, this.activeColor);
     },
 
-    continueDrawing(x, y) {
+    continueDrawing(x, y, color) {
       const ctx = this.$refs.whiteboardCanvas.getContext('2d');
+      ctx.strokeStyle = color; // Set the stroke color for each segment
       ctx.lineTo(x, y);
       ctx.stroke();
     },
@@ -744,12 +834,12 @@ export default {
     redraw() {
       const ctx = this.$refs.whiteboardCanvas.getContext('2d');
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-      ctx.strokeStyle = '#000';
       ctx.lineJoin = 'round';
       ctx.lineWidth = 5;
 
       for (let i = 1; i < this.points.length; i++) {
         ctx.beginPath();
+        ctx.strokeStyle = this.points[i - 1].color; // Use the color saved with the point
         ctx.moveTo(this.points[i - 1].x, this.points[i - 1].y);
         ctx.lineTo(this.points[i].x, this.points[i].y);
         ctx.closePath();
@@ -784,6 +874,23 @@ export default {
         tags: [],
         transcript: '',
       });
+    },
+
+    uploadImage(event) {
+      const file = event.target.files[0];
+      if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.backgroundImageURL = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    },
+    clearBackgroundImage() {
+      this.backgroundImageURL = null;
+    },
+    onImageLoad() {
+      this.imageLoaded = true;
     },
   },
 };
