@@ -31,17 +31,14 @@
     <section class="bg-white rounded-lg p-6 mt-8 text-center">
       <h2 class="text-2xl font-bold mb-6">Start Your Journey Now</h2>
       <p class="text-gray-600 mb-6">
-        Enroll in the "{{ course.title }}" course and begin your learning
-        adventure with {{ course.instructor.name }} as your guide.
+        Enroll in the "{{ course.title }}" course and begin your learning adventure with {{ course.instructor.name }} as your guide.
       </p>
-      <div
-        class="flex flex-col md:flex-row md:justify-center items-center space-y-4 md:space-y-0 md:space-x-4"
-      >
-        <button
-          @click="$emit('open-course')"
-          class="bg-blue-500 hover:bg-blue-600 text-white rounded-lg py-3 px-8 w-full md:w-auto transition-colors duration-300 ease-in-out focus:outline-none focus:border-4 active:outline-none border-blue-700"
-        >
-          Enroll Now
+      <div class="flex flex-col md:flex-row md:justify-center items-center space-y-4 md:space-y-0 md:space-x-4">
+        <!-- Conditional rendering based on isLoggedIn -->
+        <button @click="$emit(isLoggedIn ? 'continue-course' : 'open-course')"
+          class="text-white font-semibold rounded-lg py-3 px-8 w-full md:w-auto transition-colors duration-300 ease-in-out focus:outline-none active:outline-none border-blue-700" :class="isLoggedIn ? 'bg-green-500 hover:bg-green-600' : 'bg-blue-500 hover:bg-blue-600'">
+          <!-- Text changes based on isLoggedIn -->
+          {{ isLoggedIn ? 'Continue' : 'Enroll Now' }}
         </button>
       </div>
       <div
@@ -58,12 +55,12 @@
       </div>
     </section>
 
-    <!-- Curriculum Section -->
-    <section class="bg-white rounded-lg p-6 shadow-lg mt-4">
+ <!-- Curriculum Section -->
+ <section class="bg-white rounded-lg p-6 shadow-lg mt-4">
       <h2 class="text-xl font-bold mb-4">Curriculum</h2>
       <div v-for="(_module, index) in course.modules" :key="index" class="mb-4">
         <div
-          class="mb-3 bg-gray-100 rounded-lg p-3 hover:bg-gray-200 transition-all duration-200 cursor-pointer shadow-md"
+          :class="['mb-3 bg-gray-100 rounded-lg p-3 hover:bg-gray-200 transition-all duration-200 cursor-pointer shadow-md', index < 2 && isLoggedIn && 'completed-module bg-green-200 hover:bg-green-300']"
           @click="_module.hide = !_module.hide"
         >
           <div class="flex items-center justify-between">
@@ -83,7 +80,7 @@
             <div
               v-for="topic in _module.lessons"
               :key="topic"
-              class="my-1 p-2 bg-gray-200 rounded hover:shadow-md hover:bg-gray-300 transition-all duration-200 cursor-pointer"
+              :class="['my-1 p-2 bg-gray-100 rounded hover:shadow-md hover:bg-gray-300 transition-all duration-200 cursor-pointer', index < 2 && isLoggedIn && 'completed-topic bg-green-200 hover:bg-green-300']"
             >
               {{ topic.title }}
             </div>
@@ -141,9 +138,10 @@
 export default {
   data() {
     return {
+      isLoggedIn: false,
       course: {
-        name: 'ChatGPT for Job Searching & Interview Prep',
-        description: 'Learn how to use ChatGPT to optimize your job search and interview prep.',
+        name: 'Job Searching with ChatGPT',
+        description: 'Learn how to use ChatGPT to optimize your job search and land your dream job!',
         instructor: {
           name: 'John Doe',
           title: 'Senior Vue.js Developer',
@@ -152,19 +150,17 @@ export default {
           website: 'https://johndoe.com',
         },
         learnings: [
-          'Understand the basics of Vue.js',
-          'Build interactive web interfaces',
-          'Use Vue CLI for project management',
-          'Create Single Page Applications (SPA)',
-          'Handle HTTP requests with Axios',
-          'Implement Routing with Vue Router',
-          'State Management with Vuex',
-          'Optimize your Vue applications',
+          'What ChatGPT Can and Can\'t Do',
+          'Job Description Parsing Strategies',
+          'Resume Optimization',
+          'Cover Letter Optimization',
+          'Networking Strategies',
+          'Communication Etiquette',
         ],
         modules: [
           {
             id: 1,
-            name: 'Intro to ChatGPT and AI Prompts',
+            name: 'ChatGPT and AI Prompts',
             thumbnail: 'https://via.placeholder.com/150',
             lessons: [
               {
@@ -1249,5 +1245,13 @@ export default {
 </script>
 
 <style scoped>
-/* Your TailwindCSS styles can go here, should you require custom styling */
+.completed-module {
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+.completed-topic {
+  text-decoration: line-through;
+  opacity: 0.7;
+}
 </style>

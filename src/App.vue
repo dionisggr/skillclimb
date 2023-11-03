@@ -93,7 +93,7 @@
   <!-- Learning Path -->
   <LearningPath
     v-else-if="selectedNavItem === 'learning-path'"
-    @preview-course="selectedNavItem = 'course-preview'"
+    @open-course="selectedNavItem = 'course'"
   />
 
   <!-- Video Platform -->

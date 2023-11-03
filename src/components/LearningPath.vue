@@ -9,9 +9,15 @@
         <p class="text-gray-600">Dive deep into this comprehensive journey.</p>
         <!-- Call to Action Button -->
         <button
-          class="mt-4 bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200"
+          class="mt-4 text-white px-6 py-2 rounded-md focus:outline-non focus:ring"
+          :class="
+            isLoggedIn
+              ? 'bg-green-500 hover:bg-green-600 focus:border-green-700'
+              : 'bg-blue-500 hover:bg-blue-600 focus:border-blue-700'
+          "
+          @click="$emit('open-course')"
         >
-          Start Learning Path
+          {{ isLoggedIn ? 'Continue' : 'Start Learning' }} Path
         </button>
       </div>
       <div class="space-x-4 flex items-center">
@@ -41,16 +47,36 @@
       </div>
     </div>
 
-    <!-- Included Courses -->
-    <section class="bg-white p-4 rounded-lg shadow-lg">
-      <h2 class="text-2xl font-bold mb-4">Included Courses</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Included Courses -->
+<section class="bg-white p-4 rounded-lg shadow-lg">
+    <h2 class="text-2xl font-bold mb-4">Included Courses</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div
+        v-for="(course, index) in learningPath.courses"
+        :key="index"
+        :class="[
+          'relative flex flex-col justify-between rounded-lg shadow-sm p-4 hover:shadow-lg transition-shadow duration-300 cursor-pointer',
+          isLoggedIn && !index ? 'bg-blue-50' : 'bg-gray-100', // Highlight the third course
+          index < 2 ? 'coming-soon' : '',
+        ]"
+        @click="$emit('open-course')"
+      >
+        <!-- Coming Soon Overlay for first 2 courses -->
         <div
-          v-for="(course, index) in learningPath.courses"
-          :key="index"
-          class="flex flex-col justify-between rounded-lg shadow-sm bg-gray-100 p-4 hover:shadow-lg transition-shadow duration-300 cursor-pointer"
-          @click="$emit('preview-course')"
+          v-if="index > 1"
+          class="absolute rounded-xl top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 flex items-center justify-center"
         >
+          <span class="text-white font-bold text-xl">Coming Soon</span>
+        </div>
+
+          <!-- Progress Indicator for the third course -->
+          <div v-if="isLoggedIn && !index" class="absolute top-2 right-2">
+            <span
+              class="text-yellow-600 font-semibold text-sm bg-yellow-200 px-2 py-1 rounded-full"
+            >
+              In Progress
+            </span>
+          </div>
           <!-- Course Header with Thumbnail and Duration -->
           <div class="flex justify-between mb-4">
             <div class="flex">
@@ -104,7 +130,9 @@
               <span class="ml-2 font-bold">{{ course.assessments }}</span>
               assessments
             </div>
-            <span class="text-gray-600 font-semibold">{{ course.instructor.name }}</span>
+            <span class="text-gray-600 font-semibold">{{
+              course.instructor.name
+            }}</span>
           </div>
         </div>
       </div>
@@ -197,6 +225,7 @@
 export default {
   data() {
     return {
+      isLoggedIn: true,
       learningPath: {
         title: 'ChatGPT Mastery Path',
         students: 2050,
@@ -205,141 +234,75 @@ export default {
         description: '',
         courses: [
           {
-            title: 'Advanced React Techniques',
-            duration: 6,
-            lessons: 18,
-            assessments: 4,
-            topics: [
-              'Hooks in-depth',
-              'Context API',
-              'Advanced Routing',
-              'Server Side Rendering',
-            ],
-            instructor: {
-              name: 'Alex Kent',
-              imageUrl: 'https://source.unsplash.com/random/201x126?course',
-            },
-          },
-          {
-            title: 'Introduction to TypeScript',
-            duration: 4,
-            lessons: 12,
-            assessments: 2,
-            topics: [
-              'Basic types',
-              'Interfaces and Classes',
-              'Generics',
-              'Decorators',
-            ],
-            instructor: {
-              name: 'Mia Wong',
-              imageUrl: 'https://source.unsplash.com/random/201x126?course',
-            },
-          },
-          {
-            title: 'Web Performance Optimization',
+            title: 'Job Searching with ChatGPT',
             duration: 5,
             lessons: 14,
             assessments: 3,
-            topics: [
-              'Critical Rendering Path',
-              'Image & Media Optimization',
-              'Lazy Loading',
-              'Performance Auditing',
-            ],
+            topics: ['Resume Optimization', 'Interview Preparation'],
             instructor: {
-              name: 'Leo Fitz',
+              name: 'Dionis Gonzalez',
               imageUrl: 'https://source.unsplash.com/random/201x126?course',
             },
           },
           {
-            title: 'Vue.js Foundations',
+            title: 'Mastering Interviews with ChatGPT',
             duration: 5,
             lessons: 17,
             assessments: 3,
             topics: [
-              'Reactive Data Binding',
-              'Vue Components',
-              'Vue Router',
-              'State Management with Vuex',
+              'Interview Types',
+              'Behavioral Questions',
+              'Technical Interviews',
+              'STAR Method',
             ],
             instructor: {
-              name: 'Isabelle Choi',
+              name: 'Dionis Gonzalez',
               imageUrl: 'https://source.unsplash.com/random/201x126?course',
             },
           },
           {
-            title: 'CSS Animations & Transitions',
-            duration: 3,
-            lessons: 10,
-            assessments: 2,
-            topics: [
-              'Transitions vs. Animations',
-              'Keyframe Animations',
-              'Easing Functions',
-              'Performance Considerations',
-            ],
-            instructor: {
-              name: 'Samuel Jackson',
-              imageUrl: 'https://source.unsplash.com/random/201x126?course',
-            },
-          },
-          {
-            title: 'GraphQL for Frontend Developers',
-            duration: 5,
-            lessons: 16,
-            assessments: 3,
-            topics: [
-              'GraphQL Basics',
-              'Queries and Mutations',
-              'Integrating with React',
-              'State Management with Apollo',
-            ],
-            instructor: {
-              name: 'Lydia Hall',
-              imageUrl: 'https://source.unsplash.com/random/201x126?course',
-            },
-          },
-          {
-            title: 'Web Accessibility (A11y) Best Practices',
-            duration: 4,
-            lessons: 13,
-            assessments: 2,
-            topics: [
-              'Accessibility Basics',
-              'Screen Readers and Semantics',
-              'ARIA Roles & Attributes',
-              'Testing for Accessibility',
-            ],
-            instructor: {
-              name: 'Raul Vega',
-              imageUrl: 'https://source.unsplash.com/random/201x126?course',
-            },
-          },
-          {
-            title: 'Progressive Web Apps (PWA) Mastery',
+            title: 'ChatGPT For Everyone',
             duration: 6,
             lessons: 18,
             assessments: 4,
             topics: [
-              'What are PWAs?',
-              'Service Workers & Caching',
-              'Offline Capabilities',
-              'Push Notifications',
+              'Artificial Intelligence',
+              'Large Language Models',
+              'OpenAI',
+              'ChatGPT',
+              'Prompt Engineering',
             ],
             instructor: {
-              name: 'Nina Bhatia',
+              name: 'Dionis Gonzalez',
+              imageUrl: 'https://source.unsplash.com/random/201x126?course',
+            },
+          },
+          {
+            title: 'ChatGPT For Developers',
+            duration: 4,
+            lessons: 12,
+            assessments: 2,
+            topics: [
+              'AI Design',
+              'Debugging',
+              'Troubleshooting',
+              'Prompt Engineering',
+            ],
+            instructor: {
+              name: 'Dionis Gonzalez',
               imageUrl: 'https://source.unsplash.com/random/201x126?course',
             },
           },
         ],
         skills: [
-          'Responsive Web Design using Flexbox and Grid',
-          'Advanced JavaScript Patterns & Best Practices',
-          'State Management in Vue with Vuex',
-          'Creating Reusable React Components',
-          'Optimizing Web Performance',
-          'Integrating APIs and handling data',
+          'Artificial Intelligence',
+          'Large Language Models',
+          'OpenAI, GPT and ChatGPT',
+          'GPT 3.5-Turbo vs GPT-4',
+          'Pair-Programming with AI',
+          'Prompt Engineering',
+          'Resume Optimization',
+          'Interview Preparation',
         ],
         testimonials: [
           {

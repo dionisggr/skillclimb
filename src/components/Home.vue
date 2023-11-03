@@ -1,7 +1,7 @@
 <template>
   <div class="bg-gray-100">
     <!-- Hero Section -->
-    <section class="relative text-center py-36 pb-32 bg-white">
+    <section class="relative text-center pt-36 pb-24 bg-white">
       <h1 class="text-6xl font-bold">Welcome to SkillClimb</h1>
       <p class="text-gray-600 mt-4 text-xl">
         Join our community of learners and creators.
@@ -70,7 +70,7 @@
     </section>
 
     <!-- Video Introduction Section -->
-    <section class="py-16 w-3/5 mx-auto">
+    <section class="py-16 w-3/5 max-w-4xl mx-auto">
       <h2 class="text-4xl font-bold text-center mb-8">Who We Are</h2>
       <iframe
         width="100%"
@@ -85,42 +85,52 @@
       </p>
     </section>
 
-    <!-- Roadmaps Section -->
-    <section
-      class="py-16 w-full px-12 mx-auto bg-white"
-      id="popular-learning-paths"
+<!-- Roadmaps Section -->
+<section
+  class="py-16 w-full px-12 mx-auto bg-white"
+  id="popular-learning-paths"
+>
+  <h2 class="text-4xl font-bold text-center mb-12">
+    Popular Learning Paths
+  </h2>
+  <div
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 justify-center max-w-screen-2xl mx-auto"
+  >
+    <div
+      v-for="(path, index) in learningPaths"
+      :key="path.id"
+      class="course-card max-w-md cursor-pointer transform transition-transform"
+      :class="!index && 'transform transition-transform hover:-translate-y-2.5 hover:shadow-lg'"
+      @click="index === 0 ? $emit('open-learning-path') : null"
     >
-      <h2 class="text-4xl font-bold text-center mb-12">
-        Popular Learning Paths
-      </h2>
-      <div
-        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 justify-center"
-      >
+      <div class="relative">
+        <img
+          :src="path.thumbnail"
+          alt="Course Thumbnail"
+          class="w-full h-48 object-cover rounded-t-md"
+        />
         <div
-          class="course-card max-w-md cursor-pointer transform transition-transform hover:-translate-y-2.5 hover:shadow-lg"
-          v-for="path in learningPaths"
-          :key="path.id"
-          @click="$emit('open-learning-path')"
+          v-if="index !== 0"
+          class="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center rounded-t-md"
         >
-          <img
-            :src="path.thumbnail"
-            alt="Course Thumbnail"
-            class="w-full h-48 object-cover rounded-t-md"
-          />
-          <div class="p-6 bg-white rounded-b-md">
-            <h3 class="text-2xl font-semibold mb-2">{{ path.title }}</h3>
-            <p class="text-gray-600">{{ path.description }}</p>
-          </div>
+          <span class="text-slate-200 text-2xl font-semibold">Coming Soon</span>
         </div>
       </div>
-    </section>
+      <div class="p-6 bg-white rounded-b-md">
+        <h3 class="text-2xl font-semibold mb-2">{{ path.title }}</h3>
+        <p class="text-gray-600">{{ path.description }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 
     <!-- Reviews Section -->
     <section class="py-16 w-11/12 mx-auto" id="reviews">
       <h2 class="text-4xl font-bold text-center mb-12">
         What our learners say
       </h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-screen-2xl mx-auto">
         <div
           v-for="review in reviews"
           :key="review.id"
@@ -205,24 +215,24 @@ export default {
       learningPaths: [
         {
           id: 1,
+          title: 'ChatGPT',
+          description: 'Learn about generative AI and prompt engineering',
+          thumbnail:
+            'https://d-cb.jc-cdn.com/sites/crackberry.com/files/styles/large/public/article_images/2023/08/openai-logo.jpg',
+        },
+        {
+          id: 2,
           title: 'Web Development',
           description: 'Master the art of web development...',
           thumbnail:
             'https://i.ytimg.com/vi/gQojMIhELvM/hqdefault.jpg?sqp=-oaymwEXCNACELwBSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLD7gwoOXxTW38khre_34WIRlyngDg',
         },
         {
-          id: 2,
+          id: 3,
           title: 'Solutions Engineering',
           description: 'Learn how to evaluate and deploy software solutions',
           thumbnail:
-            'https://th.bing.com/th/id/OIG.2r6EZ7PYvfej0iVeIwcM?pid=ImgGn',
-        },
-        {
-          id: 3,
-          title: 'ChatGPT',
-          description: 'Learn about generative AI and prompt engineering',
-          thumbnail:
-            'https://d-cb.jc-cdn.com/sites/crackberry.com/files/styles/large/public/article_images/2023/08/openai-logo.jpg',
+          'https://th.bing.com/th/id/OIG.2r6EZ7PYvfej0iVeIwcM?pid=ImgGn',
         },
         {
           id: 4,
@@ -328,11 +338,6 @@ export default {
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1); /* adding shadow */
   display: flex; /* making it flex */
   flex-direction: column; /* orienting children vertically */
-}
-
-.course-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15); /* enhanced shadow on hover */
 }
 
 .course-card > div {
