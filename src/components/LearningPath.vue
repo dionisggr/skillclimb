@@ -1,73 +1,72 @@
 <template>
   <main class="flex flex-col p-4 max-w-screen-xl mx-auto">
     <!-- Learning Path Insights -->
-    <div
-      class="mb-6 bg-white p-8 pb-4 rounded-lg shadow-lg flex flex-col md:flex-row justify-between items-center"
+<div class="mb-6 bg-white p-4 sm:p-6 md:p-8 pb-4 rounded-lg shadow-lg flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+  <div class="flex-1 text-center md:text-left">
+    <h1 class="text-2xl sm:text-3xl md:text-4xl font-semibold">{{ learningPath.title }}</h1>
+    <p class="text-gray-600 mt-2">Dive deep into this comprehensive journey.</p>
+    <!-- Call to Action Button -->
+    <button
+      class="mt-4 text-white px-6 py-2 rounded-md focus:outline-none focus:ring"
+      :class="
+        isLoggedIn
+          ? 'bg-green-500 hover:bg-green-600 focus:ring-green-300'
+          : 'bg-blue-500 hover:bg-blue-600 focus:ring-blue-300'
+      "
+      @click="$emit('open-course')"
     >
-      <div class="mb-4 md:mb-0">
-        <h1 class="text-4xl font-semibold">{{ learningPath.title }}</h1>
-        <p class="text-gray-600">Dive deep into this comprehensive journey.</p>
-        <!-- Call to Action Button -->
-        <button
-          class="mt-4 text-white px-6 py-2 rounded-md focus:outline-non focus:ring"
+      {{ isLoggedIn ? 'Continue' : 'Start Learning' }} Path
+    </button>
+  </div>
+  <div class="flex-1 flex flex-col sm:flex-row justify-evenly items-center">
+    <div class="flex items-center mb-2 sm:mb-0">
+      <span class="font-bold text-lg">{{ learningPath.students }}</span>
+      <span class="ml-1 text-gray-600">students enrolled</span>
+    </div>
+    <div class="flex items-center mb-2 sm:mb-0">
+      <span v-for="n in 5" :key="n" class="mr-1">
+        <i
           :class="
-            isLoggedIn
-              ? 'bg-green-500 hover:bg-green-600 focus:border-green-700'
-              : 'bg-blue-500 hover:bg-blue-600 focus:border-blue-700'
+            n <= learningPath.rating
+              ? 'fas fa-star text-yellow-500'
+              : 'far fa-star text-gray-300'
           "
+        ></i>
+      </span>
+    </div>
+    <div class="flex items-center mb-2 sm:mb-0">
+      <span class="font-bold text-lg">{{ learningPath.courses.length }}</span>
+      <span class="ml-1 text-gray-600">courses</span>
+    </div>
+    <div class="flex items-center">
+      <span class="font-bold text-lg">{{ learningPath.assessments }}</span>
+      <span class="ml-1 text-gray-600">assessments</span>
+    </div>
+  </div>
+</div>
+
+
+    <!-- Included Courses -->
+    <section class="bg-white p-4 rounded-lg shadow-lg">
+      <h2 class="text-2xl font-bold mb-4">Included Courses</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div
+          v-for="(course, index) in learningPath.courses"
+          :key="index"
+          :class="[
+            'relative flex flex-col justify-between rounded-lg shadow-sm p-4 hover:shadow-lg transition-shadow duration-300 cursor-pointer',
+            isLoggedIn && !index ? 'bg-blue-50' : 'bg-gray-100', // Highlight the third course
+            index < 2 ? 'coming-soon' : '',
+          ]"
           @click="$emit('open-course')"
         >
-          {{ isLoggedIn ? 'Continue' : 'Start Learning' }} Path
-        </button>
-      </div>
-      <div class="space-x-4 flex items-center">
-        <div>
-          <span class="font-bold">{{ learningPath.students }}</span> students
-          enrolled
-        </div>
-        <div>
-          <span v-for="n in 5" :key="n" class="mr-1">
-            <i
-              :class="
-                n <= learningPath.rating
-                  ? 'fas fa-star text-yellow-500'
-                  : 'far fa-star text-gray-300'
-              "
-            ></i>
-          </span>
-        </div>
-        <div>
-          <span class="font-bold">{{ learningPath.courses.length }}</span>
-          courses
-        </div>
-        <div>
-          <span class="font-bold">{{ learningPath.assessments }}</span>
-          assessments
-        </div>
-      </div>
-    </div>
-
-<!-- Included Courses -->
-<section class="bg-white p-4 rounded-lg shadow-lg">
-    <h2 class="text-2xl font-bold mb-4">Included Courses</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div
-        v-for="(course, index) in learningPath.courses"
-        :key="index"
-        :class="[
-          'relative flex flex-col justify-between rounded-lg shadow-sm p-4 hover:shadow-lg transition-shadow duration-300 cursor-pointer',
-          isLoggedIn && !index ? 'bg-blue-50' : 'bg-gray-100', // Highlight the third course
-          index < 2 ? 'coming-soon' : '',
-        ]"
-        @click="$emit('open-course')"
-      >
-        <!-- Coming Soon Overlay for first 2 courses -->
-        <div
-          v-if="index > 1"
-          class="absolute rounded-xl top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 flex items-center justify-center"
-        >
-          <span class="text-white font-bold text-xl">Coming Soon</span>
-        </div>
+          <!-- Coming Soon Overlay for first 2 courses -->
+          <div
+            v-if="index > 1"
+            class="absolute rounded-xl top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 flex items-center justify-center"
+          >
+            <span class="text-white font-bold text-xl">Coming Soon</span>
+          </div>
 
           <!-- Progress Indicator for the third course -->
           <div v-if="isLoggedIn && !index" class="absolute top-2 right-2">
@@ -141,11 +140,12 @@
     <!-- Skills Gained -->
     <section class="bg-white rounded-lg shadow-lg p-6 space-y-4 py-8">
       <h2 class="text-2xl font-bold text-center">Skills to Master</h2>
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      <!-- Adjust grid columns: 1 column for mobile, 3 for tablet, 4 for desktop -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-4 p-2">
         <div
           v-for="skill in learningPath.skills"
           :key="skill"
-          class="p-4 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition duration-200"
+          class="p-4 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition duration-200 ease-in-out"
         >
           {{ skill }}
         </div>
@@ -159,9 +159,9 @@
         <li
           v-for="prerequisite in learningPath.prerequisites"
           :key="prerequisite"
-          class="mb-4 list-none flex flex-col"
+          class="mb-4 flex flex-col"
         >
-          <div class="flex -mb-3">
+          <div class="flex items-center mb-2">
             <!-- Icon/Image for visual indicator -->
             <img
               :src="prerequisite.icon"

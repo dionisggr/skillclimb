@@ -1,52 +1,133 @@
 <template>
-  <header
-    class="sticky top-0 z-50 flex items-center justify-between bg-white p-4 shadow-md"
-  >
-    <div class="flex items-center">
-      <!-- Simple SVG ladder icon as a placeholder -->
-      <svg
-        class="h-6 w-6 mr-1"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-      >
-        <path
-          d="M7 0h2v24H7zm8 0h2v24h-2zm-6 4h6v2h-6zm6 5H9v-2h6zm-6 5h6v2h-6zm6 5H9v-2h6z"
-        />
-      </svg>
-      <h1
-        class="text-xl font-semibold cursor-pointer"
-        @click="selectedNavItem = 'home'"
-      >
-        SkillClimb
-      </h1>
-    </div>
-    <nav class="flex items-center space-x-20">
-      <div
-        class="flex py-1"
-        v-for="link in ['Home', 'Courses', 'Certifications', 'Pricing']"
-      >
-        <a
-          href="#"
-          class="rounded text-gray-700 hover:bg-gray-200 p-1 font-semibold"
-          @click="selectedNavItem = link.toLowerCase()"
-          >{{ link }}</a
-        >
-      </div>
+  <header class="sticky top-0 z-50 bg-white p-4 shadow-md">
+    <div class="flex items-center justify-between">
       <div class="flex items-center">
-        <input
-          type="text"
-          placeholder="Search course..."
-          class="w-80 rounded-xl border p-2 px-4 ml-8"
-        />
-        <button
-          class="rounded-full bg-gray-200 ml-8 mr-6 p-2 hover:shadow-lg transform transition-all duration-200"
+        <!-- Simple SVG ladder icon as a placeholder -->
+        <svg
+          class="h-6 w-6 mr-1"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
         >
-          <account-circle />
+          <path
+            d="M7 0h2v24H7zm8 0h2v24h-2zm-6 4h6v2h-6zm6 5H9v-2h6zm-6 5h6v2h-6zm6 5H9v-2h6z"
+          />
+        </svg>
+        <h1
+          class="text-xl font-semibold cursor-pointer"
+          @click="selectedNavItem = 'home'"
+        >
+          SkillClimb
+        </h1>
+      </div>
+      <!-- Hamburger Icon -->
+      <div class="md:hidden">
+        <button @click="toggleSidebar">
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16"
+            ></path>
+          </svg>
         </button>
       </div>
-    </nav>
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center w-full justify-between ml-8">
+        <div class="flex mx-auto w-1/2 justify-between">
+          <div
+            class="flex p-1.5 px-2 relative"
+            v-for="link in ['Home', 'Courses', 'Certifications', 'Pricing']"
+          >
+          <span v-if="link === 'Certifications'" class="absolute top-0 right-0 text-sm font-bold text-red-500">Coming Soon</span>
+            <a
+              href="#"
+              class="rounded hover:bg-gray-200 p-1 font-semibold" :class="link === 'Certifications' ? 'line-through cursor-not-allowed text-gray-600' : 'text-gray-700'"
+              @click="link !== 'Certifications' && (selectedNavItem = link.toLowerCase())"
+              >{{ link }}</a
+            >
+          </div>
+        </div>
+        <div class="flex items-center">
+          <input
+            type="text"
+            placeholder="Search course..."
+            class="hidden lg:block w-80 rounded-xl border p-2 px-4 ml-8"
+          />
+          <button
+            class="rounded-full bg-gray-200 ml-8 mr-6 p-2 hover:shadow-lg transform transition-all duration-200"
+          >
+            <account-circle />
+          </button>
+        </div>
+      </nav>
+    </div>
   </header>
+
+  <!-- Sidebar -->
+  <transition name="slide">
+    <div
+      v-if="isSidebarOpen"
+      class="fixed inset-0 overflow-hidden z-50"
+      @click.self="toggleSidebar"
+    >
+      <div
+        class="absolute inset-0 bg-black opacity-50"
+        @click="toggleSidebar"
+      ></div>
+      <div
+        class="absolute top-0 right-0 w-64 bg-white p-4 overflow-auto h-full shadow-lg transform transition-transform duration-300 ease-in-out"
+      >
+        <!-- Close button -->
+        <button
+          class="absolute top-4 right-4 focus:outline-none"
+          @click="toggleSidebar"
+        >
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            ></path>
+          </svg>
+        </button>
+
+        <!-- Sidebar header with website title -->
+        <div class="border-b pb-2 mb-6">
+          <h2 class="text-2xl font-semibold">SkillClimb</h2>
+        </div>
+
+        <!-- Navigation links -->
+        <nav>
+          <a
+            href="#"
+            class="block py-4 px-4 rounded transition duration-200 hover:bg-gray-100 mb-2 text-lg"
+            v-for="link in ['Home', 'Courses', 'Certifications', 'Pricing']"
+            @click="
+              selectedNavItem = link.toLowerCase();
+              toggleSidebar();
+            "
+          >
+            {{ link }}
+          </a>
+        </nav>
+      </div>
+    </div>
+  </transition>
 
   <!-- Home -->
   <Home
@@ -56,13 +137,13 @@
   />
 
   <!-- Courses -->
-    <Courses
+  <Courses
     v-else-if="selectedNavItem === 'courses'"
     @preview-course="selectedNavItem = 'course-preview'"
   />
 
   <!-- Course Preview -->
-    <CoursePreview
+  <CoursePreview
     v-else-if="selectedNavItem === 'course-preview'"
     @open-course="selectedNavItem = 'course'"
   />
@@ -497,6 +578,8 @@ export default {
       selectedTopic: {},
       selectedOption: null,
       selectedLessonIndex: null,
+      selectedNavItem: 'home',
+      isSidebarOpen: false,
     };
   },
   computed: {
@@ -558,6 +641,9 @@ export default {
     },
     isSelectedLesson(index) {
       return this.selectedLessonIndex === index; // Check if the lesson is selected
+    },
+    toggleSidebar() {
+      this.isSidebarOpen = !this.isSidebarOpen;
     },
   },
 };

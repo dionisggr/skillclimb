@@ -1,31 +1,35 @@
 <template>
   <div class="bg-gray-100">
     <!-- Hero Section -->
-    <section class="relative text-center pt-36 pb-24 bg-white">
-      <h1 class="text-6xl font-bold">Welcome to SkillClimb</h1>
-      <p class="text-gray-600 mt-4 text-xl">
+    <section
+      class="relative text-center pt-12 lg:pt-36 p-4 pb-8 lg:pb-24 bg-white"
+    >
+      <h1 class="text-3xl lg:text-6xl font-bold">Welcome to SkillClimb</h1>
+      <p class="text-gray-600 mt-4 text-lg lg:text-xl">
         Join our community of learners and creators.
       </p>
 
       <!-- Call to Actions -->
-      <div class="mt-16 flex justify-center space-x-6">
+      <div
+        class="px-4 mt-8 lg:mt-16 flex flex-wrap justify-center space-x-0 lg:space-x-6 space-y-4 lg:space-y-0"
+      >
         <a
           href="#popular-learning-paths"
-          class="px-10 py-4 bg-blue-500 text-white rounded-full shadow-md hover:bg-blue-600 transition-colors text-lg cursor-pointer"
+          class="w-full lg:w-auto block px-6 py-3 lg:px-10 lg:py-4 bg-blue-500 text-white rounded-full shadow-md hover:bg-blue-600 transition-colors text-lg cursor-pointer"
         >
           I'm a Learner
         </a>
         <a
           href="#"
-          class="px-10 py-4 bg-green-500 text-white rounded-full shadow-md hover:bg-green-600 transition-colors text-lg cursor-pointer"
           @click="$emit('open-dashboard')"
+          class="w-full lg:w-auto block mt-4 lg:mt-0 px-6 py-3 lg:px-10 lg:py-4 bg-green-500 text-white rounded-full shadow-md hover:bg-green-600 transition-colors text-lg cursor-pointer"
         >
           I'm a Content Creator
         </a>
       </div>
 
       <!-- How It Works link -->
-      <div class="mt-12">
+      <div class="mt-12 mb-6">
         <a
           href="#"
           @click.prevent="toggleHowItWorks"
@@ -39,98 +43,107 @@
       <transition name="slide-fade">
         <div
           v-if="showHowItWorks"
-          class="how-it-works-content mt-6 mx-auto w-3/4 bg-blue-500 bg-opacity-5 p-10 rounded-md shadow-md text-gray-700 leading-relaxed text-xl max-w-4xl"
+          class="how-it-works-content mt-4 lg:mt-6 lg:mx-auto lg:w-3/4 bg-blue-500 bg-opacity-5 p-4 lg:p-10 rounded-md shadow-md text-gray-700 leading-relaxed text-lg lg:text-xl max-w-4xl"
         >
           <!-- Header -->
-          <h2 class="text-3xl font-bold text-center mb-6">What We Offer</h2>
+          <h2 class="text-2xl lg:text-3xl font-bold text-center mb-4 lg:mb-6">
+            What We Offer
+          </h2>
 
           <!-- Benefit Items -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-8">
             <div
               v-for="benefit in benefits"
               :key="benefit"
-              class="flex items-start space-x-4"
+              class="flex items-start space-x-2 lg:space-x-4 text-base"
             >
               <!-- Icon (Replace with your actual icons) -->
               <div
-                class="flex-none w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center"
+                class="flex-none w-8 lg:w-10 h-8 lg:h-10 bg-blue-200 rounded-full flex items-center justify-center"
               >
-                <span class="text-blue-500 text-2xl">&#x2714;</span>
-                <!-- Checkmark, replace with an icon -->
+                <span class="text-blue-500 text-xl lg:text-2xl">&#x2714;</span>
               </div>
 
               <!-- Text Content -->
-              <div class="flex-grow">
-                {{ benefit }}
-              </div>
+              <div class="flex-grow">{{ benefit }}</div>
             </div>
           </div>
         </div>
       </transition>
     </section>
 
-    <!-- Video Introduction Section -->
-    <section class="py-16 w-3/5 max-w-4xl mx-auto">
-      <h2 class="text-4xl font-bold text-center mb-8">Who We Are</h2>
-      <iframe
-        width="100%"
-        height="450"
-        src="https://www.youtube.com/embed/4jjhWcWfCyE"
-        frameborder="0"
-        allowfullscreen
-      ></iframe>
+    <section class="py-8 pb-12 lg:py-12 w-full px-4 max-w-xl lg:max-w-4xl mx-auto">
+      <h2 class="text-2xl lg:text-4xl font-bold text-center mb-4 lg:mb-8">
+        Who We Are
+      </h2>
+      <div class="aspect-w-16 aspect-h-9 rounded-xl overflow-hidden shadow-lg">
+        <iframe
+          class="w-full h-52 lg:h-[400px]"
+          src="https://www.youtube.com/embed/4jjhWcWfCyE"
+          frameborder="0"
+          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        ></iframe>
+      </div>
       <p class="text-center text-gray-600 mt-4">
         Dive deep into our platform's capabilities and see what makes SkillClimb
         unique.
       </p>
     </section>
 
-<!-- Roadmaps Section -->
-<section
-  class="py-16 w-full px-12 mx-auto bg-white"
-  id="popular-learning-paths"
->
-  <h2 class="text-4xl font-bold text-center mb-12">
-    Popular Learning Paths
-  </h2>
-  <div
-    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 justify-center max-w-screen-2xl mx-auto"
-  >
-    <div
-      v-for="(path, index) in learningPaths"
-      :key="path.id"
-      class="course-card max-w-md cursor-pointer transform transition-transform"
-      :class="!index && 'transform transition-transform hover:-translate-y-2.5 hover:shadow-lg'"
-      @click="index === 0 ? $emit('open-learning-path') : null"
+    <!-- Roadmaps Section -->
+    <section
+      class="py-12 lg:py-16 w-full px-4 lg:px-12 mx-auto bg-white"
+      id="popular-learning-paths"
     >
-      <div class="relative">
-        <img
-          :src="path.thumbnail"
-          alt="Course Thumbnail"
-          class="w-full h-48 object-cover rounded-t-md"
-        />
+      <h2 class="text-2xl lg:text-4xl font-bold text-center mb-8 lg:mb-12">
+        Popular Learning Paths
+      </h2>
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-8 justify-center max-w-screen-xl mx-auto"
+      >
         <div
-          v-if="index !== 0"
-          class="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center rounded-t-md"
+          v-for="(path, index) in learningPaths"
+          :key="path.id"
+          class="course-card max-w-md cursor-pointer transform transition-transform hover:-translate-y-1.5 hover:shadow-lg"
+          @click="$emit('open-learning-path')"
         >
-          <span class="text-slate-200 text-2xl font-semibold">Coming Soon</span>
+          <div class="relative">
+            <img
+              :src="path.thumbnail"
+              alt="Course Thumbnail"
+              class="w-full h-40 lg:h-48 object-cover rounded-t-md"
+            />
+            <div
+              v-if="index !== 0"
+              class="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center rounded-t-md"
+            >
+              <span class="text-slate-200 text-xl lg:text-2xl font-semibold"
+                >Coming Soon</span
+              >
+            </div>
+          </div>
+          <div class="p-4 lg:p-6 bg-white rounded-b-md">
+            <h3 class="text-xl lg:text-2xl font-semibold mb-2">
+              {{ path.title }}
+            </h3>
+            <p class="text-gray-600">{{ path.description }}</p>
+          </div>
         </div>
       </div>
-      <div class="p-6 bg-white rounded-b-md">
-        <h3 class="text-2xl font-semibold mb-2">{{ path.title }}</h3>
-        <p class="text-gray-600">{{ path.description }}</p>
-      </div>
-    </div>
-  </div>
-</section>
-
+    </section>
 
     <!-- Reviews Section -->
-    <section class="py-16 w-11/12 mx-auto" id="reviews">
-      <h2 class="text-4xl font-bold text-center mb-12">
+    <section
+      class="py-8 lg:py-16 w-full px-4 max-w-screen-xl mx-auto"
+      id="reviews"
+    >
+      <h2 class="text-2xl lg:text-4xl font-bold text-center mb-8 lg:mb-12">
         What our learners say
       </h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-screen-2xl mx-auto">
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-8 max-w-screen-xl mx-auto"
+      >
         <div
           v-for="review in reviews"
           :key="review.id"
@@ -153,9 +166,8 @@
               :class="
                 star <= review.stars ? 'text-yellow-400' : 'text-gray-300'
               "
+              >&#9733;</span
             >
-              &#9733;
-            </span>
           </div>
           <!-- Review Text -->
           <p class="text-gray-600 text-sm">{{ review.text }}</p>
@@ -164,36 +176,33 @@
     </section>
 
     <!-- Newsletter Section -->
-    <section class="pt-16 bg-white" id="newsletter">
-      <div class="w-11/12 mx-auto">
-        <h2 class="text-4xl font-bold text-center mb-4">Stay Updated</h2>
-        <p class="text-center text-gray-600 mb-8">
-          Subscribe to our newsletter and get the latest updates on our courses
-          and special offers!
+    <section class="py-8 lg:pt-16 bg-white" id="newsletter">
+      <div class="max-w-2xl mx-auto px-4 text-center">
+        <h2 class="text-2xl lg:text-4xl font-bold mb-6 lg:mb-10">
+          Stay in the Loop
+        </h2>
+        <p class="mb-6 lg:mb-10 text-gray-600">
+          Subscribe to our newsletter and never miss out on new content and
+          updates.
         </p>
-
-        <div class="flex justify-center">
-          <div class="w-full max-w-xl bg-gray-100 p-8 rounded-md shadow-md">
-            <form
-              @submit.prevent="subscribeToNewsletter"
-              class="flex flex-col space-y-4"
-            >
-              <input
-                type="email"
-                v-model="subscriberEmail"
-                required
-                placeholder="Your Email Address"
-                class="px-4 py-2 rounded-md border-2 border-gray-300 focus:border-blue-500 focus:outline-none"
-              />
-              <button
-                type="submit"
-                class="px-4 py-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 transition-colors text-lg cursor-pointer"
-              >
-                Subscribe Now
-              </button>
-            </form>
-          </div>
-        </div>
+        <!-- Subscription Form -->
+        <form
+          @submit.prevent="subscribeToNewsletter"
+          class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4"
+        >
+          <input
+            type="email"
+            v-model="newsletterEmail"
+            class="flex-grow px-4 py-2 text-lg rounded-md shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Enter your email"
+          />
+          <button
+            type="submit"
+            class="px-6 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-lg"
+          >
+            Subscribe
+          </button>
+        </form>
       </div>
     </section>
   </div>
@@ -232,7 +241,7 @@ export default {
           title: 'Solutions Engineering',
           description: 'Learn how to evaluate and deploy software solutions',
           thumbnail:
-          'https://th.bing.com/th/id/OIG.2r6EZ7PYvfej0iVeIwcM?pid=ImgGn',
+            'https://th.bing.com/th/id/OIG.2r6EZ7PYvfej0iVeIwcM?pid=ImgGn',
         },
         {
           id: 4,

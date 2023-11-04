@@ -3,7 +3,7 @@
   <main class="flex p-4" v-if="selectedNavItem === 'home'">
     <!-- Sidebar -->
     <aside
-      class="h-screen max-w-[350px] overflow-y-auto rounded bg-white p-4 shadow-md"
+      class="max-w-[325px] overflow-y-auto rounded bg-white p-4 shadow-md"
     >
       <h2
         class="mb-6 text-center text-lg font-bold border border-solid rounded-md p-1"

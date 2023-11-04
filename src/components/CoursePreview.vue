@@ -8,7 +8,7 @@
 
     <!-- Introductory Video Section -->
     <section
-      class="relative rounded-lg shadow-lg overflow-hidden w-5/6 mx-auto"
+      class="relative rounded-lg shadow-lg overflow-hidden mx-auto"
       style="height: 500px"
     >
       <iframe
@@ -76,7 +76,7 @@
           </div>
         </div>
         <transition name="slide-fade">
-          <div v-if="!_module.hide" class="mt-2 ml-12">
+          <div v-if="!_module.hide" class="mt-2 ml-6 md:ml-8 lg:ml-12">
             <div
               v-for="topic in _module.lessons"
               :key="topic"

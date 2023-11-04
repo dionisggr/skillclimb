@@ -5,10 +5,12 @@
         Choose Your Pricing Plan
       </h1>
 
-      <div class="grid lg:grid-cols-2 gap-10">
+      <!-- Responsive Grid -->
+      <div class="grid md:grid-cols-1 lg:grid-cols-2 gap-10">
         <!-- Single Course Card -->
-        <div class="bg-white p-6 rounded-lg shadow-lg text-center transform transition-transform duration-300 hover:scale-105 hover:shadow-xl cursor-pointer">
-
+        <div
+          class="bg-white p-6 rounded-lg shadow-lg text-center transform transition-transform duration-300 hover:scale-105 hover:shadow-xl cursor-pointer"
+        >
           <h2 class="text-2xl font-bold mb-4">Single Course Purchase</h2>
           <p class="text-lg text-gray-700 mb-6">Pay once, study forever.</p>
 
@@ -31,8 +33,9 @@
         </div>
 
         <!-- Subscription Card -->
-        <div class="bg-white p-6 rounded-lg shadow-lg text-center transform transition-transform duration-300 hover:scale-105 hover:shadow-xl cursor-pointer">
-
+        <div
+          class="bg-white p-6 rounded-lg shadow-lg text-center transform transition-transform duration-300 hover:scale-105 hover:shadow-xl cursor-pointer"
+        >
           <h2 class="text-2xl font-bold mb-4">Monthly Subscription</h2>
           <p class="text-lg text-gray-700 mb-6">
             Access all courses with one subscription.
@@ -60,35 +63,45 @@
 
       <!-- Credits Purchase Info -->
       <div
-        class="mt-16 bg-gradient-to-r from-blue-500 to-blue-700 rounded-lg shadow-lg overflow-hidden w-2/3 mx-auto"
+        class="mt-16 bg-gradient-to-r from-blue-500 to-blue-700 rounded-lg shadow-lg overflow-hidden w-full mx-auto py-2 lg:py-0 lg:w-2/3"
       >
-        <div class="p-6 sm:p-8 md:flex md:items-center md:justify-between">
+        <div
+          class="p-4 sm:p-6 lg:p-8 flex flex-col sm:flex-row items-center justify-between"
+        >
           <!-- Left Content: Text & Icon -->
-          <div class="md:flex md:items-center space-x-6">
-            <!-- Icon (consider using a Vue component library or an SVG for the icon) -->
-            <div class="bg-white rounded-full p-4 shadow-md">
-              <img
-                src="https://tailwindui.com/img/logos/workcation.svg"
-                alt="Credits Icon"
-                class="h-8 w-8"
-              />
+          <div
+            class="flex items-start sm:items-center space-x-4 lg:space-x-6 text-center sm:text-left"
+          >
+            <!-- Icon: should remain a circle -->
+            <div class="shrink-0">
+              <div
+                class="bg-white rounded-full p-3 lg:p-4 shadow-md inline-flex items-center justify-center"
+              >
+                <img
+                  src="https://tailwindui.com/img/logos/workcation.svg"
+                  alt="Credits Icon"
+                  class="h-8 w-8"
+                />
+              </div>
             </div>
 
             <!-- Text -->
-            <div>
-              <p class="text-white text-2xl font-bold mb-2">
+            <div class="flex-grow sm:mt-0 sm:ml-4">
+              <p
+                class="text-white text-xl lg:text-2xl font-semibold mb-2 leading-snug text-left"
+              >
                 Need more AI interaction credits?
               </p>
-              <p class="text-blue-200">
+              <p class="text-blue-200 text-sm lg:text-base leading-relaxed text-left">
                 Unlock more AI-generated content with our flexible credit packs.
               </p>
             </div>
           </div>
 
           <!-- Right Content: Button -->
-          <div class="mt-8 md:mt-0">
+          <div class="mt-5 sm:mt-0 flex justify-center">
             <button
-              class="bg-white text-blue-600 font-bold py-2 px-5 rounded-full hover:bg-gray-100 hover:text-blue-700"
+              class="my-2 bg-white text-blue-600 font-semibold py-2 px-4 lg:px-5 rounded-full hover:bg-gray-100 hover:text-blue-700 transition duration-300 ease-in-out"
             >
               Buy Credits
             </button>

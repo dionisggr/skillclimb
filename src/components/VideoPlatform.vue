@@ -79,7 +79,7 @@
             >
               <img
                 :src="backgroundImageURL"
-                class="absolute top-0 left-0 w-full h-full object-cover rounded-xl opacity-50"
+                class="absolute top-0 left-0 w-full h-full object-cover rounded-xl"
                 ref="backgroundImage"
                 @load="onImageLoad"
               />
@@ -104,15 +104,15 @@
               ></video>
             </div>
 
-            <div class="mt-4 flex space-x-4">
+            <div class="mt-4 flex items-center">
               <button
                 @click="changeMode('user')"
                 :class="{
                   'bg-gray-200': recordingMode === 'whiteboard',
                   'bg-blue-500': recordingMode === 'user',
                 }"
-                class="px-4 py-2 text-white rounded-l-lg"
-                :disabled="!stream"
+                class="px-4 py-2 text-white rounded-l-lg h-fit"
+                :disabled="stream"
               >
                 Full Frame
               </button>
@@ -123,60 +123,24 @@
                   'bg-gray-200': recordingMode === 'user',
                   'bg-blue-500': recordingMode === 'whiteboard',
                 }"
-                class="px-4 py-2 text-white rounded-r-lg"
+                class="px-4 py-2 text-white rounded-r-lg h-fit"
               >
                 Whiteboard
               </button>
-              <!-- Upload Background Button -->
-              <div class="flex items-center space-x-2">
-                <label
-                  class="block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer"
-                >
-                  Upload Background
-                  <input
-                    type="file"
-                    accept="image/*"
-                    @change="uploadImage"
-                    class="hidden"
-                  />
-                </label>
 
-                <!-- Color Picker -->
-                <input
-                  type="color"
-                  v-model="activeColor"
-                  @change="changeColor"
-                  class="w-8 h-8 cursor-pointer rounded-full border-2 border-gray-300 p-1"
-                />
+              <!-- Thumbnails Container -->
+              <div v-if="recording && backgroundImageURLs.length" class="mt-4 flex overflow-x-auto w-fit mx-auto ml-auto mr-0">
+                <div
+                  v-for="(image, index) in backgroundImageURLs"
+                  :key="index"
+                  class="flex-none w-28 h-20 rounded-lg overflow-hidden mx-2"
+                >
+                  <img :src="image" class="w-full h-full object-cover" />
+                </div>
               </div>
             </div>
 
-            <button
-              v-if="!stream && !recording"
-              @click="startRecording"
-              class="mt-4 px-5 py-2 w-1/3 mx-auto block bg-green-500 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors"
-            >
-              Start Recording
-            </button>
-
-            <button
-              v-if="recording"
-              @click="pauseRecording"
-              class="mt-4 px-5 py-2 w-1/3 mx-auto block bg-yellow-500 text-white rounded-lg shadow-md hover:bg-yellow-700 transition-colors"
-            >
-              {{ paused ? 'Resume Recording' : 'Pause Recording' }}
-            </button>
-
-            <!-- Add Stop Recording button -->
-            <button
-              v-if="stream"
-              @click="stopRecording"
-              class="mt-4 px-5 py-2 w-1/3 mx-auto block bg-red-500 text-white rounded-lg shadow-md hover:bg-red-700 transition-colors"
-            >
-              Stop Recording
-            </button>
-
-            <div v-if="videoURL" class="mt-4">
+            <div v-if="videoURL && !whiteboardURL" class="mt-4">
               <h4 class="text-lg font-medium text-gray-700 mb-2">Preview:</h4>
               <video
                 class="w-full h-96 rounded-xl"
@@ -195,12 +159,73 @@
               ></video>
             </div>
 
-            <input
-              type="file"
-              accept="image/*"
-              @change="uploadImage"
-              class="mt-4"
-            />
+
+
+            <div class="flex justify-between px-4 text-center mt-8">
+              <!-- Upload Canvas Button with Previous and Next Arrows -->
+              <div class="flex items-center space-x-2">
+                <!-- Upload Canvas Button -->
+                <label
+                  class="block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 cursor-pointer rounded-lg"
+                >
+                  Upload Canvas
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    @change="uploadImages"
+                    class="hidden"
+                  />
+                </label>
+              </div>
+
+              <div class="flex justify-center space-x-2 items-center">
+                <!-- Color Picker -->
+                <input
+                  type="color"
+                  v-model="activeColor"
+                  @change="changeColor"
+                  class="w-8 h-8 cursor-pointer rounded-lg border-2 border-gray-300 px-0.5"
+                />
+                <!-- Clear Canvas Button -->
+                <button
+                  @click="clearCanvas"
+                  class="bg-orange-400 hover:bg-red-700 text-white font-bold text-xs py-1 px-2 rounded-full"
+                >
+                  Clear
+                </button>
+              </div>
+            </div>
+
+            <div class="flex justify-center items-center my-4 mb-12 mt-8">
+              <button
+                v-if="!stream && !recording"
+                @click="startRecording"
+                class="px-5 py-2 w-1/3 mx-auto block bg-green-500 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors"
+              >
+                {{ videoURL || whiteboardURL ? 'Resume' : 'Start' }} Recording
+              </button>
+
+              <button
+                v-if="recording"
+                @click="pauseRecording"
+                class="mt-4 px-5 py-2 w-1/3 mx-auto block bg-yellow-500 text-white rounded-lg shadow-md hover:bg-yellow-700 transition-colors"
+              >
+                {{ paused ? 'Resume Recording' : 'Pause Recording' }}
+              </button>
+
+              <button
+                v-if="stream || videoURL || whiteboardURL"
+                @click="stopRecording"
+                class="px-5 py-2 w-1/3 mx-auto block text-white rounded-lg shadow-md hover:bg-red-700 transition-colors h-fit"
+                :class="{
+                  'bg-red-500': !(whiteboardURL || videoURL),
+                  'bg-indigo-500 w-fit': whiteboardURL || videoURL,
+                }"
+              >
+                {{  videoURL || whiteboardURL ? 'Save As...' : 'Stop Recording' }}
+              </button>
+            </div>
           </div>
 
           <!-- AI-related Features and Options -->
@@ -585,7 +610,14 @@ export default {
       activeColor: '#000000',
       paused: false,
       recording: false,
+      backgroundImageURLs: [],
+      currentImageIndex: 0,
     };
+  },
+  computed: {
+    backgroundImageURL() {
+      return this.backgroundImageURLs[this.currentImageIndex];
+    },
   },
   methods: {
     async pauseRecording() {
@@ -623,7 +655,7 @@ export default {
         this.mediaRecorder.onstop = this.generateVideoURL;
         this.mediaRecorder.start();
 
-        this.$nextTick(this.updateCanvasSize);
+        await this.$nextTick(this.updateCanvasSize);
 
         if (this.recordingMode === 'whiteboard') {
           await this.$nextTick();
@@ -637,6 +669,8 @@ export default {
       }
     },
     stopRecording() {
+      this.recording = false;
+
       if (this.mediaRecorder) {
         this.mediaRecorder.stop();
       }
@@ -655,7 +689,6 @@ export default {
 
       this.previousChunks = [...this.previousChunks, ...this.chunks]; // Append new chunks to previous chunks
       this.chunks = []; // Clear the current chunks as they've been appended to the previous chunks
-      this.recording = false;
     },
 
     recordCanvas() {
@@ -755,33 +788,33 @@ export default {
       this.mediaRecorder.start(); // Start recording
     },
     async changeMode(newMode) {
-  if (this.recordingMode === newMode) {
-    // No mode change needed, just return
-    return;
-  }
+      if (this.recordingMode === newMode) {
+        // No mode change needed, just return
+        return;
+      }
 
-  this.recordingMode = newMode;
+      this.recordingMode = newMode;
 
-  if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
-    await this.pauseRecording(); // Pause the recording before changing the mode
+      if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
+        await this.pauseRecording(); // Pause the recording before changing the mode
 
-    if (this.stream) {
-      const videoElem =
-        this.recordingMode === 'user'
-          ? this.$refs.fullFrameVideo
-          : this.$refs.whiteboardVideo;
-      videoElem.srcObject = this.stream;
-    }
+        if (this.stream) {
+          const videoElem =
+            this.recordingMode === 'user'
+              ? this.$refs.fullFrameVideo
+              : this.$refs.whiteboardVideo;
+          videoElem.srcObject = this.stream;
+        }
 
-    if (this.recordingMode === 'whiteboard') {
-      this.$nextTick(this.updateCanvasSize);
-      await this.$nextTick();
-      this.recordCanvas();
-    }
+        if (this.recordingMode === 'whiteboard') {
+          await this.$nextTick(this.updateCanvasSize);
+          // await this.$nextTick();
+          this.recordCanvas();
+        }
 
-    await this.pauseRecording(); // Resume the recording after changing the mode
-  }
-},
+        await this.pauseRecording(); // Resume the recording after changing the mode
+      }
+    },
 
     toggleLesson(index) {
       this.isLessonCollapsed[index] = !this.isLessonCollapsed[index];
@@ -915,14 +948,30 @@ export default {
       });
     },
 
-    uploadImage(event) {
-      const file = event.target.files[0];
-      if (file && file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.backgroundImageURL = e.target.result;
-        };
-        reader.readAsDataURL(file);
+    uploadImages(event) {
+      const files = event.target.files;
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (file && file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            this.backgroundImageURLs.push(e.target.result);
+            if (this.currentImageIndex < 0) {
+              this.currentImageIndex = 0;
+            }
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+    },
+    prevImage() {
+      if (this.currentImageIndex > 0) {
+        this.currentImageIndex--;
+      }
+    },
+    nextImage() {
+      if (this.currentImageIndex < this.backgroundImageURLs.length - 1) {
+        this.currentImageIndex++;
       }
     },
     clearBackgroundImage() {
@@ -937,6 +986,11 @@ export default {
       // Reset the chunks for the next series of recordings
       this.chunks = [];
       this.isFirstRecording = true; // Reset the first recording flag
+    },
+    clearCanvas() {
+      const canvas = this.$refs.whiteboardCanvas;
+      const context = canvas.getContext('2d');
+      context.clearRect(0, 0, canvas.width, canvas.height);
     },
   },
 };
