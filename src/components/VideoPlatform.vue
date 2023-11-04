@@ -1,8 +1,8 @@
 <template>
   <div class="bg-gray-10 min-h-screen pb-1">
     <!-- Video Content Header -->
-    <div class="text-center py-10 bg-blue-500 text-white">
-      <h1 class="text-4xl font-extrabold">Video Content Creation</h1>
+    <div class="text-center py-10 px-6 bg-blue-500 text-white space-y-4">
+      <h1 class="text-3xl lg:text-4xl font-extrabold">Video Content Creation</h1>
       <p class="text-blue-100">
         Enhance your videos with modern AI technologies.
       </p>
@@ -11,7 +11,7 @@
     <!-- Main Content Area -->
     <div class="container mx-auto px-4 max-w-screen-xl mt-4">
       <!-- Video Upload & Details -->
-      <div class="bg-white p-6 rounded-xl shadow-lg mb-10">
+      <div class="bg-white p-4 rounded-xl shadow-lg mb-10 lg:p-6">
         <!-- Video Mode Selection -->
         <div class="mb-6 text-center">
           <button
@@ -30,15 +30,22 @@
           </button>
         </div>
 
-        <div class="flex space-x-6">
+        <div
+          class="flex flex-col space-y-6 lg:flex-row lg:space-y-0 lg:space-x-6"
+        >
           <!-- Upload Mode -->
           <div v-if="!mode" class="flex-1">
-            <video class="w-full h-96 rounded-xl" controls></video>
-            <div class="mt-2 flex items-center justify-between mr-2">
-              <input type="file" class="border rounded p-2 w-3/4 mr-4" />
+            <video class="w-full min-h-44 lg:h-96 rounded-xl" controls></video>
+            <div
+              class="mt-2 flex flex-col items-center justify-between lg:flex-row"
+            >
+              <input
+                type="file"
+                class="border rounded p-2 mx-4 w-full lg:w-3/4 mr-4"
+              />
 
               <!-- Toggle between Full Course and Lesson -->
-              <div class="flex">
+              <div class="flex space-x-2 mt-4 lg:mt-0">
                 <button
                   :class="
                     courseMode === 'lesson' ? 'bg-green-600' : 'bg-gray-200'
@@ -129,7 +136,10 @@
               </button>
 
               <!-- Thumbnails Container -->
-              <div v-if="recording && backgroundImageURLs.length" class="mt-4 flex overflow-x-auto w-fit mx-auto ml-auto mr-0">
+              <div
+                v-if="recording && backgroundImageURLs.length"
+                class="mt-4 flex overflow-x-auto w-fit mx-auto ml-auto mr-0"
+              >
                 <div
                   v-for="(image, index) in backgroundImageURLs"
                   :key="index"
@@ -158,8 +168,6 @@
                 :src="whiteboardURL"
               ></video>
             </div>
-
-
 
             <div class="flex justify-between px-4 text-center mt-8">
               <!-- Upload Canvas Button with Previous and Next Arrows -->
@@ -223,13 +231,15 @@
                   'bg-indigo-500 w-fit': whiteboardURL || videoURL,
                 }"
               >
-                {{  videoURL || whiteboardURL ? 'Save As...' : 'Stop Recording' }}
+                {{
+                  videoURL || whiteboardURL ? 'Save As...' : 'Stop Recording'
+                }}
               </button>
             </div>
           </div>
 
           <!-- AI-related Features and Options -->
-          <div class="w-1/3 flex flex-col space-y-4">
+          <div class="flex flex-col space-y-4 w-full lg:w-1/3">
             <div class="text-lg font-medium text-gray-700 mb-2">
               AI Features:
             </div>
@@ -280,29 +290,52 @@
           </div>
         </div>
 
-        <!-- Lessons & Topics Arrangement -->
         <div
           v-if="courseMode === 'lesson'"
-          class="mt-8 p-6 bg-white rounded-xl shadow-sm mb-10 transform transition relative"
+          class="mt-8 sm:p-6 bg-white rounded-xl shadow-sm mb-10 transform transition relative md:p-4 flex flex-col"
         >
-          <!-- Add Lesson Button -->
-          <button
-            class="absolute top-6 right-6 text-white bg-blue-500 hover:bg-blue-600 transition duration-300 ease-in-out font-bold py-2 px-4 rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
-            @click="addLesson"
-          >
-            <i class="fas fa-plus mr-2"></i>
-            Add Lesson
-          </button>
+          <!-- Title (Mobile and Tablet View) -->
           <h2
-            class="ml-1 text-3xl font-bold tracking-wider text-gray-700 mb-6 border-b pb-3 flex items-center"
+            class="ml-1 text-2xl sm:text-3xl font-bold tracking-wider text-gray-700 mb-6 border-b pb-3 flex items-center mt-8 md:hidden"
           >
             <i
-              class="fas fa-video mr-4 text-blue-500"
-              style="font-size: 1.6rem"
+              class="fas fa-video mr-3 sm:mr-4 text-blue-500"
+              :class="{
+                'text-5xl': screen === 'xs',
+                'text-6xl': screen === 'sm',
+              }"
             ></i>
             Lessons & Topics
           </h2>
 
+          <!-- Add Lesson Button (Mobile and Tablet View) -->
+          <button
+            @click="addLesson"
+            class="md:hidden text-white bg-blue-500 hover:bg-blue-600 transition duration-300 ease-in-out font-bold py-2 px-4 rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-300 z-10 mb-6 mx-auto"
+          >
+            <i class="fas fa-plus mr-2"></i> Add Lesson
+          </button>
+
+          <!-- Title (Desktop View) -->
+          <h2
+            class="ml-1 text-2xl sm:text-3xl font-bold tracking-wider text-gray-700 mb-6 border-b pb-3 flex items-center mt-8 md:mt-0 hidden md:flex"
+          >
+            <i
+              class="fas fa-video mr-3 sm:mr-4 text-blue-500"
+              style="font-size: 1.3rem sm:font-size: 1.6rem"
+            ></i>
+            Lessons & Topics
+          </h2>
+
+          <!-- Add Lesson Button (Desktop View) -->
+          <button
+            @click="addLesson"
+            class="md:absolute top-5 md:right-6 text-white bg-blue-500 hover:bg-blue-600 transition duration-300 ease-in-out font-bold py-2 px-4 rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-300 z-10 hidden md:block"
+          >
+            <i class="fas fa-plus mr-2"></i> Add Lesson
+          </button>
+
+          <!-- The rest of the code remains the same -->
           <div class="space-y-6">
             <div
               v-for="(lesson, lessonIndex) in videoLessons"
@@ -329,10 +362,10 @@
 
                   <!-- Updated Edit Button -->
                   <button
-                    class="ml-12 text-base hover:bg-blue-100 focus:outline-none transition rounded-full"
+                    class="ml-6 text-base hover:bg-blue-100 focus:outline-none transition rounded-full"
                   >
                     <i
-                      class="fas fa-edit text-blue-600 hover:text-blue-700"
+                      class="fas fa-edit text-blue-600 hover:text-blue-700 text-sm mb-0.5"
                     ></i>
                   </button>
                 </h3>
@@ -342,14 +375,16 @@
                     class="text-xs font-semibold text-gray-600 hover:text-gray-800 focus:outline-none transition"
                     @click.stop="moveLessonUp(lessonIndex)"
                   >
-                    <i class="fas fa-arrow-up mr-1"></i> Move Up
+                    <i class="fas fa-arrow-up mr-1"></i>
+                    <span class="hidden md:inline">Move Up</span>
                   </button>
                   <button
                     v-if="lessonIndex < videoLessons.length - 1"
                     class="text-xs font-semibold text-gray-600 hover:text-gray-800 focus:outline-none transition"
                     @click.stop="moveLessonDown(lessonIndex)"
                   >
-                    <i class="fas fa-arrow-down mr-0.5"></i> Move Down
+                    <i class="fas fa-arrow-down mr-0.5"></i>
+                    <span class="hidden md:inline">Move Down</span>
                   </button>
                 </div>
               </div>
@@ -469,27 +504,29 @@
         <!-- General Details -->
 
         <div
-          class="space-y-4 px-6 pb-6"
+          class="space-y-4 px-4 sm:px-6 pb-6"
           :class="courseMode === 'lesson' ? 'mt-8' : 'mt-12'"
         >
-          <h2 class="text-3xl font-semibold text-gray-700">Course Details</h2>
+          <h2 class="text-2xl sm:text-3xl font-semibold text-gray-700">
+            Course Details
+          </h2>
           <input
             v-model="videoTitle"
             type="text"
             placeholder="Course Title"
-            class="border rounded p-2 w-full"
+            class="border rounded p-2 w-full text-sm sm:text-base"
           />
           <textarea
             v-model="videoDescription"
             rows="4"
             placeholder="Description"
-            class="border rounded p-2 w-full"
+            class="border rounded p-2 w-full text-sm sm:text-base"
           ></textarea>
           <input
             v-model="videoTags"
             type="text"
             placeholder="Tags (comma separated)"
-            class="border rounded p-2 w-full"
+            class="border rounded p-2 w-full text-sm sm:text-base"
           />
         </div>
 
