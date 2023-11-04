@@ -7,52 +7,53 @@
     </div>
 
     <!-- Dashboard Content -->
-    <div class="container mx-auto px-4 max-w-screen-xl mt-8">
-      <!-- Insights Section -->
-      <div class="bg-white p-6 shadow-lg grid grid-cols-3 gap-4 mb-8">
-        <div class="bg-white p-6 rounded-xl shadow-md flex items-center">
-          <div class="mr-4 bg-blue-200 p-4 rounded-full">
-            <i class="fas fa-video text-blue-600 text-xl"></i>
-            <!-- Using Font Awesome icons -->
-          </div>
-          <div>
-            <h2 class="text-xl font-semibold">Total Videos</h2>
-            <p>123</p>
-          </div>
-        </div>
-
-        <div class="bg-white p-6 rounded-xl shadow-md flex items-center">
-          <div class="mr-4 bg-blue-200 p-4 rounded-full">
-            <i class="fas fa-eye text-blue-600 text-xl"></i>
-          </div>
-          <div>
-            <h2 class="text-xl font-semibold">Total Views</h2>
-            <p>456K</p>
-          </div>
-        </div>
-
-        <div class="bg-white p-6 rounded-xl shadow-md flex items-center">
-          <div class="mr-4 bg-blue-200 p-4 rounded-full">
-            <i class="fas fa-comments text-blue-600 text-xl"></i>
-          </div>
-          <div>
-            <h2 class="text-xl font-semibold">Total Comments</h2>
-            <p>789</p>
-          </div>
-        </div>
+<div class="container mx-auto max-w-screen-xl mt-8">
+  <!-- Insights Section -->
+  <div class="bg-white p-6 shadow-lg grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+    <div class="bg-white p-6 rounded-xl shadow-md flex items-center justify-center sm:justify-start mb-4 sm:mb-0">
+      <div class="mr-4 bg-blue-200 p-4 rounded-full">
+        <i class="fas fa-video text-blue-600 text-xl"></i>
+        <!-- Using Font Awesome icons -->
       </div>
+      <div>
+        <h2 class="text-xl font-semibold">Total Videos</h2>
+        <p>123</p>
+      </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-md flex items-center justify-center sm:justify-start mb-4 sm:mb-0">
+      <div class="mr-4 bg-blue-200 p-4 rounded-full">
+        <i class="fas fa-eye text-blue-600 text-xl"></i>
+      </div>
+      <div>
+        <h2 class="text-xl font-semibold">Total Views</h2>
+        <p>456K</p>
+      </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-md flex items-center justify-center sm:justify-start">
+      <div class="mr-4 bg-blue-200 p-4 rounded-full">
+        <i class="fas fa-comments text-blue-600 text-xl"></i>
+      </div>
+      <div>
+        <h2 class="text-xl font-semibold">Total Comments</h2>
+        <p>789</p>
+      </div>
+    </div>
+  </div>
 
       <!-- Courses Overview -->
       <div class="bg-white p-6 rounded-xl shadow-lg mb-10">
-        <div class="flex justify-between items-center mb-6">
-          <h2 class="text-2xl font-semibold text-gray-700">Your Courses</h2>
-          <button
-            class="bg-blue-500 text-white rounded-lg px-5 py-2 shadow-md hover:bg-blue-700 transition-colors"
-            @click="$emit('open-video-platform')"
-          >
-            Create New Course
-          </button>
-        </div>
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+  <h2 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-4 md:mb-0">Your Courses</h2>
+  <button
+    class="bg-blue-500 text-white rounded-lg px-4 sm:px-5 py-2 shadow-md hover:bg-blue-700 transition-colors"
+    @click="$emit('open-video-platform')"
+  >
+    Create New Course
+  </button>
+</div>
+
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div
             v-for="course in courses"

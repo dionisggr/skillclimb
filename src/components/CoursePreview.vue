@@ -8,8 +8,8 @@
 
     <!-- Introductory Video Section -->
     <section
-      class="relative rounded-lg shadow-lg overflow-hidden mx-auto"
-      style="height: 500px"
+      class="relative block rounded-lg shadow-lg overflow-hidden mx-auto w-full max-w-4xl"
+      style=" "
     >
       <iframe
         src="https://www.youtube.com/embed/1GNsWa_EZdw?si=cXiwSUe1odIDdUAM"
@@ -17,7 +17,7 @@
         frameborder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         allowfullscreen
-        class="w-full h-full"
+        class="w-full min-h-52 h-[50vw] max-h-[450px] object-cover"
       ></iframe>
       <div
         class="absolute top-0 left-0 bg-gradient-to-b from-black to-transparent text-white p-4 w-full"
@@ -31,12 +31,22 @@
     <section class="bg-white rounded-lg p-6 mt-8 text-center">
       <h2 class="text-2xl font-bold mb-6">Start Your Journey Now</h2>
       <p class="text-gray-600 mb-6">
-        Enroll in the "{{ course.title }}" course and begin your learning adventure with {{ course.instructor.name }} as your guide.
+        Enroll in the "{{ course.title }}" course and begin your learning
+        adventure with {{ course.instructor.name }} as your guide.
       </p>
-      <div class="flex flex-col md:flex-row md:justify-center items-center space-y-4 md:space-y-0 md:space-x-4">
+      <div
+        class="flex flex-col md:flex-row md:justify-center items-center space-y-4 md:space-y-0 md:space-x-4"
+      >
         <!-- Conditional rendering based on isLoggedIn -->
-        <button @click="$emit(isLoggedIn ? 'continue-course' : 'open-course')"
-          class="text-white font-semibold rounded-lg py-3 px-8 w-full md:w-auto transition-colors duration-300 ease-in-out focus:outline-none active:outline-none border-blue-700" :class="isLoggedIn ? 'bg-green-500 hover:bg-green-600' : 'bg-blue-500 hover:bg-blue-600'">
+        <button
+          @click="$emit(isLoggedIn ? 'continue-course' : 'open-course')"
+          class="text-white font-semibold rounded-lg py-3 px-8 w-full md:w-auto transition-colors duration-300 ease-in-out focus:outline-none active:outline-none border-blue-700"
+          :class="
+            isLoggedIn
+              ? 'bg-green-500 hover:bg-green-600'
+              : 'bg-blue-500 hover:bg-blue-600'
+          "
+        >
           <!-- Text changes based on isLoggedIn -->
           {{ isLoggedIn ? 'Continue' : 'Enroll Now' }}
         </button>
@@ -55,12 +65,17 @@
       </div>
     </section>
 
- <!-- Curriculum Section -->
- <section class="bg-white rounded-lg p-6 shadow-lg mt-4">
+    <!-- Curriculum Section -->
+    <section class="bg-white rounded-lg p-6 shadow-lg mt-4">
       <h2 class="text-xl font-bold mb-4">Curriculum</h2>
       <div v-for="(_module, index) in course.modules" :key="index" class="mb-4">
         <div
-          :class="['mb-3 bg-gray-100 rounded-lg p-3 hover:bg-gray-200 transition-all duration-200 cursor-pointer shadow-md', index < 2 && isLoggedIn && 'completed-module bg-green-200 hover:bg-green-300']"
+          :class="[
+            'mb-3 bg-gray-100 rounded-lg p-3 hover:bg-gray-200 transition-all duration-200 cursor-pointer shadow-md',
+            index < 2 &&
+              isLoggedIn &&
+              'completed-module bg-green-200 hover:bg-green-300',
+          ]"
           @click="_module.hide = !_module.hide"
         >
           <div class="flex items-center justify-between">
@@ -80,7 +95,12 @@
             <div
               v-for="topic in _module.lessons"
               :key="topic"
-              :class="['my-1 p-2 bg-gray-100 rounded hover:shadow-md hover:bg-gray-300 transition-all duration-200 cursor-pointer', index < 2 && isLoggedIn && 'completed-topic bg-green-200 hover:bg-green-300']"
+              :class="[
+                'my-1 p-2 bg-gray-100 rounded hover:shadow-md hover:bg-gray-300 transition-all duration-200 cursor-pointer',
+                index < 2 &&
+                  isLoggedIn &&
+                  'completed-topic bg-green-200 hover:bg-green-300',
+              ]"
             >
               {{ topic.title }}
             </div>
@@ -108,29 +128,30 @@
       </div>
     </section>
 
-    <!-- Instructor Info Section -->
-    <section
-      class="bg-gradient-to-r from-blue-500 to-green-400 rounded-lg p-6 shadow-lg text-white mt-2"
-    >
-      <h2 class="text-xl font-bold mb-4">Instructor Info</h2>
-      <div class="flex items-center space-x-4">
-        <img
-          :src="course.instructor.imageUrl"
-          alt="Instructor"
-          class="w-24 h-24 rounded-full border-4 border-white"
-        />
-        <div>
-          <p class="text-2xl font-semibold">{{ course.instructor.name }}</p>
-          <p class="mb-2">{{ course.instructor.title }}</p>
-          <p>{{ course.instructor.bio }}</p>
-          <a
-            :href="course.instructor.website"
-            class="block mt-4 text-sm underline"
-            >Visit Instructor's Website</a
-          >
-        </div>
-      </div>
-    </section>
+<!-- Instructor Info Section -->
+<section
+  class="bg-gradient-to-r from-blue-500 to-green-400 rounded-lg p-6 shadow-lg text-white mt-2"
+>
+  <h2 class="text-xl font-bold mb-4">Instructor</h2>
+  <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
+    <img
+      :src="course.instructor.imageUrl"
+      alt="Instructor"
+      class="w-24 h-24 rounded-full border-4 border-white mx-auto sm:mx-0"
+    />
+    <div class="text-center sm:text-left">
+      <p class="text-2xl font-semibold">{{ course.instructor.name }}</p>
+      <p class="mb-2">{{ course.instructor.title }}</p>
+      <p>{{ course.instructor.bio }}</p>
+      <a
+        :href="course.instructor.website"
+        class="block mt-4 text-sm underline"
+        >Visit Instructor's Website</a
+      >
+    </div>
+  </div>
+</section>
+
   </main>
 </template>
 
@@ -141,7 +162,8 @@ export default {
       isLoggedIn: false,
       course: {
         name: 'Job Searching with ChatGPT',
-        description: 'Learn how to use ChatGPT to optimize your job search and land your dream job!',
+        description:
+          'Learn how to use ChatGPT to optimize your job search and land your dream job!',
         instructor: {
           name: 'John Doe',
           title: 'Senior Vue.js Developer',
@@ -150,7 +172,7 @@ export default {
           website: 'https://johndoe.com',
         },
         learnings: [
-          'What ChatGPT Can and Can\'t Do',
+          "What ChatGPT Can and Can't Do",
           'Job Description Parsing Strategies',
           'Resume Optimization',
           'Cover Letter Optimization',
