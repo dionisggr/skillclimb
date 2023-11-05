@@ -2,7 +2,9 @@
   <div class="bg-gray-10 min-h-screen pb-1">
     <!-- Video Content Header -->
     <div class="text-center py-6 px-6 bg-blue-500 text-white space-y-4">
-      <h1 class="text-3xl lg:text-4xl font-extrabold">Video Content Creation</h1>
+      <h1 class="text-3xl lg:text-4xl font-extrabold">
+        Video Content Creation
+      </h1>
       <p class="text-blue-100">
         Enhance your videos with modern AI technologies.
       </p>
@@ -23,7 +25,10 @@
           </button>
           <button
             :class="{ 'bg-blue-500': mode, 'bg-gray-200': !mode }"
-            @click="mode = true"
+            @click="
+              mode = true;
+              setupVideoFeed();
+            "
             class="px-4 py-2 rounded-r-xl text-white"
           >
             Record
@@ -111,7 +116,7 @@
               ></video>
             </div>
 
-            <div class="mt-4 flex items-center">
+            <div class="mt-4 flex items-center px-8">
               <button
                 @click="changeMode('user')"
                 :class="{
@@ -146,6 +151,21 @@
                 >
                   <img :src="image" class="w-full h-full object-cover" />
                 </div>
+              </div>
+              <!-- Blinking Recording Notification -->
+              <div
+                v-if="mediaRecorder && mediaRecorder.state === 'recording'"
+                class="flex justify-center items-center my-4 ml-auto space-x-2"
+              >
+                <!-- Blinking Dot -->
+                <div
+                  class="w-3 h-3 bg-red-500 rounded-full animate-pulse"
+                ></div>
+
+                <!-- Recording Label -->
+                <span class="text-sm text-gray-700 font-semibold"
+                  >Recording</span
+                >
               </div>
             </div>
 
@@ -206,7 +226,7 @@
 
             <div class="flex justify-center items-center my-4 mb-12 mt-8">
               <button
-                v-if="!stream && !recording"
+                v-if="!mediaRecorder || mediaRecorder.state !== 'recording'"
                 @click="startRecording"
                 class="min-w-fit px-5 py-2 w-1/3 mx-auto block bg-green-500 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors"
               >
@@ -222,17 +242,18 @@
               </button>
 
               <button
-                v-if="stream || videoURL || whiteboardURL"
+                v-if="mediaRecorder && mediaRecorder.state === 'recording'"
                 @click="stopRecording"
-                class="px-5 py-2 w-1/3 mx-auto block text-white rounded-lg shadow-md hover:bg-red-700 transition-colors h-fit"
-                :class="{
-                  'bg-red-500': !(whiteboardURL || videoURL),
-                  'bg-indigo-500 w-fit': whiteboardURL || videoURL,
-                }"
+                class="px-5 py-2 w-1/3 mx-auto block text-white rounded-lg shadow-md hover:bg-red-700 transition-colors h-fit bg-red-500"
               >
-                {{
-                  videoURL || whiteboardURL ? 'Save As...' : 'Stop Recording'
-                }}
+                Stop Recording
+              </button>
+              <button
+                v-if="videoURL || whiteboardURL"
+                @click="saveRecording"
+                class="px-5 py-2 mx-auto block text-white rounded-lg shadow-md hover:bg-red-700 transition-colors h-fit bg-indigo-500 w-fit"
+              >
+                Save As...
               </button>
             </div>
           </div>
@@ -668,6 +689,33 @@ export default {
       }
     },
 
+    async setupVideoFeed() {
+      if (this.stream) {
+        this.stream.getTracks().forEach((track) => track.stop());
+      }
+
+      try {
+        this.stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+        });
+
+        const videoElem =
+          this.recordingMode === 'user'
+            ? this.$refs.fullFrameVideo
+            : this.$refs.whiteboardVideo;
+        videoElem.srcObject = this.stream;
+
+        await this.$nextTick(this.updateCanvasSize);
+
+        if (this.recordingMode === 'whiteboard') {
+          await this.$nextTick();
+          this.recordCanvas(true); // Pass true to indicate setup mode
+        }
+      } catch (error) {
+        console.error('Error accessing camera:', error);
+      }
+    },
+
     async startRecording() {
       if (this.stream) {
         this.stream.getTracks().forEach((track) => track.stop());
@@ -704,6 +752,7 @@ export default {
         console.error('Error accessing camera:', error);
       }
     },
+
     stopRecording() {
       this.recording = false;
 
@@ -727,7 +776,24 @@ export default {
       this.chunks = []; // Clear the current chunks as they've been appended to the previous chunks
     },
 
-    recordCanvas() {
+    saveRecording() {
+          // Check if there is a URL to save
+    if (this.videoURL || this.whiteboardURL) {
+      // Create an anchor element
+      const link = document.createElement('a');
+      // Set the href to the URL of the video or whiteboard
+      link.href = this.videoURL || this.whiteboardURL;
+      // Set the download attribute to suggest a filename
+      link.download = this.videoURL ? 'recording.mp4' : 'whiteboard.png'; // Choose appropriate file extensions
+      // Append the link to the body
+      document.body.appendChild(link);
+      // Trigger the download
+      link.click();
+      // Remove the link from the document
+      document.body.removeChild(link);
+    }
+    },
+    recordCanvas(isSetupMode = false) {
       const composedCanvas = document.createElement('canvas');
       const composedContext = composedCanvas.getContext('2d');
       const whiteboardCanvas = this.$refs.whiteboardCanvas;
@@ -806,22 +872,25 @@ export default {
 
       const stream = composedCanvas.captureStream(25); // Capture at 25 fps
 
-      this.mediaRecorder = new MediaRecorder(stream, {
-        mimeType: 'video/webm; codecs=vp9',
-      });
+      if (!isSetupMode) {
+        // Start recording only if it's not setup mode
+        this.mediaRecorder = new MediaRecorder(stream, {
+          mimeType: 'video/webm; codecs=vp9',
+        });
 
-      this.mediaRecorder.ondataavailable = (event) => {
-        this.chunks.push(event.data);
-      };
+        this.mediaRecorder.ondataavailable = (event) => {
+          this.chunks.push(event.data);
+        };
 
-      this.mediaRecorder.onstop = () => {
-        clearInterval(this.drawInterval); // Stop drawing when recording stops
-        const blob = new Blob(this.chunks, { type: 'video/webm' });
-        this.whiteboardURL = URL.createObjectURL(blob);
-        this.chunks = []; // Clear the chunks for next recording
-      };
+        this.mediaRecorder.onstop = () => {
+          clearInterval(this.drawInterval); // Stop drawing when recording stops
+          const blob = new Blob(this.chunks, { type: 'video/webm' });
+          this.whiteboardURL = URL.createObjectURL(blob);
+          this.chunks = []; // Clear the chunks for next recording
+        };
 
-      this.mediaRecorder.start(); // Start recording
+        this.mediaRecorder.start(); // Start recording
+      }
     },
     async changeMode(newMode) {
       if (this.recordingMode === newMode) {
@@ -829,26 +898,44 @@ export default {
         return;
       }
 
+      // Stop previous recording if any
+      if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
+        this.stopRecording();
+      }
+
       this.recordingMode = newMode;
 
-      if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
-        await this.pauseRecording(); // Pause the recording before changing the mode
+      // Reinitialize the stream for the new mode
+      try {
+        this.stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+        });
 
-        if (this.stream) {
-          const videoElem =
-            this.recordingMode === 'user'
-              ? this.$refs.fullFrameVideo
-              : this.$refs.whiteboardVideo;
-          videoElem.srcObject = this.stream;
-        }
+        const videoElem =
+          this.recordingMode === 'user'
+            ? this.$refs.fullFrameVideo
+            : this.$refs.whiteboardVideo;
+        videoElem.srcObject = this.stream;
 
+        // Update the canvas size for the whiteboard
         if (this.recordingMode === 'whiteboard') {
           await this.$nextTick(this.updateCanvasSize);
-          // await this.$nextTick();
-          this.recordCanvas();
+          // Initialize the composite video setup
+          this.initCompositeVideo();
         }
+      } catch (error) {
+        console.error('Error accessing camera:', error);
+      }
+    },
 
-        await this.pauseRecording(); // Resume the recording after changing the mode
+    // New function to initialize the composite video setup
+    initCompositeVideo() {
+      if (this.recordingMode !== 'whiteboard') {
+        return;
+      }
+
+      if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
+        this.recordCanvas();
       }
     },
 
@@ -1036,5 +1123,16 @@ export default {
 /* Style for the toggle buttons */
 button {
   transition: background-color 0.3s ease-in-out;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.blinking {
+  animation: blink 1s linear infinite;
+  color: red;
 }
 </style>
