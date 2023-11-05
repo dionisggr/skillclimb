@@ -1,6 +1,6 @@
 <template>
   <div
-    class="mt-8 bg-white p-6 rounded-lg shadow-md transition-all duration-300 transform"
+    class="mt-2 bg-white p-6 rounded-lg shadow-md transition-all duration-300 transform"
   >
     <div class="flex justify-between items-center mb-6">
       <h5 class="font-semibold text-lg">Question 1: {{ current.prompt }}</h5>

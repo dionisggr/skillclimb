@@ -70,13 +70,13 @@
           <!-- Coming Soon Overlay for first 2 courses -->
           <div
             v-if="index > 1"
-            class="absolute rounded-xl top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 flex items-center justify-center"
+            class="absolute rounded-xl top-0 left-0 right-0 bottom-0 bg-black bg-opacity-30 flex items-center justify-center"
           >
             <span class="text-white font-bold text-xl">Coming Soon</span>
           </div>
 
           <!-- Progress Indicator for the third course -->
-          <div v-if="isLoggedIn && !index" class="absolute top-2 right-2">
+          <div v-if="isLoggedIn && !index" class="ml-auto mb-2">
             <span
               class="text-yellow-600 font-semibold text-sm bg-yellow-200 px-2 py-1 rounded-full"
             >
@@ -94,13 +94,13 @@
                 />
               </div>
               <div class="flex-1 flex items-center">
-                <h3 class="text-lg font-semibold mb-1 line-clamp-2">
+                <h3 class="w-11/12 text-base font-semibold mb-1 md:text-lg">
                   {{ course.title }}
                 </h3>
               </div>
             </div>
             <!-- Course Duration -->
-            <div class="duration-block flex items-end border-solid ml-2">
+            <div class="duration-block flex flex-col items-center text-center border-solid ml-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-6 w-6 mr-1"

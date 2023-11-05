@@ -1,15 +1,64 @@
 <template>
   <!-- Main Content -->
-  <main class="flex p-4" v-if="selectedNavItem === 'home'">
+  <main class="flex lg:p-4" v-if="selectedNavItem === 'home'">
     <!-- Sidebar -->
+    <button
+      @click="toggleSidebar"
+      class="lg:hidden fixed bottom-12 left-8 z-30 flex items-center justify-center h-14 w-14 rounded-full bg-blue-500 shadow-xl text-white"
+    >
+      <!-- Menu Icon -->
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="feather feather-menu"
+      >
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
+
+    <!-- Sidebar Content -->
     <aside
-      class="max-w-[325px] overflow-y-auto rounded bg-white p-4 shadow-md"
+      :class="
+        sidebarOpen ? 'translate-x-0 ease-out' : '-translate-x-full ease-in'
+      "
+      class="w-11/12 max-w-[325px] mt-16 pt-12 fixed inset-y-0 left-0 transform overflow-y-auto bg-white p-4 shadow-md transition duration-300 z-40 lg:relative lg:translate-x-0 lg:block lg:mt-0 lg:w-full"
     >
       <h2
-        class="mb-6 text-center text-lg font-bold border border-solid rounded-md p-1"
+        class="mb-6 text-center text-lg font-bold border border-solid rounded-md p-1 absolute top-3 w-3/4 lg:w-11/12"
       >
         Course Modules
       </h2>
+      <!-- Close Button (Visible only on mobile) -->
+      <button
+        @click="toggleSidebar"
+        class="lg:hidden absolute top-4 right-4 flex items-center justify-center h-8 w-8 rounded-full bg-gray-200"
+      >
+        <!-- Close Icon -->
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="feather feather-x"
+        >
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
 
       <!-- Sidebar Video Lessons -->
       <a
@@ -46,9 +95,11 @@
     </aside>
 
     <!-- Course Content -->
-    <section class="ml-4 w-3/4 rounded bg-white p-5 pb-0 shadow-md relative">
+    <section
+      class="w-full md:w-3/4 rounded bg-white p-5 pb-0 shadow-md relative lg:ml-4"
+    >
       <div class="flex items-center text-sm mb-2">
-        <a href="#" class="hover:underline hover:text-blue-500">{{
+        <a href="#" class="hover:underline hover:text-blue-500 font-medium">{{
           course.name
         }}</a>
         <chevron-right size="20" class="mx-1" />
@@ -57,20 +108,22 @@
       <h2 class="text-2xl font-bold m-1 mt-4">{{ currentLesson.title }}</h2>
 
       <!-- Course Video and Right Section -->
-      <div class="mb-6 flex min-w-[700px]">
+      <div class="mb-6 flex flex-col md:flex-row">
         <iframe
           src="https://www.youtube.com/embed/o5MutYFWsM8?si=fgz694AFm8ol7rae"
           title="YouTube video player"
           frameborder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowfullscreen
-          class="w-full h-auto"
+          class="h-52 rounded-2xl w-full md:h-auto mb-4 md:mb-0"
         ></iframe>
 
         <!-- Right Section: Video Description and Topics -->
-        <div class="ml-4 flex w-2/5 flex-col space-y-4">
+        <div
+          class="flex-grow ml-0 md:ml-4 flex w-full md:w-2/5 flex-col space-y-4"
+        >
           <!-- Video Topics -->
-          <div class="h-[400px] flex-grow overflow-y-auto">
+          <div class="h-[400px] overflow-y-auto">
             <p class="mb-2 font-semibold text-lg text-gray-800">
               Module Lessons:
             </p>
@@ -97,9 +150,7 @@
                   </p>
                 </div>
                 <div class="inline-block w-2/3">
-                  <p class="text-sm font-bold ml-1">
-                    {{ lesson.title }}
-                  </p>
+                  <p class="text-sm font-bold ml-1">{{ lesson.title }}</p>
                   <div
                     class="relative h-2 w-full rounded-full bg-gray-300 mt-2 mb-2"
                   >
@@ -143,9 +194,9 @@
       </div>
 
       <!-- General Information Section -->
-      <div class="bg-gray-100 p-6 mb-6 rounded-lg shadow-lg relative">
+      <div class="bg-gray-100 p-2 lg:p-6 mb-6 rounded-lg shadow-lg relative">
         <!-- Back Button and Subtopic Name Wrapper -->
-        <div class="flex items-center mb-4">
+        <div class="flex items-center mb-4 flex-wrap m-3">
           <!-- Back Button -->
           <button
             v-if="selectedSubtopic.name"
@@ -159,8 +210,11 @@
           <h3 v-if="!selectedSubtopic.name" class="text-3xl font-semibold mb-2">
             General Information
           </h3>
+
           <!-- Toggle Buttons -->
-          <div class="mb-4 space-x-2 flex justify-center ml-auto">
+          <div
+            class="mt-4 lg:mt-0 mb-4 space-x-4 overflow-x-auto no-scrollbar lg:overflow-visible flex lg:justify-center ml-auto p-1 px-2"
+          >
             <button
               @click="setOption('Simplified')"
               :class="
@@ -168,7 +222,7 @@
                   ? 'bg-yellow-500 text-white ring-2 ring-yellow-300 ring-offset-1 shadow-2xl scale-105'
                   : 'bg-yellow-200 text-yellow-800 scale-100'
               "
-              class="px-6 py-2 rounded-full font-semibold text-sm transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50 hover:shadow-md transform hover:-translate-y-1 hover:scale-105"
+              class="px-6 py-2 rounded-full font-semibold text-sm transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50 hover:shadow-md transform hover:-translate-y-1 hover:scale-105 whitespace-nowrap"
             >
               Simplified
             </button>
@@ -179,7 +233,7 @@
                   ? 'bg-blue-500 text-white ring-2 ring-blue-300 ring-offset-1 shadow-2xl scale-105'
                   : 'bg-blue-200 text-blue-800 scale-100'
               "
-              class="px-6 py-2 rounded-full font-semibold text-sm transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 hover:shadow-md transform hover:-translate-y-1 hover:scale-105"
+              class="px-6 py-2 rounded-full font-semibold text-sm transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 hover:shadow-md transform hover:-translate-y-1 hover:scale-105 whitespace-nowrap"
             >
               Explore
             </button>
@@ -190,7 +244,7 @@
                   ? 'bg-green-500 text-white ring-2 ring-green-300 ring-offset-1 shadow-2xl scale-105'
                   : 'bg-green-200 text-green-800 scale-100'
               "
-              class="px-6 py-2 rounded-full font-semibold text-sm transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 hover:shadow-md transform hover:-translate-y-1 hover:scale-105"
+              class="min-w-fit px-6 py-2 rounded-full font-semibold text-sm transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 hover:shadow-md transform hover:-translate-y-1 hover:scale-105 whitespace-nowrap"
             >
               For You
             </button>
@@ -201,7 +255,7 @@
                   ? 'bg-red-500 text-white ring-2 ring-red-300 ring-offset-1 shadow-2xl scale-105'
                   : 'bg-red-200 text-red-800 scale-100'
               "
-              class="px-6 py-2 rounded-full font-semibold text-sm transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 hover:shadow-md transform hover:-translate-y-1 hover:scale-105"
+              class="px-6 py-2 rounded-full font-semibold text-sm transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 hover:shadow-md transform hover:-translate-y-1 hover:scale-105 whitespace-nowrap"
             >
               Examples
             </button>
@@ -316,7 +370,7 @@
           <span
             v-for="subtopic in generatedSubtopics"
             :key="subtopic.name"
-            class="cursor-pointer bg-green-200 text-green-800 rounded-full px-4 py-1.5 hover:bg-green-300 transition-all duration-300 shadow-md hover:shadow-lg"
+            class="cursor-pointer text-sm md:text-base bg-green-200 text-green-800 rounded-full px-4 py-1.5 hover:bg-green-300 transition-all duration-300 shadow-md hover:shadow-lg"
             @click="selectedSubtopic = { name: subtopic.name, options: [] }"
           >
             {{ subtopic.name }}
@@ -377,23 +431,27 @@
           <h3 class="ml-2 text-2xl font-semibold">Mini-Practice</h3>
         </div>
 
-        <div class="mt-4 grid grid-cols-3 gap-4">
-          <div
-            v-for="practice in practices"
-            :key="practice.title"
-            class="h-fit w-full rounded-lg border p-4 shadow-sm transition-shadow duration-300 hover:shadow-md"
-            :class="{
-              'bg-blue-100 border-blue-300 shadow-md':
-                selectedPractice?.title === practice.title,
-            }"
-            @click="selectedPractice = practice"
-          >
-            <h4 class="text-sm font-bold">{{ practice.title }}</h4>
-            <p class="text-xs my-2 italic">{{ practice.description }}</p>
-            <p class="text-xs font-bold">
-              {{ practice.exerciseCount }} exercises
-            </p>
-          </div>
+        <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <template v-for="practice in practices">
+            <div
+              v-if="
+                !selectedPractice || selectedPractice?.title === practice.title
+              "
+              :key="practice.title"
+              class="h-fit w-full rounded-lg border p-4 shadow-sm transition-shadow duration-300 hover:shadow-md"
+              :class="{
+                'bg-blue-100 border-blue-300 shadow-md':
+                  selectedPractice?.title === practice.title,
+              }"
+              @click="togglePractice(practice)"
+            >
+              <h4 class="text-sm font-bold">{{ practice.title }}</h4>
+              <p class="text-xs my-2 italic">{{ practice.description }}</p>
+              <p class="text-xs font-bold">
+                {{ practice.exerciseCount }} exercises
+              </p>
+            </div>
+          </template>
         </div>
 
         <Practice :name="selectedPractice?.title" />
@@ -1693,7 +1751,7 @@ export default {
         },
         {
           id: 2,
-          name: 'What\'s the possibility of an AI takeover?',
+          name: "What's the possibility of an AI takeover?",
           supplementalInfo: 'Lorem ipsum',
         },
         // ... more generated subtopics
@@ -1907,6 +1965,7 @@ export default {
       submittedOption: null,
       selectedModule: {},
       openSubtopics: [],
+      sidebarOpen: false,
     };
   },
   computed: {
@@ -1924,6 +1983,9 @@ export default {
     },
   },
   methods: {
+    toggleSidebar() {
+      this.sidebarOpen = !this.sidebarOpen;
+    },
     toggleSection(index) {
       this.sections[index].show = !this.sections[index].show;
     },
@@ -2019,6 +2081,15 @@ export default {
     },
     setOption(selectedOption) {
       this.selectedInformation = selectedOption;
+    },
+    togglePractice(practice) {
+      if (this.selectedPractice?.title === practice?.title) {
+        this.showPractice = false;
+        this.selectedPractice = null;
+      } else {
+        this.showPractice = true;
+        this.selectedPractice = practice;
+      }
     },
   },
 };

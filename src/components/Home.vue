@@ -72,7 +72,7 @@
       </transition>
     </section>
 
-    <section class="py-8 pb-12 lg:py-12 w-full px-4 max-w-xl lg:max-w-4xl mx-auto">
+    <section class="p-10 lg:py-12 w-full px-4 max-w-xl lg:max-w-4xl mx-auto">
       <h2 class="text-2xl lg:text-4xl font-bold text-center mb-4 lg:mb-8">
         Who We Are
       </h2>
@@ -97,7 +97,7 @@
       id="popular-learning-paths"
     >
       <h2 class="text-2xl lg:text-4xl font-bold text-center mb-8 lg:mb-12">
-        Popular Learning Paths
+        Learning Paths
       </h2>
       <div
         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-8 justify-center max-w-screen-xl mx-auto"

@@ -649,7 +649,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 /* Custom styling for hover, color, and shadow effects */
 .video-lesson {
   transition: transform 0.3s ease, background-color 0.3s ease;
@@ -718,4 +718,13 @@ export default {
 .line-through {
   text-decoration: line-through;
 }
+
+::-webkit-scrollbar {
+    display: none; /* for Chrome, Safari, and Opera */
+  }
+  
+  * {
+    -ms-overflow-style: none;  /* for Internet Explorer, Edge */
+    scrollbar-width: none;  /* for Firefox */
+  }
 </style>

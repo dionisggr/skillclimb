@@ -1,7 +1,7 @@
 <template>
   <div class="bg-gray-10 min-h-screen pb-1">
     <!-- Video Content Header -->
-    <div class="text-center py-10 px-6 bg-blue-500 text-white space-y-4">
+    <div class="text-center py-6 px-6 bg-blue-500 text-white space-y-4">
       <h1 class="text-3xl lg:text-4xl font-extrabold">Video Content Creation</h1>
       <p class="text-blue-100">
         Enhance your videos with modern AI technologies.
@@ -9,9 +9,9 @@
     </div>
 
     <!-- Main Content Area -->
-    <div class="container mx-auto px-4 max-w-screen-xl mt-4">
+    <div class="container mx-auto max-w-screen-xl mt-4 lg:px-4">
       <!-- Video Upload & Details -->
-      <div class="bg-white p-4 rounded-xl shadow-lg mb-10 lg:p-6">
+      <div class="bg-white p-6 rounded-xl shadow-lg mb-10 lg:p-6">
         <!-- Video Mode Selection -->
         <div class="mb-6 text-center">
           <button
@@ -35,7 +35,7 @@
         >
           <!-- Upload Mode -->
           <div v-if="!mode" class="flex-1">
-            <video class="w-full min-h-44 lg:h-96 rounded-xl" controls></video>
+            <video class="w-full h-52 lg:h-96 rounded-xl" controls></video>
             <div
               class="mt-2 flex flex-col items-center justify-between lg:flex-row"
             >
@@ -119,7 +119,6 @@
                   'bg-blue-500': recordingMode === 'user',
                 }"
                 class="px-4 py-2 text-white rounded-l-lg h-fit"
-                :disabled="stream"
               >
                 Full Frame
               </button>
@@ -138,7 +137,7 @@
               <!-- Thumbnails Container -->
               <div
                 v-if="recording && backgroundImageURLs.length"
-                class="mt-4 flex overflow-x-auto w-fit mx-auto ml-auto mr-0"
+                class="mt-4 flex overflow-x-auto w-fit mx-auto ml-auto mr-0 hide-scrollbar"
               >
                 <div
                   v-for="(image, index) in backgroundImageURLs"
@@ -174,7 +173,7 @@
               <div class="flex items-center space-x-2">
                 <!-- Upload Canvas Button -->
                 <label
-                  class="block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 cursor-pointer rounded-lg"
+                  class="min-w-fit block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 cursor-pointer rounded-lg"
                 >
                   Upload Canvas
                   <input
@@ -209,7 +208,7 @@
               <button
                 v-if="!stream && !recording"
                 @click="startRecording"
-                class="px-5 py-2 w-1/3 mx-auto block bg-green-500 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors"
+                class="min-w-fit px-5 py-2 w-1/3 mx-auto block bg-green-500 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors"
               >
                 {{ videoURL || whiteboardURL ? 'Resume' : 'Start' }} Recording
               </button>

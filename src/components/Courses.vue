@@ -17,7 +17,7 @@
           class="w-full p-3 rounded-md shadow-md"
         />
 
-        <div class="mt-4 flex space-x-2 pb-1.5 overflow-x-scroll">
+        <div class="mt-4 flex space-x-2 pb-1.5 overflow-x-scroll hide-scrollbar">
           <button
             v-for="category in mainCategories"
             :key="category"
@@ -39,7 +39,7 @@
       <div v-for="subCategory in getFilteredSubCategories()" :key="subCategory">
         <h2 class="text-2xl font-semibold p-4">{{ subCategory }}</h2>
 
-        <div class="p-4 flex overflow-x-auto space-x-4">
+        <div class="p-4 flex overflow-x-auto space-x-4 hide-scrollbar">
           <div
             v-for="course in getFilteredCourses(subCategory)"
             :key="course.id"
