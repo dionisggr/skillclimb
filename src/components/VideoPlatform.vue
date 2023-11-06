@@ -75,6 +75,19 @@
 
           <!-- Record Mode -->
           <div v-if="mode" class="flex-1">
+            <!-- Teleprompter Overlay -->
+            <div v-if="showTeleprompter" class="fixed -top-4 left-0 right-0 z-50 text-3xl w-1/3 mx-auto">
+              <div class="text-center p-4">
+                <div
+                  class="bg-black bg-opacity-80 text-white h-screen overflow-y-auto p-4 space-y-16"
+                >
+                  <!-- Scrollable prompter text goes here -->
+                  <p v-for="data in teleprompterData">
+                    {{ data }}
+                  </p>
+                </div>
+              </div>
+            </div>
             <!-- User Full Frame Mode -->
             <video
               v-show="recordingMode === 'user' && stream"
@@ -636,7 +649,61 @@ export default {
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis, vero?',
               tags: ['tag1', 'tag2'],
               transcript:
-                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis, vero?',
+                [
+                    `Ladies and Gentlemen, Good evening! Thank you for being here
+                    with us today. As I stand before you, I am reminded of the
+                    incredible journey that has led us to this moment. It is a
+                    story marked by perseverance, innovation, and the relentless
+                    pursuit of excellence.`,
+                    
+                    `But before we delve into the heart of our
+                    discussion, let's take a moment to reflect on the immense
+                    beauty that surrounds us. Look around you, the exquisite
+                    blend of architecture and nature, the harmonious coexistence
+                    of the past and the present. It's a testament to what we, as
+                    a society, can achieve when we work together in unison.`,
+                    
+                    `Now, let's pivot to the core of our conversation
+                    tonight. We are at the cusp of a technological renaissance.
+                    The world as we know it is transforming at an unprecedented
+                    pace. Technologies that were once relegated to the realms of
+                    science fiction are now becoming a part of our everyday
+                    lives. Artificial intelligence is revolutionizing
+                    industries, biotechnology is unlocking the secrets of life,
+                    and space exploration is expanding the very boundaries of
+                    our world. `,
+                    `However, with great power comes great
+                    responsibility. We must tread this path with a keen sense of
+                    ethics and a profound respect for the planet that we call
+                    home. It is imperative that we harness these advancements
+                    not just for economic prosperity but also for the betterment
+                    of humanity as a whole. `,
+                    `As we forge ahead, let
+                    us not forget the lessons of history. Time and again, it has
+                    been shown that collaboration and understanding are the
+                    cornerstones of progress. In this global village, our fates
+                    are intertwined like never before. It is by embracing our
+                    diversity, by listening and learning from each other, that
+                    we can solve the most complex challenges that lie ahead.`,
+                    
+                    `I want to leave you with a thought. Each one of
+                    us has the power to make a difference. It doesn't matter how
+                    small our actions might seem, for it's the smallest of
+                    pebbles that creates the most beautiful ripples. So, I urge
+                    you all to take that step, to be the change you wish to see
+                    in the world. `,
+                    `In conclusion, as we look towards
+                    the horizon, let's move forward with hope in our hearts and
+                    an unwavering faith in our collective potential. The future
+                    is not just something we enter, but something we create.`,
+                    
+                    `Thank you once again for your gracious presence
+                    here tonight. Let's make it an evening of fruitful
+                    discussions, meaningful connections, and an unwavering
+                    commitment to shaping a better tomorrow.`,
+                    
+                    `Goodnight, and let's continue to dream big and
+                    aspire for greatness!`,],
             },
             {
               title: 'Topic 2',
@@ -669,11 +736,19 @@ export default {
       recording: false,
       backgroundImageURLs: [],
       currentImageIndex: 0,
+      showTeleprompter: false,
     };
   },
   computed: {
     backgroundImageURL() {
       return this.backgroundImageURLs[this.currentImageIndex];
+    },
+    teleprompterData() {
+      return this.videoLessons
+        .map((lesson) => lesson.topics)
+        .flat()
+        .map((topic) => topic.transcript)
+        .flat();
     },
   },
   methods: {
@@ -711,6 +786,8 @@ export default {
           await this.$nextTick();
           this.recordCanvas(true); // Pass true to indicate setup mode
         }
+
+        document.addEventListener('keydown', this.teleprompterListener);
       } catch (error) {
         console.error('Error accessing camera:', error);
       }
@@ -774,6 +851,8 @@ export default {
 
       this.previousChunks = [...this.previousChunks, ...this.chunks]; // Append new chunks to previous chunks
       this.chunks = []; // Clear the current chunks as they've been appended to the previous chunks
+
+      document.removeEventListener('keydown', this.teleprompterListener);
     },
 
     saveRecording() {
@@ -1115,6 +1194,11 @@ export default {
       const context = canvas.getContext('2d');
       context.clearRect(0, 0, canvas.width, canvas.height);
     },
+    teleprompterListener(evt) {
+      if (evt.keyCode === 84) {
+        this.showTeleprompter = !this.showTeleprompter;
+      }
+    }
   },
 };
 </script>
