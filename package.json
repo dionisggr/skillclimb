@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ffmpeg/core": "^0.12.4",
+    "@ffmpeg/ffmpeg": "^0.12.7",
     "@mdi/font": "^7.2.96",
     "@shopify/draggable": "^1.1.1",
     "github-markdown-css": "^5.4.0",

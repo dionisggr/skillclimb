@@ -40,14 +40,146 @@
         >
           <!-- Upload Mode -->
           <div v-if="!mode" class="flex-1">
-            <video class="w-full h-52 lg:h-96 rounded-xl" controls></video>
+            <!-- Main Video Display -->
+            <div v-if="uploadedVideos.length > 0" class="mb-4">
+              <!-- Video Container with Overlays -->
+              <div class="relative">
+                <!-- Shaded Area Before the Video Starts -->
+                <div
+                  class="absolute bg-black bg-opacity-50"
+                  :style="{
+                    left: 0,
+                    right: `${100 - startPointer}%`,
+                    top: 0,
+                    bottom: 0,
+                  }"
+                ></div>
+
+                <!-- Main Video Display -->
+                <video
+                  ref="video"
+                  :src="selectedVideo.url"
+                  class="w-full h-52 lg:h-96 rounded-xl"
+                  controls
+                  preload="auto"
+                ></video>
+
+                <!-- Shaded Area After the Video Ends -->
+                <div
+                  class="absolute bg-black bg-opacity-50"
+                  :style="{
+                    left: `${endPointer}%`,
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                  }"
+                ></div>
+
+                {{ selectedVideo.duration }}
+              </div>
+              <!-- Range Slider Control -->
+              <div class="flex items-center my-4">
+                <div
+                  class="slider-container w-full h-1 bg-gray-300 relative select-none"
+                >
+                  <!-- Start Dragger -->
+                  <div
+                    class="absolute top-0 bg-blue-500 w-4 h-4 -mt-1.5 rounded-full cursor-pointer"
+                    :style="{ left: `${startPointer}%` }"
+                    @mousedown="initDrag('start')"
+                  ></div>
+
+                  <!-- End Dragger -->
+                  <div
+                    class="absolute top-0 bg-blue-500 w-4 h-4 -mt-1.5 rounded-full cursor-pointer"
+                    :style="{ left: `${endPointer}%` }"
+                    @mousedown="initDrag('end')"
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Thumbnails & Sorting -->
             <div
-              class="mt-2 flex flex-col items-center justify-between lg:flex-row"
+              v-if="uploadedVideos.length > 0"
+              class="flex space-x-2 overflow-x-auto py-2"
             >
-              <input
-                type="file"
-                class="border rounded p-2 mx-4 w-full lg:w-3/4 mr-4"
-              />
+              <div
+                v-for="(video, index) in uploadedVideos"
+                :key="video.id"
+                @click="selectVideo(index)"
+                class="flex flex-col items-center cursor-pointer"
+              >
+                <img
+                  :src="video.thumbnail"
+                  class="w-24 h-16 rounded-md"
+                  :class="{
+                    'ring-2 ring-blue-500': selectedVideo.id === video.id,
+                  }"
+                />
+                <span class="text-xs mt-1">{{ video.name }}</span>
+              </div>
+            </div>
+
+            <!-- Controls & Dropdowns (Shown after video upload) -->
+            <div
+              v-if="uploadedVideos.length > 0"
+              class="flex flex-col lg:flex-row justify-between items-center"
+            >
+              <!-- Existing dropdowns and buttons -->
+
+              <!-- New Play All and Save All buttons -->
+              <div class="flex space-x-2 mt-4 lg:mt-0">
+                <button
+                  @click="playAllVideos"
+                  class="px-4 py-2 bg-blue-500 text-white rounded-l-xl"
+                >
+                  Play All
+                </button>
+                <button
+                  @click="saveAllVideos"
+                  class="px-4 py-2 bg-green-600 text-white rounded-r-xl"
+                >
+                  Save All
+                </button>
+              </div>
+            </div>
+
+            <!-- Upload Input -->
+            <input
+              type="file"
+              multiple
+              @change="handleUpload"
+              class="border rounded p-2 mx-4 w-full lg:w-3/4 mr-4 mb-4"
+            />
+
+            <!-- Controls & Dropdowns (Shown after video upload) -->
+            <div
+              v-if="uploadedVideos.length > 0"
+              class="flex flex-col lg:flex-row"
+            >
+              <!-- Lesson & Topic Dropdowns -->
+              <div class="flex-1 space-y-2 mb-4 lg:mb-0">
+                <select
+                  v-model="selectedLesson"
+                  class="border rounded p-2 w-full"
+                >
+                  <option disabled value="">Select a Lesson</option>
+                  <option>Lesson 1</option>
+                  <option>Lesson 2</option>
+                  <option>Lesson 3</option>
+                </select>
+
+                <select
+                  v-model="selectedTopic"
+                  class="border rounded p-2 w-full"
+                >
+                  <option disabled value="">Select a Topic</option>
+                  <option>Topic 1</option>
+                  <option>Topic 2</option>
+                  <option @click="addTopic">+ Add Topic</option>
+                </select>
+              </div>
 
               <!-- Toggle between Full Course and Lesson -->
               <div class="flex space-x-2 mt-4 lg:mt-0">
@@ -72,11 +204,13 @@
               </div>
             </div>
           </div>
-
           <!-- Record Mode -->
           <div v-if="mode" class="flex-1">
             <!-- Teleprompter Overlay -->
-            <div v-if="showTeleprompter" class="fixed -top-4 left-0 right-0 z-50 text-3xl w-1/3 mx-auto">
+            <div
+              v-if="showTeleprompter"
+              class="fixed -top-4 left-0 right-0 z-50 text-3xl w-1/3 mx-auto"
+            >
               <div class="text-center p-4">
                 <div
                   class="bg-black bg-opacity-80 text-white h-screen overflow-y-auto p-4 space-y-16"
@@ -588,6 +722,13 @@ export default {
       }
     });
   },
+  updated() {
+    if (this.$refs.video) {
+      this.$refs.video.timeupdate = () => {
+        console.log(this.$refs.video.duration);
+      };
+    }
+  },
   beforeDestroy() {
     if (this.stream) {
       this.stream.getTracks().forEach((track) => track.stop());
@@ -648,22 +789,21 @@ export default {
               description:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis, vero?',
               tags: ['tag1', 'tag2'],
-              transcript:
-                [
-                    `Ladies and Gentlemen, Good evening! Thank you for being here
+              transcript: [
+                `Ladies and Gentlemen, Good evening! Thank you for being here
                     with us today. As I stand before you, I am reminded of the
                     incredible journey that has led us to this moment. It is a
                     story marked by perseverance, innovation, and the relentless
                     pursuit of excellence.`,
-                    
-                    `But before we delve into the heart of our
+
+                `But before we delve into the heart of our
                     discussion, let's take a moment to reflect on the immense
                     beauty that surrounds us. Look around you, the exquisite
                     blend of architecture and nature, the harmonious coexistence
                     of the past and the present. It's a testament to what we, as
                     a society, can achieve when we work together in unison.`,
-                    
-                    `Now, let's pivot to the core of our conversation
+
+                `Now, let's pivot to the core of our conversation
                     tonight. We are at the cusp of a technological renaissance.
                     The world as we know it is transforming at an unprecedented
                     pace. Technologies that were once relegated to the realms of
@@ -672,38 +812,39 @@ export default {
                     industries, biotechnology is unlocking the secrets of life,
                     and space exploration is expanding the very boundaries of
                     our world. `,
-                    `However, with great power comes great
+                `However, with great power comes great
                     responsibility. We must tread this path with a keen sense of
                     ethics and a profound respect for the planet that we call
                     home. It is imperative that we harness these advancements
                     not just for economic prosperity but also for the betterment
                     of humanity as a whole. `,
-                    `As we forge ahead, let
+                `As we forge ahead, let
                     us not forget the lessons of history. Time and again, it has
                     been shown that collaboration and understanding are the
                     cornerstones of progress. In this global village, our fates
                     are intertwined like never before. It is by embracing our
                     diversity, by listening and learning from each other, that
                     we can solve the most complex challenges that lie ahead.`,
-                    
-                    `I want to leave you with a thought. Each one of
+
+                `I want to leave you with a thought. Each one of
                     us has the power to make a difference. It doesn't matter how
                     small our actions might seem, for it's the smallest of
                     pebbles that creates the most beautiful ripples. So, I urge
                     you all to take that step, to be the change you wish to see
                     in the world. `,
-                    `In conclusion, as we look towards
+                `In conclusion, as we look towards
                     the horizon, let's move forward with hope in our hearts and
                     an unwavering faith in our collective potential. The future
                     is not just something we enter, but something we create.`,
-                    
-                    `Thank you once again for your gracious presence
+
+                `Thank you once again for your gracious presence
                     here tonight. Let's make it an evening of fruitful
                     discussions, meaningful connections, and an unwavering
                     commitment to shaping a better tomorrow.`,
-                    
-                    `Goodnight, and let's continue to dream big and
-                    aspire for greatness!`,],
+
+                `Goodnight, and let's continue to dream big and
+                    aspire for greatness!`,
+              ],
             },
             {
               title: 'Topic 2',
@@ -737,6 +878,14 @@ export default {
       backgroundImageURLs: [],
       currentImageIndex: 0,
       showTeleprompter: false,
+      uploadedVideos: [],
+      selectedVideo: {},
+      courseMode: 'lesson',
+      selectedLesson: '',
+      selectedTopic: '',
+      startPointer: 0,
+      endPointer: 100,
+      currentDragger: null,
     };
   },
   computed: {
@@ -752,6 +901,51 @@ export default {
     },
   },
   methods: {
+    initDrag(type) {
+      this.currentDragger = type;
+      window.addEventListener('mousemove', this.drag);
+      window.addEventListener('mouseup', this.stopDrag);
+    },
+    drag(event) {
+      const slider = this.$el.querySelector('.slider-container'); // make sure to add 'slider-container' class to your slider div
+      const sliderRect = slider.getBoundingClientRect();
+      const newPointerPosition =
+        ((event.clientX - sliderRect.left) / sliderRect.width) * 100;
+      if (
+        this.currentDragger === 'start' &&
+        newPointerPosition < this.endPointer
+      ) {
+        this.startPointer = Math.max(
+          0,
+          Math.min(newPointerPosition, this.endPointer)
+        );
+      } else if (
+        this.currentDragger === 'end' &&
+        newPointerPosition > this.startPointer
+      ) {
+        this.endPointer = Math.min(
+          100,
+          Math.max(newPointerPosition, this.startPointer)
+        );
+      }
+    },
+
+    async stopDrag() {
+      window.removeEventListener('mousemove', this.drag);
+      window.removeEventListener('mouseup', this.stopDrag);
+      this.currentDragger = null;
+      this.applyVideoClip();
+    },
+    applyVideoClip() {
+      this.selectedVideo.clipStart = this.startPointer / 100;
+      this.selectedVideo.clipEnd = this.endPointer / 100;
+      const videoElement = this.$refs.video;
+
+      if (!videoElement || videoElement.duration == Infinity) return;
+
+      videoElement.currentTime =
+        (this.startPointer / 100) * videoElement.duration;
+    },
     async pauseRecording() {
       if (!this.mediaRecorder) return;
 
@@ -856,21 +1050,21 @@ export default {
     },
 
     saveRecording() {
-          // Check if there is a URL to save
-    if (this.videoURL || this.whiteboardURL) {
-      // Create an anchor element
-      const link = document.createElement('a');
-      // Set the href to the URL of the video or whiteboard
-      link.href = this.videoURL || this.whiteboardURL;
-      // Set the download attribute to suggest a filename
-      link.download = this.videoURL ? 'recording.mp4' : 'whiteboard.png'; // Choose appropriate file extensions
-      // Append the link to the body
-      document.body.appendChild(link);
-      // Trigger the download
-      link.click();
-      // Remove the link from the document
-      document.body.removeChild(link);
-    }
+      // Check if there is a URL to save
+      if (this.videoURL || this.whiteboardURL) {
+        // Create an anchor element
+        const link = document.createElement('a');
+        // Set the href to the URL of the video or whiteboard
+        link.href = this.videoURL || this.whiteboardURL;
+        // Set the download attribute to suggest a filename
+        link.download = this.videoURL ? 'recording.mp4' : 'whiteboard.png'; // Choose appropriate file extensions
+        // Append the link to the body
+        document.body.appendChild(link);
+        // Trigger the download
+        link.click();
+        // Remove the link from the document
+        document.body.removeChild(link);
+      }
     },
     recordCanvas(isSetupMode = false) {
       const composedCanvas = document.createElement('canvas');
@@ -1198,7 +1392,104 @@ export default {
       if (evt.keyCode === 84) {
         this.showTeleprompter = !this.showTeleprompter;
       }
-    }
+    },
+    async handleUpload(event) {
+      const files = event.target.files;
+      for (let i = 0; i < files.length; i++) {
+        const videoFile = files[i];
+
+        const video = document.createElement('video');
+        video.preload = 'metadata';
+        const thumbnail = URL.createObjectURL(videoFile); // Mock thumbnail
+        this.uploadedVideos.push({
+          id: Date.now() + i, // Mock ID
+          name: videoFile.name,
+          url: thumbnail,
+          thumbnail: thumbnail,
+          clipStart: 0,
+          clipEnd: 1,
+        });
+      }
+      this.selectVideo(0); // Select the first video by default
+
+      // Reset the input value so that the same file can be uploaded again
+      event.target.value = '';
+
+      await this.$nextTick(() => {
+        const videoElement = this.$refs.video;
+        videoElement.currentTime = 0.5;
+        console.log(videoElement.duration);
+
+        const onTimeUpdate = () => {
+          if (!videoElement?.duration) return;
+
+          if (
+            videoElement.currentTime >=
+            this.selectedVideo.clipEnd * videoElement.duration
+          ) {
+            videoElement.pause(); // Pause the video if it reaches the end pointer
+            videoElement.currentTime = 0;
+          }
+
+          if (
+            videoElement.currentTime <
+            this.selectedVideo.clipStart * videoElement.duration
+          ) {
+            videoElement.currentTime =
+              this.selectedVideo.clipStart * videoElement.duration;
+          }
+        };
+
+        videoElement.addEventListener('timeupdate', onTimeUpdate);
+      });
+    },
+    async selectVideo(index) {
+      this.selectedVideo = this.uploadedVideos[index];
+
+      this.startPointer = this.selectedVideo.clipStart * 100;
+      this.endPointer = this.selectedVideo.clipEnd * 100;
+
+      await this.$nextTick(() => {
+        const videoElement = this.$refs.video;
+        videoElement.src = this.selectedVideo.url; // Set the video source to the selected video
+        videoElement.load(); // Load the new video source
+      });
+
+      await this.$nextTick(() => {
+        console.log(this.$refs.video);
+      });
+    },
+    addTopic() {
+      // Logic to add a new topic
+    },
+    playAllVideos() {
+      let currentVideoIndex = 0;
+      const videoElement = this.$refs.video;
+
+      const playNextVideo = () => {
+        if (currentVideoIndex < this.uploadedVideos.length) {
+          this.selectVideo(currentVideoIndex);
+
+          // Wait for the video to be ready before playing
+          const onCanPlay = () => {
+            videoElement.play();
+            videoElement.removeEventListener('canplay', onCanPlay);
+          };
+          videoElement.addEventListener('canplay', onCanPlay);
+        }
+      };
+
+      videoElement.onended = () => {
+        currentVideoIndex++;
+        if (currentVideoIndex < this.uploadedVideos.length) {
+          playNextVideo();
+        } else {
+          videoElement.onended = null; // Remove the event listener when done
+        }
+      };
+
+      playNextVideo();
+    },
   },
 };
 </script>
