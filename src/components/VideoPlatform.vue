@@ -323,7 +323,35 @@
                 controls
                 :src="videoURL"
               ></video>
+
+              <!-- Slider for selecting start and end times -->
+              <div class="mt-4 relative">
+                <input
+                  type="range"
+                  id="slider-start"
+                  min="0"
+                  max="100"
+                  value="25"
+                  class="slider absolute w-full h-2 bg-transparent pointer-events-none appearance-none z-20"
+                />
+                <input
+                  type="range"
+                  id="slider-end"
+                  min="0"
+                  max="100"
+                  value="75"
+                  class="slider absolute w-full h-2 bg-transparent pointer-events-none appearance-none z-10"
+                />
+                <div
+                  class="slider-track absolute bg-gray-300 h-2 w-full z-0"
+                ></div>
+                <div
+                  id="slider-range"
+                  class="slider-range absolute bg-blue-500 h-2 z-10"
+                ></div>
+              </div>
             </div>
+
             <div v-if="whiteboardURL" class="mt-4">
               <h4 class="text-lg font-medium text-gray-700 mb-2">
                 Whiteboard Preview:
@@ -375,17 +403,11 @@
               <button
                 v-if="!mediaRecorder || mediaRecorder.state !== 'recording'"
                 @click="startRecording"
-                class="min-w-fit px-5 py-2 w-1/3 mx-auto block bg-green-500 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors"
+                class="min-w-fit px-5 py-2 w-1/3 mx-auto block bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition-colors"
               >
-                {{ videoURL || whiteboardURL ? 'Resume' : 'Start' }} Recording
-              </button>
-
-              <button
-                v-if="recording"
-                @click="pauseRecording"
-                class="mt-4 px-5 py-2 w-1/3 mx-auto block bg-yellow-500 text-white rounded-lg shadow-md hover:bg-yellow-700 transition-colors"
-              >
-                {{ paused ? 'Resume Recording' : 'Pause Recording' }}
+                {{
+                  videoURL || whiteboardURL ? 'Start Over' : 'Start Recording'
+                }}
               </button>
 
               <button
@@ -395,313 +417,15 @@
               >
                 Stop Recording
               </button>
-              <button
-                v-if="videoURL || whiteboardURL"
-                @click="saveRecording"
-                class="px-5 py-2 mx-auto block text-white rounded-lg shadow-md hover:bg-red-700 transition-colors h-fit bg-indigo-500 w-fit"
-              >
-                Save As...
-              </button>
-            </div>
-          </div>
-
-          <!-- AI-related Features and Options -->
-          <div class="flex flex-col space-y-4 w-full lg:w-1/3">
-            <div class="text-lg font-medium text-gray-700 mb-2">
-              AI Features:
-            </div>
-            <button
-              @click="autoEnhance"
-              class="px-5 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors"
-            >
-              AI Auto Enhance
-            </button>
-            <button
-              @click="aiTranscription"
-              class="px-5 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors"
-            >
-              AI Transcription
-            </button>
-            <button
-              @click="aiAssistant"
-              class="px-5 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors"
-            >
-              AI Insights
-            </button>
-            <div class="flex space-x-4">
-              <label class="flex items-center">
-                <input
-                  type="checkbox"
-                  class="rounded border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 mr-2"
-                />
-                Audio Enhancer
-              </label>
-              <label class="flex items-center">
-                <input
-                  type="checkbox"
-                  class="rounded border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 mr-2"
-                />
-                Scene Detection
-              </label>
-            </div>
-            <input
-              type="text"
-              placeholder="Mark Topic"
-              class="border rounded p-2 w-full"
-            />
-            <button
-              class="px-5 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors"
-            >
-              Mark Current Video Time
-            </button>
-          </div>
-        </div>
-
-        <div
-          v-if="courseMode === 'lesson'"
-          class="mt-8 sm:p-6 bg-white rounded-xl shadow-sm mb-10 transform transition relative md:p-4 flex flex-col"
-        >
-          <!-- Title (Mobile and Tablet View) -->
-          <h2
-            class="ml-1 text-2xl sm:text-3xl font-bold tracking-wider text-gray-700 mb-6 border-b pb-3 flex items-center mt-8 md:hidden"
-          >
-            <i
-              class="fas fa-video mr-3 sm:mr-4 text-blue-500"
-              :class="{
-                'text-5xl': screen === 'xs',
-                'text-6xl': screen === 'sm',
-              }"
-            ></i>
-            Lessons & Topics
-          </h2>
-
-          <!-- Add Lesson Button (Mobile and Tablet View) -->
-          <button
-            @click="addLesson"
-            class="md:hidden text-white bg-blue-500 hover:bg-blue-600 transition duration-300 ease-in-out font-bold py-2 px-4 rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-300 z-10 mb-6 mx-auto"
-          >
-            <i class="fas fa-plus mr-2"></i> Add Lesson
-          </button>
-
-          <!-- Title (Desktop View) -->
-          <h2
-            class="ml-1 text-2xl sm:text-3xl font-bold tracking-wider text-gray-700 mb-6 border-b pb-3 flex items-center mt-8 md:mt-0 hidden md:flex"
-          >
-            <i
-              class="fas fa-video mr-3 sm:mr-4 text-blue-500"
-              style="font-size: 1.3rem sm:font-size: 1.6rem"
-            ></i>
-            Lessons & Topics
-          </h2>
-
-          <!-- Add Lesson Button (Desktop View) -->
-          <button
-            @click="addLesson"
-            class="md:absolute top-5 md:right-6 text-white bg-blue-500 hover:bg-blue-600 transition duration-300 ease-in-out font-bold py-2 px-4 rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-300 z-10 hidden md:block"
-          >
-            <i class="fas fa-plus mr-2"></i> Add Lesson
-          </button>
-
-          <!-- The rest of the code remains the same -->
-          <div class="space-y-6">
-            <div
-              v-for="(lesson, lessonIndex) in videoLessons"
-              :key="lessonIndex"
-              class="relative border border-gray-200 rounded-lg overflow-hidden"
-            >
-              <!-- Lesson Header -->
-              <div
-                class="flex items-center justify-between p-4 bg-blue-50 hover:bg-blue-100 cursor-pointer transition"
-                @click="toggleLesson(lessonIndex)"
-              >
-                <h3
-                  class="text-xl font-semibold text-gray-800 flex items-center"
-                >
-                  <i
-                    :class="{
-                      'fas fa-angle-down': !isLessonCollapsed[lessonIndex],
-                      'fas fa-angle-right': isLessonCollapsed[lessonIndex],
-                    }"
-                    class="mr-4 text-blue-500"
-                  >
-                  </i>
-                  {{ lesson.title }}
-
-                  <!-- Updated Edit Button -->
-                  <button
-                    class="ml-6 text-base hover:bg-blue-100 focus:outline-none transition rounded-full"
-                  >
-                    <i
-                      class="fas fa-edit text-blue-600 hover:text-blue-700 text-sm mb-0.5"
-                    ></i>
-                  </button>
-                </h3>
-                <div class="flex items-center space-x-3 mx-2">
-                  <button
-                    v-if="lessonIndex"
-                    class="text-xs font-semibold text-gray-600 hover:text-gray-800 focus:outline-none transition"
-                    @click.stop="moveLessonUp(lessonIndex)"
-                  >
-                    <i class="fas fa-arrow-up mr-1"></i>
-                    <span class="hidden md:inline">Move Up</span>
-                  </button>
-                  <button
-                    v-if="lessonIndex < videoLessons.length - 1"
-                    class="text-xs font-semibold text-gray-600 hover:text-gray-800 focus:outline-none transition"
-                    @click.stop="moveLessonDown(lessonIndex)"
-                  >
-                    <i class="fas fa-arrow-down mr-0.5"></i>
-                    <span class="hidden md:inline">Move Down</span>
-                  </button>
-                </div>
-              </div>
-
-              <div v-if="!isLessonCollapsed[lessonIndex]" class="px-4">
-                <ul class="divide-y divide-gray-200">
-                  <li
-                    v-for="(topic, topicIndex) in lesson.topics"
-                    :key="topicIndex"
-                    class="py-4"
-                  >
-                    <!-- Topic Header -->
-                    <div class="flex justify-between items-center mb-2">
-                      <h4
-                        v-if="!topic.isEditing"
-                        class="text-lg text-gray-700 font-medium"
-                      >
-                        {{ topic.title }}
-                      </h4>
-                      <input
-                        v-else
-                        v-model="topic.title"
-                        type="text"
-                        class="text-lg text-gray-700 font-medium bg-blue-50 bg-opacity-30 p-2 rounded-md border border-blue-300"
-                      />
-                      <button
-                        class="px-2.5 py-1 text-sm bg-blue-500 text-white rounded-full hover:bg-blue-700 focus:outline-none transition"
-                        @click="toggleEdit(topic)"
-                      >
-                        <i class="fas fa-edit mr-0.5"></i>
-                        {{ topic.isEditing ? 'Save' : 'Edit' }}
-                      </button>
-                    </div>
-
-                    <!-- Topic Description -->
-                    <div
-                      v-if="!topic.isEditing"
-                      class="text-sm text-gray-500 mb-2"
-                    >
-                      {{
-                        topic.description ||
-                        'Lorem ipsum dolor sit, amet consectetur adipisicing elit.'
-                      }}
-                    </div>
-                    <textarea
-                      v-else
-                      v-model="topic.description"
-                      class="text-sm text-gray-500 mb-2 w-full p-2 bg-blue-50 bg-opacity-30 rounded-md border border-blue-300"
-                      rows="4"
-                    ></textarea>
-
-                    <!-- Topic Tags -->
-                    <div v-if="!topic.isEditing" class="mb-2">
-                      <span
-                        v-for="tag in topic.tags"
-                        :key="tag"
-                        class="mr-2 p-0.5 px-4 bg-blue-100 text-blue-600 rounded-xl hover:bg-blue-200 transition cursor-pointer text-sm"
-                      >
-                        {{ tag }}
-                      </span>
-                    </div>
-                    <div v-else class="flex flex-wrap mb-2 items-center">
-                      <div
-                        v-for="(tag, index) in topic.tags"
-                        :key="index"
-                        class="flex items-center m-1 p-0.5 bg-blue-50 text-blue-600 rounded-xl border border-blue-300"
-                      >
-                        <input
-                          v-model="topic.tags[index]"
-                          class="px-4 bg-transparent focus:outline-none"
-                        />
-                        <button
-                          @click="removeTag(topic, index)"
-                          class="text-red-500 hover:text-red-600 transition text-xs mr-2"
-                        >
-                          <i class="fas fa-times"></i>
-                        </button>
-                      </div>
-                      <button
-                        @click="addTag(topic)"
-                        class="m-1 px-3 py-2 bg-green-200 text-green-600 rounded-full text-xs hover:bg-green-300 transition"
-                      >
-                        <i class="fas fa-plus"></i>
-                      </button>
-                    </div>
-
-                    <!-- Topic Transcript -->
-                    <details class="mb-2">
-                      <summary
-                        class="text-sm mt-6 flex items-center text-blue-600 hover:text-blue-700 cursor-pointer transition"
-                      >
-                        <i class="fas fa-file-alt mr-2"></i> View Transcript
-                      </summary>
-                      <div class="mt-2 px-4 py-2 bg-gray-10 rounded-md text-sm">
-                        {{
-                          topic.transcript ||
-                          'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis, vero?'
-                        }}
-                      </div>
-                    </details>
-                  </li>
-                  <li class="py-6 flex justify-center">
-                    <button
-                      class="text-white bg-blue-500 hover:bg-blue-600 transition duration-300 ease-in-out font-bold py-1.5 px-3 rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-300 text-sm"
-                      @click="addTopic(lessonIndex)"
-                    >
-                      <i class="fas fa-plus mr-2"></i>
-                      Add Topic
-                    </button>
-                  </li>
-                </ul>
-              </div>
             </div>
           </div>
         </div>
-
-        <!-- General Details -->
-
-        <div
-          class="space-y-4 px-4 sm:px-6 pb-6"
-          :class="courseMode === 'lesson' ? 'mt-8' : 'mt-12'"
-        >
-          <h2 class="text-2xl sm:text-3xl font-semibold text-gray-700">
-            Course Details
-          </h2>
-          <input
-            v-model="videoTitle"
-            type="text"
-            placeholder="Course Title"
-            class="border rounded p-2 w-full text-sm sm:text-base"
-          />
-          <textarea
-            v-model="videoDescription"
-            rows="4"
-            placeholder="Description"
-            class="border rounded p-2 w-full text-sm sm:text-base"
-          ></textarea>
-          <input
-            v-model="videoTags"
-            type="text"
-            placeholder="Tags (comma separated)"
-            class="border rounded p-2 w-full text-sm sm:text-base"
-          />
-        </div>
-
         <div class="mt-8 flex justify-center">
           <button
             class="px-5 py-2 mb-8 bg-blue-500 text-white rounded-2xl shadow-md hover:bg-blue-700 transition-colors"
+            @click="saveRecording"
           >
-            Save & Process
+            Save As...
           </button>
         </div>
       </div>
@@ -714,13 +438,6 @@ export default {
   mounted() {
     this.updateCanvasSize();
     window.addEventListener('resize', this.updateCanvasSize);
-
-    // Add all video lessons to isLessonCollapsed, except for the last one
-    this.videoLessons.forEach((lesson, index) => {
-      if (index < this.videoLessons.length - 1) {
-        this.isLessonCollapsed[index] = true;
-      }
-    });
   },
   updated() {
     if (this.$refs.video) {
@@ -738,128 +455,6 @@ export default {
   },
   data() {
     return {
-      videoLessons: [
-        {
-          title: 'Lesson 1',
-          topics: [
-            {
-              title: 'Topic 1',
-              description:
-                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis, vero?',
-              tags: ['tag1', 'tag2'],
-              transcript:
-                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis, vero?',
-            },
-            {
-              title: 'Topic 2',
-              description:
-                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis, vero?',
-              tags: ['tag1', 'tag2'],
-              transcript:
-                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis, vero?',
-            },
-          ],
-        },
-        {
-          title: 'Lesson 2',
-          topics: [
-            {
-              title: 'Topic 1',
-              description:
-                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis, vero?',
-              tags: ['tag1', 'tag2'],
-              transcript:
-                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis, vero?',
-            },
-            {
-              title: 'Topic 2',
-              description:
-                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis, vero?',
-              tags: ['tag1', 'tag2'],
-              transcript:
-                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis, vero?',
-            },
-          ],
-        },
-        {
-          title: 'Lesson 3',
-          topics: [
-            {
-              title: 'Topic 1',
-              description:
-                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis, vero?',
-              tags: ['tag1', 'tag2'],
-              transcript: [
-                `Ladies and Gentlemen, Good evening! Thank you for being here
-                    with us today. As I stand before you, I am reminded of the
-                    incredible journey that has led us to this moment. It is a
-                    story marked by perseverance, innovation, and the relentless
-                    pursuit of excellence.`,
-
-                `But before we delve into the heart of our
-                    discussion, let's take a moment to reflect on the immense
-                    beauty that surrounds us. Look around you, the exquisite
-                    blend of architecture and nature, the harmonious coexistence
-                    of the past and the present. It's a testament to what we, as
-                    a society, can achieve when we work together in unison.`,
-
-                `Now, let's pivot to the core of our conversation
-                    tonight. We are at the cusp of a technological renaissance.
-                    The world as we know it is transforming at an unprecedented
-                    pace. Technologies that were once relegated to the realms of
-                    science fiction are now becoming a part of our everyday
-                    lives. Artificial intelligence is revolutionizing
-                    industries, biotechnology is unlocking the secrets of life,
-                    and space exploration is expanding the very boundaries of
-                    our world. `,
-                `However, with great power comes great
-                    responsibility. We must tread this path with a keen sense of
-                    ethics and a profound respect for the planet that we call
-                    home. It is imperative that we harness these advancements
-                    not just for economic prosperity but also for the betterment
-                    of humanity as a whole. `,
-                `As we forge ahead, let
-                    us not forget the lessons of history. Time and again, it has
-                    been shown that collaboration and understanding are the
-                    cornerstones of progress. In this global village, our fates
-                    are intertwined like never before. It is by embracing our
-                    diversity, by listening and learning from each other, that
-                    we can solve the most complex challenges that lie ahead.`,
-
-                `I want to leave you with a thought. Each one of
-                    us has the power to make a difference. It doesn't matter how
-                    small our actions might seem, for it's the smallest of
-                    pebbles that creates the most beautiful ripples. So, I urge
-                    you all to take that step, to be the change you wish to see
-                    in the world. `,
-                `In conclusion, as we look towards
-                    the horizon, let's move forward with hope in our hearts and
-                    an unwavering faith in our collective potential. The future
-                    is not just something we enter, but something we create.`,
-
-                `Thank you once again for your gracious presence
-                    here tonight. Let's make it an evening of fruitful
-                    discussions, meaningful connections, and an unwavering
-                    commitment to shaping a better tomorrow.`,
-
-                `Goodnight, and let's continue to dream big and
-                    aspire for greatness!`,
-              ],
-            },
-            {
-              title: 'Topic 2',
-              description:
-                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis, vero?',
-              tags: ['tag1', 'tag2'],
-              transcript:
-                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis, vero?',
-            },
-          ],
-        },
-      ],
-      videoTitle: '',
-      videoDescription: '',
-      videoTags: '',
       mode: false,
       stream: null,
       recordingMode: 'user',
@@ -886,18 +481,12 @@ export default {
       startPointer: 0,
       endPointer: 100,
       currentDragger: null,
+      teleprompterData: '',
     };
   },
   computed: {
     backgroundImageURL() {
       return this.backgroundImageURLs[this.currentImageIndex];
-    },
-    teleprompterData() {
-      return this.videoLessons
-        .map((lesson) => lesson.topics)
-        .flat()
-        .map((topic) => topic.transcript)
-        .flat();
     },
   },
   methods: {
@@ -966,6 +555,7 @@ export default {
       try {
         this.stream = await navigator.mediaDevices.getUserMedia({
           video: true,
+          audio: true,
         });
 
         const videoElem =
@@ -973,6 +563,7 @@ export default {
             ? this.$refs.fullFrameVideo
             : this.$refs.whiteboardVideo;
         videoElem.srcObject = this.stream;
+        videoElem.muted = true;
 
         await this.$nextTick(this.updateCanvasSize);
 
@@ -995,6 +586,7 @@ export default {
       try {
         this.stream = await navigator.mediaDevices.getUserMedia({
           video: true,
+          audio: true,
         });
 
         const videoElem =
@@ -1002,6 +594,7 @@ export default {
             ? this.$refs.fullFrameVideo
             : this.$refs.whiteboardVideo;
         videoElem.srcObject = this.stream;
+        videoElem.muted = true;
 
         this.mediaRecorder = new MediaRecorder(this.stream);
         this.mediaRecorder.ondataavailable = (event) => {
@@ -1182,6 +775,7 @@ export default {
       try {
         this.stream = await navigator.mediaDevices.getUserMedia({
           video: true,
+          audio: true,
         });
 
         const videoElem =
@@ -1189,6 +783,7 @@ export default {
             ? this.$refs.fullFrameVideo
             : this.$refs.whiteboardVideo;
         videoElem.srcObject = this.stream;
+        videoElem.muted = true;
 
         // Update the canvas size for the whiteboard
         if (this.recordingMode === 'whiteboard') {
@@ -1209,38 +804,6 @@ export default {
 
       if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
         this.recordCanvas();
-      }
-    },
-
-    toggleLesson(index) {
-      this.isLessonCollapsed[index] = !this.isLessonCollapsed[index];
-    },
-    moveLessonUp(lessonIndex) {
-      if (lessonIndex > 0) {
-        const aboveLesson = this.videoLessons[lessonIndex - 1];
-        this.videoLessons[lessonIndex - 1] = this.videoLessons[lessonIndex];
-        this.videoLessons[lessonIndex] = aboveLesson;
-
-        if (lessonIndex in this.isLessonCollapsed) {
-          const aboveLessonCollapsed = this.isLessonCollapsed[lessonIndex - 1];
-          this.isLessonCollapsed[lessonIndex - 1] =
-            this.isLessonCollapsed[lessonIndex];
-          this.isLessonCollapsed[lessonIndex] = aboveLessonCollapsed;
-        }
-      }
-    },
-    moveLessonDown(lessonIndex) {
-      if (lessonIndex < this.videoLessons.length - 1) {
-        const belowLesson = this.videoLessons[lessonIndex + 1];
-        this.videoLessons[lessonIndex + 1] = this.videoLessons[lessonIndex];
-        this.videoLessons[lessonIndex] = belowLesson;
-
-        if (lessonIndex in this.isLessonCollapsed) {
-          const belowLessonCollapsed = this.isLessonCollapsed[lessonIndex + 1];
-          this.isLessonCollapsed[lessonIndex + 1] =
-            this.isLessonCollapsed[lessonIndex];
-          this.isLessonCollapsed[lessonIndex] = belowLessonCollapsed;
-        }
       }
     },
     generateVideoURL() {
@@ -1322,26 +885,6 @@ export default {
         canvas.width = container.clientWidth;
         canvas.height = container.clientHeight;
       }
-    },
-    toggleEdit(topic) {
-      if (topic.isEditing) {
-        // Handle saving logic here if needed
-      }
-      topic.isEditing = !topic.isEditing;
-    },
-    addTag(topic) {
-      topic.tags.push('');
-    },
-    removeTag(topic, index) {
-      topic.tags.splice(index, 1);
-    },
-    addTopic(lessonIndex) {
-      this.videoLessons[lessonIndex].topics.push({
-        title: 'New Topic',
-        description: '',
-        tags: [],
-        transcript: '',
-      });
     },
 
     uploadImages(event) {
@@ -1509,5 +1052,36 @@ button {
 .blinking {
   animation: blink 1s linear infinite;
   color: red;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #4f46e5; /* Tailwind blue-500 */
+  cursor: pointer;
+  border-radius: 50%;
+  pointer-events: all;
+  position: relative;
+  z-index: 30;
+}
+
+.slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: #4f46e5;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.slider-track {
+  top: 50%;
+  transform: translateY(-10%);
+}
+
+.slider-range {
+  top: 50%;
+  transform: translateY(-50%);
 }
 </style>
