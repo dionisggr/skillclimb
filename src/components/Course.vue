@@ -60,38 +60,90 @@
         </svg>
       </button>
 
-      <!-- Sidebar Video Lessons -->
-      <a
-        href="#"
-        class="video-lesson mt-5 flex items-center"
-        v-for="(lesson, index) in course.modules"
-        :key="index"
-        :class="{ yourSelectedStyle: isSelectedLesson(index) }"
-        @click.prevent="selectLesson(index)"
-      >
-        <div class="relative mr-2 inline-block w-16">
-          <img :src="lesson.thumbnail" :alt="lesson.name" class="rounded-md" />
-          <p
-            class="absolute bottom-0 left-0 right-0 text-center bg-black bg-opacity-50 text-white rounded-b-md px-1 text-[11px]"
-          >
-            {{ lesson.duration }}
-          </p>
+      <input
+        type="file"
+        ref="thumbnail"
+        accept="image/*"
+        class="hidden"
+        @change="handleFileUpload($event, index)"
+      />
+
+<!-- Sidebar Modules -->
+<a
+  href="#"
+  class="video-lesson mt-5 flex items-center relative border p-2"
+  v-for="(courseModule, index) in course.modules"
+  :key="index"
+  @click.prevent="selectModule(index)"
+>
+  <div class="relative mr-2 inline-block w-16">
+    <img
+      :src="courseModule.thumbnail"
+      :alt="courseModule.name"
+      class="rounded-md"
+    />
+    <p
+      class="absolute bottom-0 left-0 right-0 text-center bg-black bg-opacity-50 text-white rounded-b-md px-1 text-[11px]"
+    >
+      {{ courseModule.duration }}
+    </p>
+
+    <!-- Upload Icon Button -->
+    <div class="absolute -bottom-2 -right-1 mb-1 mr-1">
+      <button @click="uploadThumbnail(index)" class="text-white bg-blue-500 hover:bg-blue-700 rounded-full text-xs px-2">
+        <!-- Replace with your upload icon -->
+        <i class="fa fa-upload"></i>
+      </button>
+    </div>
+  </div>
+
+        <div v-if="!courseModule.edit" class="inline-block w-2/3">
+          <p class="text-sm font-bold text-center">{{ courseModule.name }}</p>
+          <!-- Progress Bar here -->
         </div>
-        <div class="inline-block w-2/3">
-          <p class="text-sm font-bold text-center">{{ lesson.name }}</p>
-          <div class="relative h-4 w-full rounded-full bg-gray-200 mt-2">
-            <div
-              class="absolute left-0 h-full rounded-full bg-green-400"
-              :style="{ width: lesson.progress + '%' }"
-            ></div>
-            <div
-              class="absolute bottom-0 left-0 right-0 top-0 flex items-center justify-center text-xs"
-            >
-              {{ lesson.progressText }}
-            </div>
-          </div>
+
+        <div v-else class="inline-block w-2/3">
+          <input
+            type="text"
+            v-model="editedModule.name"
+            class="text-sm font-bold text-center w-full"
+          />
+          <button @click="saveModule(index)" class="text-green-500">
+            Save
+          </button>
+          <button @click="cancelEdit(index)" class="text-red-500">
+            Cancel
+          </button>
+        </div>
+
+        <!-- Icon buttons -->
+        <div
+          class="absolute top-0 right-0 mt-2 mr-2 flex flex-col items-end justify-between text-sm h-5/6"
+        >
+          <button
+            @click="editModule(index)"
+            class="text-blue-500 hover:text-blue-700"
+          >
+            <!-- Replace with your edit icon -->
+            <i class="fa fa-edit"></i>
+          </button>
+          <button
+            @click="deleteLesson(index)"
+            class="text-red-500 hover:text-red-700 ml-2 mr-1"
+          >
+            <!-- Replace with your delete icon -->
+            <i class="fa fa-trash"></i>
+          </button>
         </div>
       </a>
+
+      <button
+        v-if="isContentCreator"
+        @click="addModule"
+        class="mt-7 mb-4 text-white font-semibold py-2 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-xl bg-blue-500 w-2/3 block mx-auto"
+      >
+        Add Module
+      </button>
     </aside>
 
     <!-- Course Content -->
@@ -105,7 +157,7 @@
         <chevron-right size="20" class="mx-1" />
       </div>
 
-      <h2 class="text-2xl font-bold m-1 mt-4">{{ currentLesson.title }}</h2>
+      <h2 class="text-2xl font-bold m-1 mt-4">{{ currentLesson?.title }}</h2>
 
       <!-- Course Video and Right Section -->
       <div class="mb-6 flex flex-col md:flex-row">
@@ -468,6 +520,14 @@ import ChevronRight from 'vue-material-design-icons/ChevronRight.vue';
 import Practice from './Practice/index.vue';
 
 export default {
+  props: {
+    user: {
+      type: Object,
+      default: () => ({
+        id: 'admin',
+      }),
+    },
+  },
   components: {
     AccountCircle,
     ChevronRight,
@@ -513,6 +573,9 @@ export default {
       showPractice: false,
       showAssessments: false,
       course: {
+        instructor: {
+          id: 'admin',
+        },
         name: 'ChatGPT for Job Searching & Interview Prep',
         modules: [
           {
@@ -1966,6 +2029,7 @@ export default {
       selectedModule: {},
       openSubtopics: [],
       sidebarOpen: false,
+      editedModule: {},
     };
   },
   computed: {
@@ -1980,6 +2044,9 @@ export default {
     },
     currentSupplementalInfo() {
       return this.supplementalInfo;
+    },
+    isContentCreator() {
+      return this.course.instructor.id === this.user.id;
     },
   },
   methods: {
@@ -2022,7 +2089,7 @@ export default {
     selectOption(option) {
       this.selectedOption = 'Lorem ipsum dolor sit amet option ' + option;
     },
-    selectLesson(index) {
+    selectModule(index) {
       this.selectedLessonIndex = index; // Update the selected lesson index
     },
     isSelectedLesson(index) {
@@ -2090,6 +2157,69 @@ export default {
         this.showPractice = true;
         this.selectedPractice = practice;
       }
+    },
+    async editLesson(index) {
+      this.currentLesson = this.course.modules[index];
+
+      // Open the modal
+      this.isEditModalOpen = true;
+    },
+
+    async deleteLesson(index) {
+      const lessonToDelete = this.course.modules[index];
+
+      if (
+        confirm(
+          `Are you sure you want to delete the lesson: ${lessonToDelete.name}?`
+        )
+      ) {
+        try {
+          this.course.modules.splice(index, 1);
+        } catch (error) {
+          console.error('Error deleting lesson:', error);
+        }
+      }
+    },
+    editModule(index) {
+      this.course.modules[index].edit = true;
+      this.editedModule = { ...this.course.modules[index] };
+    },
+    async saveModule(index) {
+      this.course.modules[index] = this.editedModule;
+
+      this.cancelEdit(index);
+    },
+    cancelEdit(index) {
+      this.course.modules[index].edit = false;
+    },
+    addModule() {
+      const newModule = {
+        name: 'New Module',
+        edit: true,
+        lessons: [],
+        edit: true,
+        thumbnail: 'https://via.placeholder.com/150',
+      };
+
+      this.course.modules.push(newModule);
+      this.editedModule = newModule;
+    },
+
+    uploadThumbnail(index) {
+      this.editedModule = this.course.modules[index];
+
+      this.$refs.thumbnail.click();
+    },
+    handleFileUpload() {
+      const file = this.$refs.thumbnail.files[0];
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        console.log(e.target.result)
+        this.editedModule.thumbnail = e.target.result;
+      };
+
+      reader.readAsDataURL(file);
     },
   },
 };

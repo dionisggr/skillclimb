@@ -6,31 +6,79 @@
       <p class="text-gray-600">Get a glimpse of what you'll learn.</p>
     </div>
 
+    <!-- Conditional Upload Video Button -->
+    <div
+      v-if="isContentCreator && !videoSrc"
+      class="flex justify-center items-center h-64"
+    >
+      <button
+        @click="triggerFileInput"
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      >
+        Upload Video
+      </button>
+      <input
+        type="file"
+        ref="videoInput"
+        class="hidden"
+        @change="handleFileChange"
+        accept="video/*"
+      />
+    </div>
     <!-- Introductory Video Section -->
     <section
       class="relative block rounded-lg shadow-lg overflow-hidden mx-auto w-full max-w-4xl"
-      style=" "
+      v-else
     >
       <iframe
-        src="https://www.youtube.com/embed/1GNsWa_EZdw?si=cXiwSUe1odIDdUAM"
+        :src="videoSrc"
         title="YouTube video player"
         frameborder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         allowfullscreen
         class="w-full min-h-52 h-[50vw] max-h-[450px] object-cover"
       ></iframe>
-      <div
-        class="absolute top-0 left-0 bg-gradient-to-b from-black to-transparent text-white p-4 w-full"
+      <!-- Remove Video Button -->
+      <button
+        v-if="videoSrc && isContentCreator"
+        @click="removeVideo"
+        class="absolute bottom-2 right-2 text-sm bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
       >
-        <h1 class="text-2xl font-bold">{{ course.name }}</h1>
-        <p>{{ course.description }}</p>
-      </div>
+        Remove
+      </button>
     </section>
+
+    <!-- Confirmation Modal -->
+    <div
+      v-if="showRemoveConfirmation"
+      class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
+    >
+      <div class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="font-bold text-lg mb-4">Confirm Removal</h2>
+        <p>Are you sure you want to remove the video?</p>
+        <div class="flex justify-end mt-4">
+          <button
+            @click="showRemoveConfirmation = false"
+            class="bg-gray-200 text-black py-2 px-4 rounded mr-2"
+          >
+            Cancel
+          </button>
+          <button
+            @click="removeVideo"
+            class="bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded"
+          >
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
 
     <!-- CTA Section -->
     <section class="bg-white rounded-lg p-6 mt-8 text-center">
-      <h2 class="text-2xl font-bold mb-6">Start Your Journey Now</h2>
-      <p class="text-gray-600 mb-6">
+      <h2 v-if="!isContentCreator" class="text-2xl font-bold mb-6">
+        Start Your Journey Now
+      </h2>
+      <p v-if="!isContentCreator" class="text-gray-600 mb-6">
         Enroll in the "{{ course.title }}" course and begin your learning
         adventure with {{ course.instructor.name }} as your guide.
       </p>
@@ -48,7 +96,13 @@
           "
         >
           <!-- Text changes based on isLoggedIn -->
-          {{ isLoggedIn ? 'Continue' : 'Enroll Now' }}
+          {{
+            isContentCreator
+              ? 'Edit Course'
+              : isLoggedIn
+              ? 'Continue'
+              : 'Enroll Now'
+          }}
         </button>
       </div>
       <div
@@ -66,7 +120,16 @@
     </section>
 
     <!-- Curriculum Section -->
-    <section class="bg-white rounded-lg p-6 shadow-lg mt-4">
+    <section class="bg-white rounded-lg p-6 shadow-lg mt-4 relative">
+      <!-- Edit Button for Content Creator -->
+      <button
+        v-if="isContentCreator"
+        @click="toggleEdit"
+        class="absolute top-2 right-6 text-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md"
+      >
+        {{ isEditingCurriculum ? 'Finish Editing' : 'Edit' }}
+      </button>
+
       <h2 class="text-xl font-bold mb-4">Curriculum</h2>
       <div v-for="(_module, index) in course.modules" :key="index" class="mb-4">
         <div
@@ -76,41 +139,90 @@
               isLoggedIn &&
               'completed-module bg-green-200 hover:bg-green-300',
           ]"
-          @click="_module.hide = !_module.hide"
+          @click="!isEditingCurriculum ? (_module.hide = !_module.hide) : null"
         >
           <div class="flex items-center justify-between">
-            <div class="flex items-center">
+            <div v-if="!isEditingCurriculum" class="flex items-center">
               <span
                 class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center mr-4"
+                >{{ index + 1 }}</span
               >
-                {{ index + 1 }}
-              </span>
               <p class="flex-grow">{{ _module.name }}</p>
             </div>
-            <span class="text-sm text-gray-600">{{ _module.duration }}</span>
+            <div v-else class="flex items-center w-1/2">
+              <input
+                v-model="_module.name"
+                class="flex-grow p-1 border rounded w-fit"
+                placeholder="Module Name"
+              />
+              <button @click="deleteModule(index)" class="ml-2 text-red-500">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+            <span v-if="!isEditingCurriculum" class="text-sm text-gray-600">{{
+              _module.duration
+            }}</span>
           </div>
         </div>
         <transition name="slide-fade">
           <div v-if="!_module.hide" class="mt-2 ml-6 md:ml-8 lg:ml-12">
             <div
-              v-for="topic in _module.lessons"
-              :key="topic"
-              :class="[
-                'my-1 p-2 bg-gray-100 rounded hover:shadow-md hover:bg-gray-300 transition-all duration-200 cursor-pointer',
-                index < 2 &&
-                  isLoggedIn &&
-                  'completed-topic bg-green-200 hover:bg-green-300',
-              ]"
+              v-for="(lesson, lessonIndex) in _module.lessons"
+              :key="lessonIndex"
             >
-              {{ topic.title }}
+              <div
+                v-if="!isEditingCurriculum"
+                class="my-1 p-2 bg-gray-100 rounded hover:shadow-md hover:bg-gray-300 transition-all duration-200 cursor-pointer"
+              >
+                {{ lesson.title }}
+              </div>
+              <div
+                v-else
+                class="flex my-1 p-2 bg-gray-100 rounded items-center"
+              >
+                <input
+                  v-model="lesson.title"
+                  class="flex-grow p-1 border rounded"
+                  placeholder="Lesson Title"
+                />
+                <button
+                  @click="deleteLesson(index, lessonIndex)"
+                  class="ml-2 text-red-500"
+                >
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </div>
             </div>
+            <button
+              v-if="isEditingCurriculum"
+              @click="addLesson(index)"
+              class="mt-2 text-blue-500"
+            >
+              Add Lesson
+            </button>
           </div>
         </transition>
       </div>
+      <button
+        v-if="isEditingCurriculum"
+        @click="addModule"
+        class="mt-2 text-blue-500"
+      >
+        Add Module
+      </button>
     </section>
 
     <!-- What You'll Learn Section -->
-    <section class="bg-white rounded-lg p-6 mt-8">
+    <section class="bg-white rounded-lg p-6 mt-8 relative">
+      <!-- Edit Button for Content Creator -->
+      <button
+        v-if="isContentCreator"
+        @click="toggleLearningEdit"
+        class="absolute top-4 right-6 text-sm bg-gray-200 hover:bg-gray-300 text-green-600 font-medium py-1.5 px-4 rounded-md hover:shadow-md"
+      >
+        {{ isEditingLearnings ? 'Finish Editing' : 'Edit' }}
+      </button>
+
       <h2 class="text-xl font-bold mb-6 text-center">What You'll Learn</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         <div
@@ -123,48 +235,133 @@
               d="M20 12l-1.39-.81l.36-2.19l1.81.68l.4-2.01l-1.82-.67l.37-2.18L20 4l-1.09-.39l.02-.02L12 2L2.47 9l1.66 5l-1.63 5l1.25.46L12 22l6.84-2.53l.02-.02L20 12z"
             ></path>
           </svg>
-          <p class="text-center">{{ item }}</p>
+          <p v-if="!isEditingLearnings" class="text-center">{{ item }}</p>
+          <input
+            v-else
+            type="text"
+            v-model="course.learnings[index]"
+            class="text-center border rounded p-1"
+          />
+          <button
+            v-if="isEditingLearnings"
+            @click="deleteLearningItem(index)"
+            class="text-red-500 mt-2"
+          >
+            <i class="fas fa-trash-alt"></i>
+            <!-- FontAwesome icon for delete -->
+          </button>
+        </div>
+      </div>
+      <button
+        v-if="isEditingLearnings"
+        @click="addLearningItem"
+        class="mt-4 text-blue-500"
+      >
+        Add Learning Item
+      </button>
+    </section>
+
+    <!-- Instructor Info Section -->
+    <section
+      class="bg-gradient-to-r from-blue-500 to-green-400 rounded-lg p-6 shadow-lg text-white mt-2 relative"
+    >
+      <!-- Edit Button -->
+      <button
+        v-if="isContentCreator"
+        @click="toggleInstructorEdit"
+        class="absolute top-2 right-2 text-sm bg-white text-blue-500 font-bold py-2 px-4 rounded"
+      >
+        {{ isEditingInstructor ? 'Finish Editing' : 'Edit' }}
+      </button>
+
+      <h2 class="text-xl font-bold mb-4">Instructor</h2>
+      <div
+        class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4"
+      >
+        <!-- Image Container -->
+        <div class="relative mx-auto sm:mx-0">
+          <img
+            :src="course.instructor.imageUrl"
+            alt="Instructor"
+            class="w-24 h-24 rounded-full border-4 border-white"
+          />
+          <!-- Upload Button -->
+          <button
+            v-if="isEditingInstructor"
+            @click="triggerInstructorImageInput"
+            class="absolute bottom-0 right-0 text-xs bg-white text-blue-500 font-bold py-1 px-2 rounded"
+          >
+            Upload
+          </button>
+          <input
+            type="file"
+            ref="instructorImageInput"
+            class="hidden"
+            @change="handleInstructorImageChange"
+          />
+        </div>
+        <div v-if="!isEditingInstructor" class="text-center sm:text-left">
+          <p class="text-2xl font-semibold">{{ course.instructor.name }}</p>
+          <p class="mb-2">{{ course.instructor.title }}</p>
+          <p>{{ course.instructor.bio }}</p>
+          <a
+            :href="course.instructor.website"
+            class="block mt-4 text-sm underline"
+            >Visit Instructor's Website</a
+          >
+        </div>
+        <div v-else class="text-center sm:text-left space-y-2">
+          <input
+            v-model="course.instructor.name"
+            class="text-xl font-semibold bg-transparent border-b border-white w-full mb-2"
+          />
+          <input
+            v-model="course.instructor.title"
+            class="mb-2 bg-transparent border-b border-white w-full"
+          />
+          <textarea
+            v-model="course.instructor.bio"
+            class="bg-transparent border-b border-white w-full"
+          ></textarea>
+          <input
+            type="file"
+            ref="instructorImageInput"
+            class="hidden"
+            @change="handleInstructorImageChange"
+          />
+          <!-- Text input for the instructor website -->
+          <input
+            v-model="course.instructor.website"
+            class="bg-transparent border-b border-white w-full"
+          />
         </div>
       </div>
     </section>
-
-<!-- Instructor Info Section -->
-<section
-  class="bg-gradient-to-r from-blue-500 to-green-400 rounded-lg p-6 shadow-lg text-white mt-2"
->
-  <h2 class="text-xl font-bold mb-4">Instructor</h2>
-  <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
-    <img
-      :src="course.instructor.imageUrl"
-      alt="Instructor"
-      class="w-24 h-24 rounded-full border-4 border-white mx-auto sm:mx-0"
-    />
-    <div class="text-center sm:text-left">
-      <p class="text-2xl font-semibold">{{ course.instructor.name }}</p>
-      <p class="mb-2">{{ course.instructor.title }}</p>
-      <p>{{ course.instructor.bio }}</p>
-      <a
-        :href="course.instructor.website"
-        class="block mt-4 text-sm underline"
-        >Visit Instructor's Website</a
-      >
-    </div>
-  </div>
-</section>
-
   </main>
 </template>
 
 <script>
 export default {
+  props: {
+    user: {
+      type: Object,
+      default: () => ({
+        id: 'admin',
+      }),
+    },
+  },
   data() {
     return {
       isLoggedIn: false,
+      videoSrc: 'https://www.youtube.com/embed/5qap5aO4i9A',
+      isEditingCurriculum: false,
+      isEditingLearnings: false,
       course: {
         name: 'Job Searching with ChatGPT',
         description:
           'Learn how to use ChatGPT to optimize your job search and land your dream job!',
         instructor: {
+          id: 'admin',
           name: 'John Doe',
           title: 'Senior Vue.js Developer',
           bio: 'A passionate web developer and instructor with over 10 years of experience. John has taught over 50,000 students online and has worked on numerous web projects using Vue.js.',
@@ -1262,6 +1459,56 @@ export default {
         ],
       },
     };
+  },
+  computed: {
+    isContentCreator() {
+      return this.course.instructor.id === this.user.id;
+    },
+  },
+  methods: {
+    triggerFileInput() {
+      this.$refs.videoInput.click();
+    },
+    handleFileChange(event) {
+      const file = event.target.files[0];
+      if (file && file.type.startsWith('video')) {
+        this.videoSrc = URL.createObjectURL(file);
+
+        console.log(this.videoSrc);
+      }
+    },
+    toggleEdit() {
+      this.isEditingCurriculum = !this.isEditingCurriculum;
+    },
+    addModule() {
+      this.course.modules.push({
+        name: 'New Module',
+        lessons: [],
+      });
+    },
+    deleteModule(index) {
+      this.course.modules.splice(index, 1);
+    },
+    addLesson(moduleIndex) {
+      this.course.modules[moduleIndex].lessons.push({
+        title: 'New Lesson',
+      });
+    },
+    deleteLesson(moduleIndex, lessonIndex) {
+      this.course.modules[moduleIndex].lessons.splice(lessonIndex, 1);
+    },
+    addLearningItem() {
+      this.course.learnings.push('New Learning Item');
+    },
+    deleteLearningItem(index) {
+      this.course.learnings.splice(index, 1);
+    },
+    toggleLearningEdit() {
+      this.isEditingLearnings = !this.isEditingLearnings;
+    },
+    removeVideo() {
+      this.videoSrc = null;
+    },
   },
 };
 </script>

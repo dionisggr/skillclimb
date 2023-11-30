@@ -233,8 +233,10 @@
             <!-- Whiteboard Mode -->
             <div
               v-show="recordingMode === 'whiteboard' && stream"
-              class="w-full h-96 bg-white rounded-xl relative"
               ref="whiteboardContainer"
+              class="w-full bg-white rounded-xl relative"
+              :class="recordingMode === 'whiteboard' ? 'h-screen' : 'h-96'"
+              style="max-height: 500px"
             >
               <img
                 :src="backgroundImageURL"
@@ -316,43 +318,16 @@
               </div>
             </div>
 
-            <div v-if="videoURL && !whiteboardURL" class="mt-4">
+            <div v-if="videoURL && !whiteboardURL && !recording" class="mt-4">
               <h4 class="text-lg font-medium text-gray-700 mb-2">Preview:</h4>
               <video
                 class="w-full h-96 rounded-xl"
                 controls
                 :src="videoURL"
               ></video>
-
-              <!-- Slider for selecting start and end times -->
-              <div class="mt-4 relative">
-                <input
-                  type="range"
-                  id="slider-start"
-                  min="0"
-                  max="100"
-                  value="25"
-                  class="slider absolute w-full h-2 bg-transparent pointer-events-none appearance-none z-20"
-                />
-                <input
-                  type="range"
-                  id="slider-end"
-                  min="0"
-                  max="100"
-                  value="75"
-                  class="slider absolute w-full h-2 bg-transparent pointer-events-none appearance-none z-10"
-                />
-                <div
-                  class="slider-track absolute bg-gray-300 h-2 w-full z-0"
-                ></div>
-                <div
-                  id="slider-range"
-                  class="slider-range absolute bg-blue-500 h-2 z-10"
-                ></div>
-              </div>
             </div>
 
-            <div v-if="whiteboardURL" class="mt-4">
+            <div v-if="whiteboardURL && !recording" class="mt-4">
               <h4 class="text-lg font-medium text-gray-700 mb-2">
                 Whiteboard Preview:
               </h4>
@@ -961,7 +936,6 @@ export default {
       await this.$nextTick(() => {
         const videoElement = this.$refs.video;
         videoElement.currentTime = 0.5;
-        console.log(videoElement.duration);
 
         const onTimeUpdate = () => {
           if (!videoElement?.duration) return;
@@ -997,42 +971,113 @@ export default {
         videoElement.src = this.selectedVideo.url; // Set the video source to the selected video
         videoElement.load(); // Load the new video source
       });
-
-      await this.$nextTick(() => {
-        console.log(this.$refs.video);
-      });
     },
     addTopic() {
       // Logic to add a new topic
     },
-    playAllVideos() {
-      let currentVideoIndex = 0;
-      const videoElement = this.$refs.video;
+    async animateTransition() {
+    const videoContainer = this.$el.querySelector('.video-container'); // Replace with your video container selector
+    const bar = document.createElement('div');
+    bar.classList.add('sliding-bar-animation');
 
-      const playNextVideo = () => {
-        if (currentVideoIndex < this.uploadedVideos.length) {
-          this.selectVideo(currentVideoIndex);
+    videoContainer.appendChild(bar);
 
-          // Wait for the video to be ready before playing
-          const onCanPlay = () => {
-            videoElement.play();
-            videoElement.removeEventListener('canplay', onCanPlay);
-          };
-          videoElement.addEventListener('canplay', onCanPlay);
-        }
-      };
+    return new Promise(resolve => {
+      bar.addEventListener('animationend', () => {
+        videoContainer.removeChild(bar);
+        resolve();
+      });
+    });
+  },
 
-      videoElement.onended = () => {
-        currentVideoIndex++;
-        if (currentVideoIndex < this.uploadedVideos.length) {
-          playNextVideo();
-        } else {
-          videoElement.onended = null; // Remove the event listener when done
-        }
-      };
+  async playAllVideos() {
+    let currentVideoIndex = 0;
+    const videoElement = this.$refs.video;
 
-      playNextVideo();
-    },
+    const playNextVideo = async () => {
+      if (currentVideoIndex < this.uploadedVideos.length) {
+        this.selectVideo(currentVideoIndex);
+
+        await new Promise(resolve => videoElement.onloadeddata = resolve);
+        await this.animateTransition(); // Wait for the transition to complete
+
+        videoElement.play();
+      }
+    };
+
+    videoElement.onended = async () => {
+      currentVideoIndex++;
+      if (currentVideoIndex < this.uploadedVideos.length) {
+        await playNextVideo();
+      } else {
+        videoElement.onended = null; // Remove the event listener when done
+      }
+    };
+
+    await playNextVideo();
+  },
+    async saveAllVideos() {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  // Set the canvas size based on your requirements
+  canvas.width = 640;
+  canvas.height = 480;
+
+  const stream = canvas.captureStream();
+  const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+  const chunks = [];
+
+  recorder.ondataavailable = (e) => chunks.push(e.data);
+  recorder.onstop = () => {
+    const blob = new Blob(chunks, { type: 'video/webm' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'combined-video.webm';
+    a.click();
+  };
+
+  recorder.start();
+
+  for (let i = 0; i < this.uploadedVideos.length; i++) {
+    await this.playVideoOnCanvas(this.uploadedVideos[i], canvas, ctx);
+  }
+
+  recorder.stop();
+},
+
+playVideoOnCanvas(videoData, canvas, ctx) {
+  return new Promise((resolve) => {
+    const videoElement = this.$refs.video;
+    videoElement.src = videoData.url;
+
+    const onLoadedData = () => {
+      videoElement.play().then(() => {
+        // Start the drawing loop only after the video starts playing
+        requestAnimationFrame(draw);
+      }).catch((e) => {
+        console.error('Error playing video: ', e);
+      });
+    };
+
+    const draw = () => {
+      if (!videoElement.paused && !videoElement.ended) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+        requestAnimationFrame(draw); // Continue the loop
+      }
+    };
+
+    videoElement.addEventListener('loadeddata', onLoadedData);
+
+    videoElement.onended = () => {
+      videoElement.removeEventListener('loadeddata', onLoadedData);
+      resolve();
+    };
+  });
+},
+
+
   },
 };
 </script>
@@ -1084,4 +1129,23 @@ button {
   top: 50%;
   transform: translateY(-50%);
 }
+
+.sliding-bar-animation {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  background: black;
+  animation: slideLeft 0.5s ease-in-out forwards;
+}
+
+@keyframes slideLeft {
+  from {
+    right: -100%;
+  }
+  to {
+    right: 100%;
+  }
+}
+
 </style>
