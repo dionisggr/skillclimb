@@ -68,38 +68,67 @@
         @change="handleFileUpload($event, index)"
       />
 
-<!-- Sidebar Modules -->
-<a
-  href="#"
-  class="video-lesson mt-5 flex items-center relative border p-2"
-  v-for="(courseModule, index) in course.modules"
-  :key="index"
-  @click.prevent="selectModule(index)"
->
-  <div class="relative mr-2 inline-block w-16">
-    <img
-      :src="courseModule.thumbnail"
-      :alt="courseModule.name"
-      class="rounded-md"
-    />
-    <p
-      class="absolute bottom-0 left-0 right-0 text-center bg-black bg-opacity-50 text-white rounded-b-md px-1 text-[11px]"
-    >
-      {{ courseModule.duration }}
-    </p>
+      <!-- Sidebar Modules -->
+      <div
+        :class="{
+          'border-blue-300 shadow-md': courseModule.id === selectedModule.id,
+          'border-gray-300': courseModule.id !== selectedModule.id,
+        }"
+        class="video-lesson mt-4 flex items-center relative p-2 border rounded-md transition-all duration-300 ease-in-out"
+        :style="
+          courseModule.id === selectedModule.id && 'background-color: #f3f8ff;'
+        "
+        v-for="(courseModule, index) in course.modules"
+        :key="index"
+        @click.prevent="selectModule(index)"
+      >
+        <div class="relative mr-2 inline-block w-16">
+          <img
+            :src="courseModule.thumbnail"
+            :alt="courseModule.name"
+            class="rounded-md"
+          />
+          <p
+            class="absolute bottom-0 left-0 right-0 text-center bg-black bg-opacity-50 text-white rounded-b-md px-1 text-[11px]"
+          >
+            {{ courseModule.duration }}
+          </p>
 
-    <!-- Upload Icon Button -->
-    <div class="absolute -bottom-2 -right-1 mb-1 mr-1">
-      <button @click="uploadThumbnail(index)" class="text-white bg-blue-500 hover:bg-blue-700 rounded-full text-xs px-2">
-        <!-- Replace with your upload icon -->
-        <i class="fa fa-upload"></i>
-      </button>
-    </div>
-  </div>
+          <!-- Upload Icon Button -->
+          <div class="absolute -bottom-2 -right-2 mb-1 mr-1">
+            <button
+              @click="uploadThumbnail(index)"
+              class="text-white bg-blue-500 hover:bg-blue-700 rounded-full text-xs p-1 px-2"
+            >
+              <!-- Replace with your upload icon -->
+              <i class="fa fa-upload"></i>
+            </button>
+          </div>
+        </div>
 
-        <div v-if="!courseModule.edit" class="inline-block w-2/3">
-          <p class="text-sm font-bold text-center">{{ courseModule.name }}</p>
+        <div
+          v-if="!courseModule.edit"
+          class="inline-block w-2/3 overflow-hidden"
+        >
+          <p class="text-sm font-bold text-center px-2">
+            {{ courseModule.name }}
+          </p>
+
           <!-- Progress Bar here -->
+          <div
+            v-if="!isContentCreator"
+            class="relative h-4 w-full rounded-full bg-gray-200 mt-2"
+          >
+            <div
+              class="absolute left-0 h-full rounded-full bg-green-400"
+              :style="{ width: courseModule.progress + '%' }"
+            ></div>
+            <div
+              class="absolute bottom-0 left-0 right-0 top-0 flex items-center justify-center text-xs"
+            >
+              {{ courseModule.progressText }}
+            </div>
+          </div>
         </div>
 
         <div v-else class="inline-block w-2/3">
@@ -108,12 +137,23 @@
             v-model="editedModule.name"
             class="text-sm font-bold text-center w-full"
           />
-          <button @click="saveModule(index)" class="text-green-500">
-            Save
-          </button>
-          <button @click="cancelEdit(index)" class="text-red-500">
-            Cancel
-          </button>
+          <!-- Icon-based Save and Cancel buttons -->
+          <div class="flex justify-center mt-2">
+            <button
+              @click="saveModule(index)"
+              class="text-green-500 hover:text-green-700 mr-2"
+            >
+              <!-- Replace with your save icon -->
+              <i class="fa fa-check-circle"></i>
+            </button>
+            <button
+              @click="cancelEdit(index)"
+              class="text-red-500 hover:text-red-700"
+            >
+              <!-- Replace with your cancel icon -->
+              <i class="fa fa-times-circle"></i>
+            </button>
+          </div>
         </div>
 
         <!-- Icon buttons -->
@@ -135,7 +175,7 @@
             <i class="fa fa-trash"></i>
           </button>
         </div>
-      </a>
+      </div>
 
       <button
         v-if="isContentCreator"
@@ -157,19 +197,31 @@
         <chevron-right size="20" class="mx-1" />
       </div>
 
-      <h2 class="text-2xl font-bold m-1 mt-4">{{ currentLesson?.title }}</h2>
+      <h2 class="text-2xl font-bold m-1 mt-4">{{ selectedLesson?.title }}</h2>
 
       <!-- Course Video and Right Section -->
       <div class="mb-6 flex flex-col md:flex-row">
-        <iframe
-          src="https://www.youtube.com/embed/o5MutYFWsM8?si=fgz694AFm8ol7rae"
-          title="YouTube video player"
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowfullscreen
-          class="h-52 rounded-2xl w-full md:h-auto mb-4 md:mb-0"
-        ></iframe>
+        <div
+          class="relative block rounded-lg shadow-lg overflow-hidden mx-auto w-full max-w-4xl"
+        >
+          <!-- Iframe -->
+          <iframe
+            :src="selectedLesson?.videoUrl"
+            title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            class="h-full rounded-2xl w-full mb-4 md:mb-0"
+          ></iframe>
 
+          <!-- Remove Video Button -->
+          <button
+            @click="removeVideo"
+            class="absolute bottom-2 right-2 text-sm bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Remove
+          </button>
+        </div>
         <!-- Right Section: Video Description and Topics -->
         <div
           class="flex-grow ml-0 md:ml-4 flex w-full md:w-2/5 flex-col space-y-4"
@@ -183,10 +235,15 @@
             <div v-for="(lesson, index) in selectedModule.lessons" :key="index">
               <!-- Video Entry -->
               <div
-                class="video-lesson mt-3 flex items-center p-3 border border-blue-700 rounded-md shadow-md hover:shadow-lg border-opacity-30"
-                @click="toggleVideo(index)"
+                class="video-lesson mt-3 flex items-center p-3 border border-blue-500 rounded-md shadow-md hover:shadow-lg border-opacity-30"
+                @click="selectLesson(index)"
                 :class="{
-                  'bg-blue-50 hover:bg-blue-50': activeVideoIndex === index,
+                  'border-blue-800 shadow-lg': selectedLesson.id === lesson.id,
+                  'hover:bg-blue-50': selectedLesson.id !== lesson.id,
+                }"
+                :style="{
+                  'background-color':
+                    selectedLesson.id === lesson.id ? '#f3f8ff' : 'white',
                 }"
               >
                 <div class="relative mr-2 inline-block w-16">
@@ -216,19 +273,19 @@
 
               <!-- Expanded Details Section for the current Video Entry -->
               <div
-                v-if="activeVideoIndex === index"
+                v-if="lesson.id === selectedLesson.id"
                 class="p-3 bg-gray-50 border rounded-md"
               >
                 <p class="text-xs italic">{{ lesson.description }}</p>
                 <ul class="space-y-2">
                   <li
-                    v-for="topic in currentLesson.topics"
+                    v-for="topic in selectedLesson?.topics"
                     :key="topic"
                     @click="selectTopic(topic)"
-                    class="cursor-pointer border rounded-lg px-4 py-2 flex text-sm font-medium items-center hover:bg-blue-100 hover:text-blue-700 transition-all duration-300"
+                    class="cursor-pointer border rounded-lg px-4 py-2 flex text-sm font-medium items-center hover:bg-gray-100 hover:text-gray-700 transition-all duration-300"
                     :class="{
-                      'bg-blue-200 text-blue-800 border-blue-500':
-                        selectedSubtopic === topic,
+                      'bg-gray-200 hover:bg-gray-200 text-gray-800 border-gray-300':
+                        selectedTopic.id === topic.id,
                       'line-through': topic.discussed,
                     }"
                   >
@@ -535,11 +592,13 @@ export default {
     Practice,
   },
   mounted() {
-    this.selectedModule = this.course.modules[0];
-    this.openSubtopics.push(this.selectedModule.lessons[0]?.id);
+    this.selectModule(0);
+    this.selectLesson(0);
     this.activeVideoIndex = 0;
-    this.selectedTopic = this.currentLesson.topics[0];
+    this.selectedTopic = this.selectedLesson?.topics[0];
     this.selectedSubtopic = this.selectedTopic.subtopics.Simplified[0];
+
+    this.openSubtopics.push(this.selectedLesson.id);
   },
   data() {
     return {
@@ -552,24 +611,6 @@ export default {
       selectedSubtopic: null,
       showPractice: false,
       selectedInformation: 'Simplified',
-      miniVideos: [
-        // sample data
-        {
-          id: 1,
-          title: 'Topic 1',
-          thumbnail: 'https://via.placeholder.com/150',
-          duration: '5:20',
-          isSelected: false,
-        },
-        {
-          id: 2,
-          title: 'Topic 2',
-          thumbnail: 'https://via.placeholder.com/150',
-          duration: '7:10',
-          isSelected: false,
-        },
-        // ... more mini-videos
-      ],
       showPractice: false,
       showAssessments: false,
       course: {
@@ -586,6 +627,7 @@ export default {
               {
                 id: 1,
                 title: 'AI, LLMS and ChatGPT',
+                videoUrl: 'https://www.youtube.com/embed/o5MutYFWsM8?si=fgz694AFm8ol7rae',
                 thumbnail:
                   'https://d-cb.jc-cdn.com/sites/crackberry.com/files/styles/large/public/article_images/2023/08/openai-logo.jpg',
                 duration: '5m 20s',
@@ -849,6 +891,7 @@ export default {
               {
                 id: 2,
                 title: 'ChatGPT And The (Modern) Job Market',
+                videoUrl: 'https://www.youtube.com/embed/o5MutYFWsM8?si=fgz694AFm8ol7rae',
                 thumbnail:
                   'https://d-cb.jc-cdn.com/sites/crackberry.com/files/styles/large/public/article_images/2023/08/openai-logo.jpg',
                 duration: '7m 10s',
@@ -970,62 +1013,244 @@ export default {
               {
                 id: 3,
                 title: 'Crafting Effective Prompts',
+                videoUrl: 'https://www.youtube.com/embed/o5MutYFWsM8?si=fgz694AFm8ol7rae',
                 thumbnail:
                   'https://d-cb.jc-cdn.com/sites/crackberry.com/files/styles/large/public/article_images/2023/08/openai-logo.jpg',
                 duration: '7m 10s',
                 progress: 20,
                 progressText: '20%',
-                subtopics: [
+                topics: [
                   {
-                    id: 1,
-                    name: 'Prompt Psychology: Intent, Context & Structure',
-                    supplementalInfo: 'Lorem ipsum',
+                    id: 6,
+                    title: 'How Recruiters Are Leveraging ChatGPT',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      {
+                        id: 1,
+                        name: 'Screening Applications',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 2,
+                        name: 'Communication & Networking',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 3,
+                        name: 'Deepening Interviews',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 4,
+                        name: 'Automation & "Efficiency"',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                    ],
                   },
                   {
-                    id: 1,
-                    name: 'Leveraging & Avoiding Biases',
-                    supplementalInfo: 'Lorem ipsum',
+                    id: 7,
+                    title: 'The New Problem With Job Searching',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      {
+                        id: 1,
+                        name: 'Job Searching & AI',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 2,
+                        name: 'Applicant Expectations vs Hiring Realities',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 3,
+                        name: 'Metric-Obsessed "Human" Resources',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 4,
+                        name: 'Skill Evaluation vs Depth of Knowledge',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                    ],
                   },
                   {
-                    id: 2,
-                    name: 'Refining & Iterating Prompts',
-                    supplementalInfo: 'Lorem ipsum',
-                  },
-                  {
-                    id: 3,
-                    name: 'Prompt Engineering Basics',
-                    supplementalInfo: 'Lorem ipsum',
+                    id: 8,
+                    title: 'How Applicants Are Taking Advantage of ChatGPT',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '4:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      {
+                        id: 1,
+                        name: 'Writing Resumes & Cover Letters',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 2,
+                        name: 'Optimizing for ATS',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 3,
+                        name: 'Communication & Networking',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 4,
+                        name: 'Company & Role Research',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 5,
+                        name: 'Comprehensive Interview Prep',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 6,
+                        name: 'Generating High-Quality Questions',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 7,
+                        name: 'Salary Negotation Strategies',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 8,
+                        name: 'Personal Brand Building',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                    ],
                   },
                 ],
               },
               {
                 id: 4,
+                videoUrl: 'https://www.youtube.com/embed/o5MutYFWsM8?si=fgz694AFm8ol7rae',
                 title: 'Exploring Common Prompts',
                 thumbnail:
                   'https://d-cb.jc-cdn.com/sites/crackberry.com/files/styles/large/public/article_images/2023/08/openai-logo.jpg',
                 duration: '7m 10s',
                 progress: 20,
                 progressText: '20%',
-                subtopics: [
+                topics: [
                   {
-                    id: 1,
-                    name: 'Role Prompting',
-                    supplementalInfo: 'Lorem ipsum',
+                    id: 6,
+                    title: 'How Recruiters Are Leveraging ChatGPT',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      {
+                        id: 1,
+                        name: 'Screening Applications',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 2,
+                        name: 'Communication & Networking',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 3,
+                        name: 'Deepening Interviews',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 4,
+                        name: 'Automation & "Efficiency"',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                    ],
                   },
                   {
-                    id: 2,
-                    name: 'Context & Reference',
-                    supplementalInfo: 'Lorem ipsum',
+                    id: 7,
+                    title: 'The New Problem With Job Searching',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '7:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      {
+                        id: 1,
+                        name: 'Job Searching & AI',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 2,
+                        name: 'Applicant Expectations vs Hiring Realities',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 3,
+                        name: 'Metric-Obsessed "Human" Resources',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 4,
+                        name: 'Skill Evaluation vs Depth of Knowledge',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                    ],
                   },
                   {
-                    id: 3,
-                    name: 'Specifying Audience',
-                    supplementalInfo: 'Lorem ipsum',
-                  },
-                  {
-                    id: 4,
-                    name: 'Providing Examples',
-                    supplementalInfo: 'Lorem ipsum',
+                    id: 8,
+                    title: 'How Applicants Are Taking Advantage of ChatGPT',
+                    thumbnail: 'https://via.placeholder.com/150',
+                    duration: '4:10',
+                    progress: 100,
+                    isSelected: false,
+                    subtopics: [
+                      {
+                        id: 1,
+                        name: 'Writing Resumes & Cover Letters',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 2,
+                        name: 'Optimizing for ATS',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 3,
+                        name: 'Communication & Networking',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 4,
+                        name: 'Company & Role Research',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 5,
+                        name: 'Comprehensive Interview Prep',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 6,
+                        name: 'Generating High-Quality Questions',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 7,
+                        name: 'Salary Negotation Strategies',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                      {
+                        id: 8,
+                        name: 'Personal Brand Building',
+                        supplementalInfo: 'Lorem ipsum',
+                      },
+                    ],
                   },
                 ],
               },
@@ -1235,7 +1460,7 @@ export default {
                       },
                       {
                         id: 2,
-                        name: 'Structuring Resume Sectionsn for Maximum Impact',
+                        name: 'Structuring Resume Sections for Maximum Impact',
                         supplementalInfo: 'Lorem ipsum',
                       },
                       {
@@ -1300,7 +1525,7 @@ export default {
             ],
           },
           {
-            id: 3,
+            id: 4,
             name: 'LinkedIn Networking Strategies',
             thumbnail: 'https://via.placeholder.com/150',
             lessons: [
@@ -1568,7 +1793,7 @@ export default {
             ],
           },
           {
-            id: 4,
+            id: 5,
             name: 'Navigating Interviews',
             thumbnail: 'https://via.placeholder.com/150',
             lessons: [
@@ -1688,7 +1913,7 @@ export default {
             ],
           },
           {
-            id: 5,
+            id: 6,
             name: 'Virtual Interview Etiquette',
             thumbnail: 'https://via.placeholder.com/150',
             lessons: [
@@ -1817,160 +2042,6 @@ export default {
           name: "What's the possibility of an AI takeover?",
           supplementalInfo: 'Lorem ipsum',
         },
-        // ... more generated subtopics
-      ],
-      sections: [
-        {
-          title: 'Mock Video Title',
-          thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg',
-          duration: '3:32',
-          show: false,
-          progress: 70,
-          topics: [
-            {
-              name: 'Topic 1',
-              discussed: true,
-              subTopics: [
-                {
-                  name: 'Subtopic 1',
-                  supplementalInfo:
-                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sodales ullamcorper vehicula.',
-                },
-                {
-                  name: 'Subtopic 2',
-                  supplementalInfo:
-                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sodales ullamcorper vehicula.',
-                },
-              ],
-            },
-            {
-              name: 'Topic 2',
-              discussed: false,
-              subTopics: [
-                {
-                  name: 'Subtopic 1',
-                  supplementalInfo:
-                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sodales ullamcorper vehicula.',
-                },
-                {
-                  name: 'Subtopic 2',
-                  supplementalInfo:
-                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sodales ullamcorper vehicula.',
-                },
-              ],
-            },
-            {
-              name: 'Topic 3',
-              discussed: false,
-              subTopics: [
-                {
-                  name: 'Subtopic 1',
-                  supplementalInfo:
-                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sodales ullamcorper vehicula.',
-                },
-                {
-                  name: 'Subtopic 2',
-                  supplementalInfo:
-                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sodales ullamcorper vehicula.',
-                },
-              ],
-            },
-            {
-              name: 'Topic 4',
-              discussed: false,
-              subTopics: [
-                {
-                  name: 'Subtopic 1',
-                  supplementalInfo: 'Lorem',
-                },
-              ],
-            },
-            {
-              name: 'Topic 5',
-              discussed: false,
-              subTopics: [
-                {
-                  name: 'Subtopic 1',
-                  supplementalInfo: 'Lorem',
-                },
-              ],
-            },
-          ],
-          supplementalInfo:
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sodales ullamcorper vehicula.',
-        },
-        {
-          title: 'Mock Video Title',
-          thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg',
-          duration: '2:32',
-          show: false,
-          progress: 0,
-          topics: [
-            {
-              name: 'Topic 1',
-              discussed: false,
-              subTopics: ['Subtopic 1', 'Subtopic 2'],
-            },
-            {
-              name: 'Topic 2',
-              discussed: false,
-              subTopics: ['Subtopic 1', 'Subtopic 2'],
-            },
-            {
-              name: 'Topic 3',
-              discussed: false,
-              subTopics: ['Subtopic 1', 'Subtopic 2'],
-            },
-            {
-              name: 'Topic 4',
-              discussed: false,
-              subTopics: ['Subtopic 1', 'Subtopic 2'],
-            },
-            {
-              name: 'Topic 5',
-              discussed: false,
-              subTopics: ['Subtopic 1', 'Subtopic 2'],
-            },
-          ],
-          supplementalInfo:
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sodales ullamcorper vehicula.',
-        },
-        {
-          title: 'Mock Video Title',
-          thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg',
-          duration: '4:32',
-          show: false,
-          progress: 0,
-          topics: [
-            {
-              name: 'Topic 1',
-              discussed: false,
-              subTopics: ['Subtopic 1', 'Subtopic 2'],
-            },
-            {
-              name: 'Topic 2',
-              discussed: false,
-              subTopics: ['Subtopic 1', 'Subtopic 2'],
-            },
-            {
-              name: 'Topic 3',
-              discussed: false,
-              subTopics: ['Subtopic 1', 'Subtopic 2'],
-            },
-            {
-              name: 'Topic 4',
-              discussed: false,
-              subTopics: ['Subtopic 1', 'Subtopic 2'],
-            },
-            {
-              name: 'Topic 5',
-              discussed: false,
-              subTopics: ['Subtopic 1', 'Subtopic 2'],
-            },
-          ],
-          supplementalInfo:
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sodales ullamcorper vehicula.',
-        },
       ],
       practices: [
         {
@@ -2053,29 +2124,11 @@ export default {
     toggleSidebar() {
       this.sidebarOpen = !this.sidebarOpen;
     },
-    toggleSection(index) {
-      this.sections[index].show = !this.sections[index].show;
-    },
     hoverMiniVideo(id) {
       // Do something on hover if required
     },
     unhoverMiniVideo(id) {
       // Reset hover effects if required
-    },
-    selectMiniVideo(id) {
-      this.miniVideos = this.miniVideos.map((video) => {
-        video.isSelected = video.id === id;
-        return video;
-      });
-    },
-    toggleVideo(index) {
-      if (this.activeVideoIndex === index) {
-        this.activeVideoIndex = null;
-      } else {
-        this.activeVideoIndex = index;
-      }
-
-      this.$forceUpdate();
     },
     selectTopic(topic) {
       this.selectedTopic = topic;
@@ -2090,7 +2143,8 @@ export default {
       this.selectedOption = 'Lorem ipsum dolor sit amet option ' + option;
     },
     selectModule(index) {
-      this.selectedLessonIndex = index; // Update the selected lesson index
+      this.selectedModule = this.course.modules[index];
+      this.selectedLesson = this.selectedModule.lessons[1];
     },
     isSelectedLesson(index) {
       return this.selectedLessonIndex === index; // Check if the lesson is selected
@@ -2158,6 +2212,13 @@ export default {
         this.selectedPractice = practice;
       }
     },
+    selectLesson(index) {
+      this.selectedLesson = this.selectedModule.lessons[index];
+      this.selectedTopic = this.selectedLesson.topics[0];
+
+      this.$forceUpdate();
+
+    },
     async editLesson(index) {
       this.currentLesson = this.course.modules[index];
 
@@ -2215,7 +2276,7 @@ export default {
       const reader = new FileReader();
 
       reader.onload = (e) => {
-        console.log(e.target.result)
+        console.log(e.target.result);
         this.editedModule.thumbnail = e.target.result;
       };
 
