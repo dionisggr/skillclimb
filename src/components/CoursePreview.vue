@@ -304,9 +304,7 @@
           <p class="text-2xl font-semibold">{{ instructor?.name }}</p>
           <p class="mb-2">{{ instructor?.title }}</p>
           <p>{{ instructor?.bio }}</p>
-          <a
-            :href="instructor?.website"
-            class="block mt-4 text-sm underline"
+          <a :href="instructor?.website" class="block mt-4 text-sm underline"
             >Visit Instructor's Website</a
           >
         </div>
@@ -355,24 +353,41 @@ export default {
   mounted() {
     if (this.isNewCourse || this.user?.id.includes('new-instructor')) {
       this.createNewCourse();
+    } else {
+      this.setup();
     }
   },
   data() {
     return {
       isLoggedIn: false,
-      videoSrc: 'https://www.youtube.com/embed/5qap5aO4i9A',
+      videoSrc: '',
       isEditingCurriculum: false,
       isEditingLearnings: false,
       isEditingInstructor: false,
-      instructor: {
-          id: 'active-instructor',
-          name: 'John Doe',
-          title: 'Senior Vue.js Developer',
-          bio: 'A passionate web developer and instructor with over 10 years of experience. John has taught over 50,000 students online and has worked on numerous web projects using Vue.js.',
-          imageUrl: '//placekitten.com/200/200',
-          website: 'https://johndoe.com',
-        },
-      course: {
+      instructor: {},
+      course: {},
+    };
+  },
+  computed: {
+    isContentCreator() {
+      return this.user?.id?.includes('instructor');
+    },
+    isEnrolled() {
+      return this.user?.id?.includes('active-student');
+    },
+  },
+  methods: {
+    setup() {
+      this.videoSrc = 'https://www.youtube.com/embed/5qap5aO4i9A';
+      this.instructor = {
+        id: 'active-instructor',
+        name: 'John Doe',
+        title: 'Senior Vue.js Developer',
+        bio: 'A passionate web developer and instructor with over 10 years of experience. John has taught over 50,000 students online and has worked on numerous web projects using Vue.js.',
+        imageUrl: '//placekitten.com/200/200',
+        website: 'https://johndoe.com',
+      };
+      this.course = {
         id: 1,
         name: 'Job Searching with ChatGPT',
         description:
@@ -1466,18 +1481,8 @@ export default {
             ],
           },
         ],
-      },
-    };
-  },
-  computed: {
-    isContentCreator() {
-      return this.user?.id?.includes('instructor');
+      }
     },
-    isEnrolled() {
-      return this.user?.id?.includes('active-student');
-    }
-  },
-  methods: {
     triggerFileInput() {
       this.$refs.videoInput.click();
     },
@@ -1540,15 +1545,19 @@ export default {
     },
     toggleInstructorEdit() {
       this.isEditingInstructor = !this.isEditingInstructor;
-    }
+    },
   },
   watch: {
     'user.id'(newId) {
       if (newId?.includes('new-instructor')) {
-      this.createNewCourse();
-    }
-    }
-  }
+        this.createNewCourse();
+      }
+
+      if (newId?.includes('active-instructor')) {
+
+      }
+    },
+  },
 };
 </script>
 

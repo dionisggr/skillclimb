@@ -250,7 +250,7 @@
 
           <!-- Upload Button - shown only if selectedLesson.videoUrl is null -->
           <button
-            v-if="!selectedLessson?.videoUrl && isContentCreator"
+            v-if="!selectedLesson?.videoUrl && isContentCreator"
             @click="uploadVideo"
             class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-lg bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded"
           >
@@ -1124,7 +1124,9 @@ export default {
       reader.readAsDataURL(file);
     },
     removeVideo() {
-      this.selectedLesson.videoUrl = null;
+      if (confirm('Are you sure you want to remove this video?')) {
+        this.selectedLesson.videoUrl = null;
+      }
     },
     editLesson(index) {
       const lesson = this.selectedModule.lessons[index];
