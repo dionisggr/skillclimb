@@ -302,15 +302,24 @@
               >
                 <div class="relative mr-2 inline-block w-16">
                   <img
-                    :src="lesson.thumbnail"
+                    :src="editedLesson?.id === lesson.id ? editedLesson?.thumbnail : lesson.thumbnail"
                     :alt="lesson.title"
                     class="rounded-md"
                   />
                   <p
+                    v-if="!lesson.isEditing"
                     class="absolute bottom-0 left-0 right-0 text-center bg-black bg-opacity-50 text-white rounded-b-md px-1 text-[11px]"
                   >
                     {{ lesson.duration }}
                   </p>
+
+<!-- Upload Button and File Input (Visible only when editing) -->
+<div v-if="lesson.isEditing" class="absolute -bottom-0.5 -left-0.5 w-1/2">
+      <input type="file" :ref="`thumbnail-${index}`" class="hidden" @change="handleThumbnailChange($event, index)" accept="image/*" />
+      <button @click="openThumbnailInput(index)" class="bg-blue-500 text-white text-xs p-2 rounded-full flex justify-center items-center">
+        <i class="fa fa-upload"></i>
+      </button>
+    </div>
                 </div>
                 <div v-if="!lesson.isEditing" class="inline-block w-2/3">
                   <p class="text-sm font-bold ml-1">{{ lesson.title }}</p>
@@ -2775,6 +2784,32 @@ export default {
           ],
         },
       ];
+    },
+    addLesson() {
+      this.selectedModule.lessons.push({
+        id: Date.now().toLocaleString(),
+        title: 'New Lesson',
+        thumbnail: 'https://via.placeholder.com/150',
+        duration: '0:00',
+        progress: 0,
+        progressText: '0%',
+        topics: [],
+      });
+    },
+    handleThumbnailChange(event, index) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      // Process file upload here
+      // For example, using FileReader to read the file and set it as the new thumbnail
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.editedLesson.thumbnail = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    },
+    openThumbnailInput(index) {
+      this.$refs[`thumbnail-${index}`]?.[0].click();
     },
   },
   watch: {
