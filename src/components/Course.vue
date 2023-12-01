@@ -65,7 +65,7 @@
         ref="thumbnail"
         accept="image/*"
         class="hidden"
-        @change="handleFileUpload($event, index)"
+        @change="handleThumbnailUpload($event, index)"
       />
 
       <!-- Sidebar Modules -->
@@ -197,37 +197,86 @@
         <chevron-right size="20" class="mx-1" />
       </div>
 
-      <h2 class="text-2xl font-bold m-1 mt-4">{{ selectedLesson?.title }}</h2>
+      <div class="flex items-center">
+        <h2 v-if="!isEditingLessonTitle" class="text-2xl font-bold m-1 mt-4">
+          {{ selectedLesson?.title }}
+        </h2>
+        <input
+          v-else
+          type="text"
+          v-model="editedLesson.title"
+          class="text-2xl font-bold m-1 mt-4 border-b-2 border-gray-300"
+        />
+        <button
+          @click="isEditingLessonTitle ? saveLesson(index) : editLessonTitle()"
+          class="ml-2"
+        >
+          <span v-if="!isEditingLessonTitle">✎</span>
+          <span v-else>✔️</span>
+        </button>
+        <button
+          v-if="isEditingLessonTitle"
+          @click="cancelEditLesson"
+          class="ml-2"
+        >
+          ❌
+        </button>
+      </div>
 
       <!-- Course Video and Right Section -->
       <div class="mb-6 flex flex-col md:flex-row">
         <div
-          class="relative block rounded-lg shadow-lg overflow-hidden mx-auto w-full max-w-4xl"
+          :class="{
+            'relative block rounded-lg overflow-hidden mx-auto w-full max-w-4xl': true,
+            'shadow-lg': selectedLesson?.videoUrl,
+          }"
         >
-          <!-- Iframe -->
+          <!-- Iframe - shown only if selectedLesson.videoUrl is not null -->
           <iframe
+            v-if="selectedLesson?.videoUrl"
             :src="selectedLesson?.videoUrl"
             title="YouTube video player"
             frameborder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowfullscreen
             class="h-full rounded-2xl w-full mb-4 md:mb-0"
+            :autoplay="false"
           ></iframe>
+
+          <!-- Upload Button - shown only if selectedLesson.videoUrl is null -->
+          <button
+            v-else
+            @click="uploadVideo"
+            class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-lg bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded"
+          >
+            Upload
+          </button>
+
+          <!-- File Input - hidden -->
+          <input
+            type="file"
+            ref="video"
+            @change="handleVideoUpload"
+            accept="video/*"
+            hidden
+          />
 
           <!-- Remove Video Button -->
           <button
+            v-if="selectedLesson?.videoUrl && isContentCreator"
             @click="removeVideo"
             class="absolute bottom-2 right-2 text-sm bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
           >
             Remove
           </button>
         </div>
+
         <!-- Right Section: Video Description and Topics -->
         <div
           class="flex-grow ml-0 md:ml-4 flex w-full md:w-2/5 flex-col space-y-4"
         >
           <!-- Video Topics -->
-          <div class="h-[400px] overflow-y-auto">
+          <div class="h-[400px] overflow-y-auto pb-12">
             <p class="mb-2 font-semibold text-lg text-gray-800">
               Module Lessons:
             </p>
@@ -235,7 +284,7 @@
             <div v-for="(lesson, index) in selectedModule.lessons" :key="index">
               <!-- Video Entry -->
               <div
-                class="video-lesson mt-3 flex items-center p-3 border border-blue-500 rounded-md shadow-md hover:shadow-lg border-opacity-30"
+                class="relative video-lesson mt-3 flex items-center p-3 border border-blue-500 rounded-md shadow-md hover:shadow-lg border-opacity-30"
                 @click="selectLesson(index)"
                 :class="{
                   'border-blue-800 shadow-lg': selectedLesson.id === lesson.id,
@@ -258,9 +307,10 @@
                     {{ lesson.duration }}
                   </p>
                 </div>
-                <div class="inline-block w-2/3">
+                <div v-if="!lesson.isEditing" class="inline-block w-2/3">
                   <p class="text-sm font-bold ml-1">{{ lesson.title }}</p>
                   <div
+                    v-if="!isContentCreator"
                     class="relative h-2 w-full rounded-full bg-gray-300 mt-2 mb-2"
                   >
                     <div
@@ -268,6 +318,50 @@
                       :style="{ width: lesson.progress + '%' }"
                     ></div>
                   </div>
+                </div>
+                <!-- Editable Lesson Title -->
+                <div v-else class="inline-block w-2/3 mt-2">
+                  <input
+                    type="text"
+                    v-model="editedLesson.title"
+                    class="w-full p-1 border rounded-md text-sm"
+                  />
+                </div>
+                <!-- Edit and Delete Icons (Absolute Positioning) -->
+                <div
+                  v-if="isContentCreator && !lesson.isEditing"
+                  class="absolute top-1 right-3 flex flex-col h-5/6 justify-between"
+                >
+                  <button
+                    @click.stop="editLesson(index)"
+                    class="text-blue-500 hover:text-blue-700"
+                  >
+                    ✎
+                  </button>
+                  <button
+                    @click.stop="confirmDeleteLesson(index)"
+                    class="text-red-500 hover:text-red-700"
+                  >
+                    🗑
+                  </button>
+                </div>
+                <!-- Save and Cancel Icons for Editing -->
+                <div
+                  v-if="isContentCreator && lesson.isEditing"
+                  class="absolute top-1 right-3 flex space-x-3 text-xs"
+                >
+                  <button
+                    @click="saveLesson(index)"
+                    class="text-green-500 hover:text-green-700"
+                  >
+                    ✔️
+                  </button>
+                  <button
+                    @click="cancelLessonEdit(index)"
+                    class="text-red-500 hover:text-red-700"
+                  >
+                    ❌
+                  </button>
                 </div>
               </div>
 
@@ -279,25 +373,85 @@
                 <p class="text-xs italic">{{ lesson.description }}</p>
                 <ul class="space-y-2">
                   <li
-                    v-for="topic in selectedLesson?.topics"
-                    :key="topic"
-                    @click="selectTopic(topic)"
-                    class="cursor-pointer border rounded-lg px-4 py-2 flex text-sm font-medium items-center hover:bg-gray-100 hover:text-gray-700 transition-all duration-300"
+                    v-for="(topic, topicIndex) in selectedLesson?.topics"
+                    :key="topic.id"
+                    class="relative cursor-pointer border rounded-lg px-4 py-2 flex justify-between text-sm font-medium items-center hover:bg-gray-100 hover:text-gray-700 transition-all duration-300"
                     :class="{
                       'bg-gray-200 hover:bg-gray-200 text-gray-800 border-gray-300':
                         selectedTopic.id === topic.id,
                       'line-through': topic.discussed,
                     }"
                   >
-                    <!-- Mocked timestamp -->
-                    <span class="mr-4 text-xs text-gray-500">{{
-                      topic.timestamp || '00:00'
-                    }}</span>
-                    {{ topic.title }}
+                    <div
+                      class="flex items-center my-3"
+                      @click="selectTopic(topic)"
+                    >
+                      <!-- Mocked timestamp -->
+                      <span class="mr-4 text-xs text-gray-500">{{
+                        topic.timestamp || '00:00'
+                      }}</span>
+                      <span v-if="!topic.isEditing" class="mr-4 block">{{
+                        topic.title
+                      }}</span>
+                      <input
+                        v-else
+                        type="text"
+                        v-model="editedTopic.title"
+                        class="text-sm w-full"
+                      />
+                    </div>
+                    <div
+                      class="flex flex-col justify-between h-full absolute right-0"
+                    >
+                      <!-- Edit and Delete Icons -->
+                      <button
+                        v-if="!topic.isEditing"
+                        @click.stop="editTopic(topic)"
+                        class="text-blue-500 hover:text-blue-700 mr-2 text-lg mt-0.5"
+                      >
+                        ✎
+                      </button>
+                      <button
+                        v-if="topic.isEditing"
+                        @click.stop="saveTopicEdit(topicIndex)"
+                        class="text-green-500 hover:text-green-700 mr-2 text-xs mt-0.5"
+                      >
+                        ✔️
+                      </button>
+                      <button
+                        v-if="topic.isEditing"
+                        @click.stop="cancelTopicEdit(topicIndex)"
+                        class="text-red-500 hover:text-red-700 mr-2 text-xs mb-0.5"
+                      >
+                        ❌
+                      </button>
+                      <button
+                        v-if="!topic.isEditing"
+                        @click.stop="confirmDeleteTopic(topicIndex)"
+                        class="text-red-500 hover:text-red-700 text-sm mb-0.5"
+                      >
+                        🗑
+                      </button>
+                    </div>
                   </li>
                 </ul>
+                <!-- Add Topic Button for the current lesson -->
+                <button
+                  @click="addTopic()"
+                  class="my-4 p-1 px-2 bg-amber-400 text-sm block mx-auto text-white rounded-md"
+                >
+                  Add Topic
+                </button>
               </div>
             </div>
+
+            <!-- Add Lesson Button -->
+            <button
+              @click="addLesson"
+              class="mt-4 p-2 px-3 block bg-blue-500 text-white rounded-xl mx-auto"
+            >
+              Add Lesson
+            </button>
           </div>
         </div>
       </div>
@@ -319,172 +473,91 @@
           <h3 v-if="!selectedSubtopic.name" class="text-3xl font-semibold mb-2">
             General Information
           </h3>
-
-          <!-- Toggle Buttons -->
-          <div
-            class="mt-4 lg:mt-0 mb-4 space-x-4 overflow-x-auto no-scrollbar lg:overflow-visible flex lg:justify-center ml-auto p-1 px-2"
-          >
-            <button
-              @click="setOption('Simplified')"
-              :class="
-                selectedInformation === 'Simplified'
-                  ? 'bg-yellow-500 text-white ring-2 ring-yellow-300 ring-offset-1 shadow-2xl scale-105'
-                  : 'bg-yellow-200 text-yellow-800 scale-100'
-              "
-              class="px-6 py-2 rounded-full font-semibold text-sm transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50 hover:shadow-md transform hover:-translate-y-1 hover:scale-105 whitespace-nowrap"
-            >
-              Simplified
-            </button>
-            <button
-              @click="setOption('Explore')"
-              :class="
-                selectedInformation === 'Explore'
-                  ? 'bg-blue-500 text-white ring-2 ring-blue-300 ring-offset-1 shadow-2xl scale-105'
-                  : 'bg-blue-200 text-blue-800 scale-100'
-              "
-              class="px-6 py-2 rounded-full font-semibold text-sm transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 hover:shadow-md transform hover:-translate-y-1 hover:scale-105 whitespace-nowrap"
-            >
-              Explore
-            </button>
-            <button
-              @click="setOption('For You')"
-              :class="
-                selectedInformation === 'For You'
-                  ? 'bg-green-500 text-white ring-2 ring-green-300 ring-offset-1 shadow-2xl scale-105'
-                  : 'bg-green-200 text-green-800 scale-100'
-              "
-              class="min-w-fit px-6 py-2 rounded-full font-semibold text-sm transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 hover:shadow-md transform hover:-translate-y-1 hover:scale-105 whitespace-nowrap"
-            >
-              For You
-            </button>
-            <button
-              @click="setOption('Examples')"
-              :class="
-                selectedInformation === 'Examples'
-                  ? 'bg-red-500 text-white ring-2 ring-red-300 ring-offset-1 shadow-2xl scale-105'
-                  : 'bg-red-200 text-red-800 scale-100'
-              "
-              class="px-6 py-2 rounded-full font-semibold text-sm transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 hover:shadow-md transform hover:-translate-y-1 hover:scale-105 whitespace-nowrap"
-            >
-              Examples
-            </button>
-          </div>
         </div>
 
         <template v-if="!selectedSubtopic.name">
           <div
-            v-for="subtopic in currentTopic.subtopics[selectedInformation]"
+            v-for="(subtopic, subtopicIndex) in selectedTopic?.subtopics?.[
+              selectedInformation
+            ]"
             :key="subtopic.id"
             class="border p-4 py-6 rounded-lg mb-3 hover:shadow-lg transition-shadow"
           >
-            <!-- Collapsible Header -->
-            <div
-              @click="toggleCollapse(subtopic.id)"
-              class="flex items-center cursor-pointer"
-            >
-              <span
-                :class="['rotate-icon', { open: isOpen(subtopic.id) }]"
-                class="text-lg"
-                >▼</span
-              >
-              <h4 class="ml-3 text-lg font-semibold">{{ subtopic.title }}</h4>
-            </div>
+ <!-- Collapsible Header -->
+  <div class="flex items-center cursor-pointer" @click="toggleCollapse(subtopic.id)">
+    <span :class="['rotate-icon', { open: isOpen(subtopic.id) }]" class="text-lg">▼</span>
+    <div class="flex-grow ml-3 flex items-center">
+      <h4 v-if="!subtopic.isEditing" class="text-lg font-semibold">{{ subtopic.title }}</h4>
+      <input v-else type="text" v-model="editedSubtopic.title" class="text-lg font-semibold flex-grow mr-2" @click.stop="" />
+
+      <!-- Edit Button -->
+      <button
+        v-if="isContentCreator && !subtopic.isEditing"
+        @click.stop="editSubtopic(subtopic)"
+        class="ml-2 mt-0.5 text-gray-600 text-sm hover:text-blue-700 px-2"
+      >
+        <i class="fas fa-pencil-alt"></i>
+      </button>
+
+      <!-- Delete Button -->
+      <button
+        v-if="isContentCreator && !subtopic.isEditing"
+        @click.stop="confirmDeleteSubtopic(subtopicIndex)"
+        class="text-gray-600 text-sm hover:text-red-700 px-2 ml-auto"
+      >
+        <i class="fas fa-trash"></i>
+      </button>
+
+      <div class="mx-4">
+<!-- Save Button -->
+<button
+                    v-if="isContentCreator && subtopic.isEditing"
+                    @click.stop="saveSubtopicEdit(subtopic)"
+                    class="bg-blue-500 text-white hover:bg-blue-700 p-1 px-2 rounded-md"
+                  >
+                    Save
+                  </button>
+
+                  <!-- Cancel Button -->
+                  <button
+                    v-if="isContentCreator && subtopic.isEditing"
+                    @click.stop="cancelSubtopicEdit(subtopic)"
+                    class="bg-red-500 text-white hover:bg-red-700 ml-2 p-1 px-2 rounded-md"
+                  >
+                    Cancel
+                  </button>
+      </div>
+    </div>
+  </div>
+
             <!-- Collapsible Content -->
             <transition name="fade">
               <div
                 v-if="isOpen(subtopic.id)"
                 class="text-gray-700 leading-relaxed mt-6"
               >
-                <div v-html="markdownToHtml(subtopic.supplementalInfo)"></div>
+                <div
+                  v-if="!subtopic.isEditing"
+                  v-html="markdownToHtml(subtopic.supplementalInfo)"
+                ></div>
+                <textarea
+                  v-else
+                  v-model="editedSubtopic.supplementalInfo"
+                  rows="8"
+                  class="w-full"
+                ></textarea>
               </div>
             </transition>
           </div>
-        </template>
 
-        <template v-else>
-          <!-- Selected Option's Subtitle, Text, and Follow-up Buttons -->
-          <div v-if="selectedOption">
-            <h4 class="text-lg font-medium mb-2">
-              {{ 'Selected Option: ' + selectedOption }}
-            </h4>
-            <p class="text-gray-700 leading-relaxed mb-4">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque
-              euismod orci ut sem gravida tincidunt.
-            </p>
-            <div class="flex flex-wrap gap-2 mb-4">
-              <button
-                v-for="followUp in 2"
-                :key="followUp"
-                class="bg-blue-200 text-blue-800 rounded-full px-4 py-1.5 hover:bg-blue-300 transition-all duration-300 shadow-md hover:shadow-lg"
-                @click="handleFollowUp(followUp)"
-              >
-                {{ followUp }}
-              </button>
-            </div>
-          </div>
-
-          <!-- Options and Custom Question Input -->
-          <div>
-            <!-- Two Column Grid for Options -->
-            <div class="flex flex-wrap justify-between mb-4">
-              <div class="w-1/2 pr-2">
-                <div
-                  v-for="i in 3"
-                  :key="'left-' + i"
-                  class="option-container mb-2 cursor-pointer bg-gray-200 text-gray-800 font-medium p-2 rounded-md transition-all duration-300 hover:bg-blue-200 hover:text-white"
-                  @click="selectOption(i)"
-                >
-                  Lorem ipsum dolor sit amet option {{ i }}
-                </div>
-              </div>
-              <div class="w-1/2 pl-2">
-                <div
-                  v-for="i in [4, 5, 6]"
-                  :key="'right-' + i"
-                  class="option-container mb-2 cursor-pointer bg-gray-200 text-gray-800 font-medium p-2 rounded-md transition-all duration-300 hover:bg-blue-200 hover:text-white"
-                  @click="selectOption(i)"
-                >
-                  Lorem ipsum dolor sit amet option {{ i }}
-                </div>
-              </div>
-            </div>
-
-            <!-- Custom Question Input -->
-            <div class="mt-4 flex w-2/3 bg-gray-200 p-2 rounded-md shadow-md">
-              <label for="customQuestion" class="sr-only"
-                >Write your custom question:</label
-              >
-              <input
-                type="text"
-                id="customQuestion"
-                v-model="customQuestion"
-                placeholder="Type your question here..."
-                class="flex-grow p-2 border rounded-l-md bg-gray-100 placeholder-gray-600"
-              />
-              <button
-                class="bg-blue-500 text-white p-2 rounded-r-md hover:bg-blue-600 transition-all duration-300 flex items-center justify-center"
-                @click="submitCustomQuestion"
-              >
-                ▶️
-                <!-- Triangle Unicode as Send icon -->
-              </button>
-            </div>
-          </div>
-        </template>
-
-        <h4 v-if="!selectedSubtopic.name" class="font-medium mt-8 mb-2">
-          Learn More:
-        </h4>
-        <div v-if="!selectedSubtopic.name" class="flex flex-wrap gap-2">
-          <span
-            v-for="subtopic in generatedSubtopics"
-            :key="subtopic.name"
-            class="cursor-pointer text-sm md:text-base bg-green-200 text-green-800 rounded-full px-4 py-1.5 hover:bg-green-300 transition-all duration-300 shadow-md hover:shadow-lg"
-            @click="selectedSubtopic = { name: subtopic.name, options: [] }"
+          <!-- Add Subtopic Button -->
+          <button
+            @click="addSubtopic(selectedInformation)"
+            class="mt-8 mb-4 p-2 bg-blue-500 text-white rounded-md mx-auto block"
           >
-            {{ subtopic.name }}
-          </span>
-        </div>
+            Add Subtopic
+          </button>
+        </template>
       </div>
 
       <!-- Notes Section -->
@@ -627,7 +700,8 @@ export default {
               {
                 id: 1,
                 title: 'AI, LLMS and ChatGPT',
-                videoUrl: 'https://www.youtube.com/embed/o5MutYFWsM8?si=fgz694AFm8ol7rae',
+                videoUrl:
+                  'https://www.youtube.com/embed/o5MutYFWsM8?si=fgz694AFm8ol7rae',
                 thumbnail:
                   'https://d-cb.jc-cdn.com/sites/crackberry.com/files/styles/large/public/article_images/2023/08/openai-logo.jpg',
                 duration: '5m 20s',
@@ -891,7 +965,8 @@ export default {
               {
                 id: 2,
                 title: 'ChatGPT And The (Modern) Job Market',
-                videoUrl: 'https://www.youtube.com/embed/o5MutYFWsM8?si=fgz694AFm8ol7rae',
+                videoUrl:
+                  'https://www.youtube.com/embed/o5MutYFWsM8?si=fgz694AFm8ol7rae',
                 thumbnail:
                   'https://d-cb.jc-cdn.com/sites/crackberry.com/files/styles/large/public/article_images/2023/08/openai-logo.jpg',
                 duration: '7m 10s',
@@ -1013,7 +1088,8 @@ export default {
               {
                 id: 3,
                 title: 'Crafting Effective Prompts',
-                videoUrl: 'https://www.youtube.com/embed/o5MutYFWsM8?si=fgz694AFm8ol7rae',
+                videoUrl:
+                  'https://www.youtube.com/embed/o5MutYFWsM8?si=fgz694AFm8ol7rae',
                 thumbnail:
                   'https://d-cb.jc-cdn.com/sites/crackberry.com/files/styles/large/public/article_images/2023/08/openai-logo.jpg',
                 duration: '7m 10s',
@@ -1134,7 +1210,8 @@ export default {
               },
               {
                 id: 4,
-                videoUrl: 'https://www.youtube.com/embed/o5MutYFWsM8?si=fgz694AFm8ol7rae',
+                videoUrl:
+                  'https://www.youtube.com/embed/o5MutYFWsM8?si=fgz694AFm8ol7rae',
                 title: 'Exploring Common Prompts',
                 thumbnail:
                   'https://d-cb.jc-cdn.com/sites/crackberry.com/files/styles/large/public/article_images/2023/08/openai-logo.jpg',
@@ -2101,6 +2178,9 @@ export default {
       openSubtopics: [],
       sidebarOpen: false,
       editedModule: {},
+      editedTopic: {},
+      editedSubtopic: {},
+      editedLesson: null,
     };
   },
   computed: {
@@ -2217,15 +2297,7 @@ export default {
       this.selectedTopic = this.selectedLesson.topics[0];
 
       this.$forceUpdate();
-
     },
-    async editLesson(index) {
-      this.currentLesson = this.course.modules[index];
-
-      // Open the modal
-      this.isEditModalOpen = true;
-    },
-
     async deleteLesson(index) {
       const lessonToDelete = this.course.modules[index];
 
@@ -2271,17 +2343,140 @@ export default {
 
       this.$refs.thumbnail.click();
     },
-    handleFileUpload() {
+    handleThumbnailUpload() {
       const file = this.$refs.thumbnail.files[0];
       const reader = new FileReader();
 
       reader.onload = (e) => {
-        console.log(e.target.result);
         this.editedModule.thumbnail = e.target.result;
       };
 
       reader.readAsDataURL(file);
     },
+    uploadVideo() {
+      this.$refs.video.click();
+    },
+    handleVideoUpload() {
+      const file = this.$refs.video.files[0];
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        this.selectedLesson.videoUrl = e.target.result;
+      };
+
+      reader.readAsDataURL(file);
+    },
+    removeVideo() {
+      this.selectedLesson.videoUrl = null;
+    },
+    editLesson(index) {
+      const lesson = this.selectedModule.lessons[index];
+      lesson.isEditing = true;
+      this.editedLesson = { ...lesson };
+    },
+
+    saveLesson(index) {
+      this.editedLesson.isEditing = false;
+
+      if (index) {
+        this.selectedModule.lessons[index] = this.editedLesson;
+      } else {
+        const lesson = this.selectedModule.lessons.find(
+          (lesson) => lesson.id === this.editedLesson.id
+        );
+
+        Object.assign(lesson, this.editedLesson);
+      }
+      this.editedLesson = null;
+    },
+
+    cancelLessonEdit(index) {
+      this.selectedModule.lessons[index].isEditing = false;
+      this.editedLesson = null;
+    },
+
+    confirmDeleteLesson(index) {
+      if (confirm('Are you sure you want to delete this lesson?')) {
+        this.selectedModule.lessons.splice(index, 1);
+      }
+    },
+    editTopic(topic) {
+      topic.isEditing = true;
+      this.editedTopic = { ...topic };
+    },
+    addTopic() {
+      const newTopic = {
+        title: 'New Topic',
+        thumbnail: 'https://via.placeholder.com/150',
+        duration: '7m 10s',
+        progress: 20,
+        progressText: '20%',
+        topics: [],
+      };
+
+      this.selectedLesson.topics.push(newTopic);
+      this.editedTopic = newTopic;
+    },
+    saveTopicEdit(topicIndex) {
+      this.editedTopic.isEditing = false;
+      this.selectedLesson.topics[topicIndex] = this.editedTopic;
+      this.editedTopic = null;
+    },
+    cancelTopicEdit(topicIndex) {
+      this.selectedLesson.topics[topicIndex].isEditing = false;
+      this.editedTopic = null;
+    },
+    confirmDeleteTopic(topicIndex) {
+      if (confirm('Are you sure you want to delete this topic?')) {
+        this.selectedLesson.topics.splice(topicIndex, 1);
+      }
+    },
+    cancelEditLesson() {
+      this.editedLesson = null;
+      this.selectedLesson.isEditing = false;
+    },
+    editSubtopic(subtopic) {
+      subtopic.isEditing = true;
+      this.editedSubtopic = { ...subtopic };
+
+      if (!this.openSubtopics.includes(subtopic.id)) {
+        this.openSubtopics.push(subtopic.id);
+      }
+    },
+    addSubtopic() {
+      const newSubtopic = {
+        id: Date.now().toString(),
+        title: 'New Subtopic',
+        supplementalInfo: 'Lorem ipsum',
+        isEditing: true,
+      };
+
+      this.selectedTopic.subtopics[this.selectedInformation].push(newSubtopic);
+      this.openSubtopics.push(newSubtopic.id);
+
+      this.editedSubtopic = newSubtopic;
+      this.selectedSubtopic = newSubtopic;
+    },
+    saveSubtopicEdit(subtopic) {
+      Object.assign(subtopic, this.editedSubtopic);
+
+      this.selectedSubtopic = subtopic;
+      this.selectedSubtopic.isEditing = false;
+    },
+    cancelSubtopicEdit(subtopic) {
+      subtopic.isEditing = false;
+      this.editedSubtopic = {};
+    },
+    removeSubtopic(subtopicIndex) {
+      if (confirm('Are you sure you want to delete this subtopic?')) {
+        this.selectedTopic.subtopics.splice(subtopicIndex, 1);
+      }
+    },
+    confirmDeleteSubtopic(subtopicIndex) {
+    if (confirm("Are you sure you want to delete this subtopic?")) {
+      this.selectedTopic.subtopics[this.selectedInformation].splice(subtopicIndex, 1);
+    }
+  },
   },
 };
 </script>
