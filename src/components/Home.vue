@@ -21,7 +21,7 @@
         </a>
         <a
           href="#"
-          @click="$emit('open-dashboard')"
+          @click="user?.id ? $emit('open-dashboard') : $emit('toggle-login')"
           class="w-full lg:w-auto block mt-4 lg:mt-0 px-6 py-3 lg:px-10 lg:py-4 bg-green-500 text-white rounded-full shadow-md hover:bg-green-600 transition-colors text-lg cursor-pointer"
         >
           I'm a Content Creator
@@ -210,6 +210,12 @@
 
 <script>
 export default {
+  props: {
+    user: {
+      type: Object,
+      default: () => ({}),
+    },
+  },
   data() {
     return {
       showHowItWorks: false,
@@ -314,6 +320,11 @@ export default {
         },
       ],
     };
+  },
+  computed: {
+    isContentCreator() {
+      return this.user.id.includes('instructor');
+    },
   },
   methods: {
     toggleHowItWorks() {

@@ -80,14 +80,14 @@
       </h2>
       <p v-if="!isContentCreator" class="text-gray-600 mb-6">
         Enroll in the "{{ course.title }}" course and begin your learning
-        adventure with {{ course.instructor.name }} as your guide.
+        adventure with {{ instructor.name }} as your guide.
       </p>
       <div
         class="flex flex-col md:flex-row md:justify-center items-center space-y-4 md:space-y-0 md:space-x-4"
       >
         <!-- Conditional rendering based on isLoggedIn -->
         <button
-          @click="$emit(isLoggedIn ? 'continue-course' : 'open-course')"
+          @click="$emit(isNewCourse ? 'create-new-course' : 'open-course')"
           class="text-white font-semibold rounded-lg py-3 px-8 w-full md:w-auto transition-colors duration-300 ease-in-out focus:outline-none active:outline-none border-blue-700"
           :class="
             isLoggedIn
@@ -98,8 +98,8 @@
           <!-- Text changes based on isLoggedIn -->
           {{
             isContentCreator
-              ? 'Edit Course'
-              : isLoggedIn
+              ? 'Course Content'
+              : isEnrolled
               ? 'Continue'
               : 'Enroll Now'
           }}
@@ -281,7 +281,7 @@
         <!-- Image Container -->
         <div class="relative mx-auto sm:mx-0">
           <img
-            :src="course.instructor.imageUrl"
+            :src="instructor?.imageUrl"
             alt="Instructor"
             class="w-24 h-24 rounded-full border-4 border-white"
           />
@@ -301,26 +301,26 @@
           />
         </div>
         <div v-if="!isEditingInstructor" class="text-center sm:text-left">
-          <p class="text-2xl font-semibold">{{ course.instructor.name }}</p>
-          <p class="mb-2">{{ course.instructor.title }}</p>
-          <p>{{ course.instructor.bio }}</p>
+          <p class="text-2xl font-semibold">{{ instructor?.name }}</p>
+          <p class="mb-2">{{ instructor?.title }}</p>
+          <p>{{ instructor?.bio }}</p>
           <a
-            :href="course.instructor.website"
+            :href="instructor?.website"
             class="block mt-4 text-sm underline"
             >Visit Instructor's Website</a
           >
         </div>
         <div v-else class="text-center sm:text-left space-y-2">
           <input
-            v-model="course.instructor.name"
+            v-model="instructor.name"
             class="text-xl font-semibold bg-transparent border-b border-white w-full mb-2"
           />
           <input
-            v-model="course.instructor.title"
+            v-model="instructor.title"
             class="mb-2 bg-transparent border-b border-white w-full"
           />
           <textarea
-            v-model="course.instructor.bio"
+            v-model="instructor.bio"
             class="bg-transparent border-b border-white w-full"
           ></textarea>
           <input
@@ -331,7 +331,7 @@
           />
           <!-- Text input for the instructor website -->
           <input
-            v-model="course.instructor.website"
+            v-model="instructor.website"
             class="bg-transparent border-b border-white w-full"
           />
         </div>
@@ -345,10 +345,17 @@ export default {
   props: {
     user: {
       type: Object,
-      default: () => ({
-        id: 'admin',
-      }),
+      default: () => ({}),
     },
+    isNewCourse: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  mounted() {
+    if (this.isNewCourse || this.user?.id.includes('new-instructor')) {
+      this.createNewCourse();
+    }
   },
   data() {
     return {
@@ -356,18 +363,20 @@ export default {
       videoSrc: 'https://www.youtube.com/embed/5qap5aO4i9A',
       isEditingCurriculum: false,
       isEditingLearnings: false,
-      course: {
-        name: 'Job Searching with ChatGPT',
-        description:
-          'Learn how to use ChatGPT to optimize your job search and land your dream job!',
-        instructor: {
-          id: 'admin',
+      isEditingInstructor: false,
+      instructor: {
+          id: 'active-instructor',
           name: 'John Doe',
           title: 'Senior Vue.js Developer',
           bio: 'A passionate web developer and instructor with over 10 years of experience. John has taught over 50,000 students online and has worked on numerous web projects using Vue.js.',
           imageUrl: '//placekitten.com/200/200',
           website: 'https://johndoe.com',
         },
+      course: {
+        id: 1,
+        name: 'Job Searching with ChatGPT',
+        description:
+          'Learn how to use ChatGPT to optimize your job search and land your dream job!',
         learnings: [
           "What ChatGPT Can and Can't Do",
           'Job Description Parsing Strategies',
@@ -1462,8 +1471,11 @@ export default {
   },
   computed: {
     isContentCreator() {
-      return this.course.instructor.id === this.user.id;
+      return this.user?.id?.includes('instructor');
     },
+    isEnrolled() {
+      return this.user?.id?.includes('active-student');
+    }
   },
   methods: {
     triggerFileInput() {
@@ -1501,15 +1513,42 @@ export default {
       this.course.learnings.push('New Learning Item');
     },
     deleteLearningItem(index) {
-      this.course.learnings.splice(index, 1);
+      if (confirm('Are you sure you want to delete this learning item?')) {
+        this.course.learnings.splice(index, 1);
+      }
     },
     toggleLearningEdit() {
       this.isEditingLearnings = !this.isEditingLearnings;
     },
     removeVideo() {
+      if (confirm('Are you sure you want to remove this video?')) {
+        this.videoSrc = null;
+      }
+    },
+    createNewCourse() {
+      this.course = {
+        name: 'New Course',
+        description: 'New Course Description',
+        instructor: this.user,
+        learnings: [],
+        modules: [],
+      };
+      this.isEditingCurriculum = true;
+      this.isEditingLearnings = true;
+      this.isEditingInstructor = true;
       this.videoSrc = null;
     },
+    toggleInstructorEdit() {
+      this.isEditingInstructor = !this.isEditingInstructor;
+    }
   },
+  watch: {
+    'user.id'(newId) {
+      if (newId?.includes('new-instructor')) {
+      this.createNewCourse();
+    }
+    }
+  }
 };
 </script>
 

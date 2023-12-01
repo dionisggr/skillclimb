@@ -21,7 +21,7 @@
           </div>
           <div>
             <h2 class="text-xl font-semibold">Total Videos</h2>
-            <p>123</p>
+            <p>{{ totalVideos }}</p>
           </div>
         </div>
 
@@ -33,7 +33,7 @@
           </div>
           <div>
             <h2 class="text-xl font-semibold">Total Views</h2>
-            <p>456K</p>
+            <p>{{ totalViews }}</p>
           </div>
         </div>
 
@@ -45,7 +45,7 @@
           </div>
           <div>
             <h2 class="text-xl font-semibold">Total Comments</h2>
-            <p>789</p>
+            <p>{{ totalComments }}</p>
           </div>
         </div>
       </div>
@@ -62,7 +62,7 @@
           </h2>
           <button
             class="bg-blue-500 text-white rounded-lg px-4 sm:px-5 py-2 shadow-md hover:bg-blue-700 transition-colors"
-            @click="$emit('open-video-platform')"
+            @click="$emit('create-new-course')"
           >
             Create New Course
           </button>
@@ -117,6 +117,7 @@
         </ul>
         <!-- Show More Button -->
         <button
+          v-if="recentFeedback.length"
           @click="loadMoreFeedback"
           class="mx-auto block mt-8 px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-500 transition duration-300"
         >
@@ -148,12 +149,33 @@
 
 <script>
 export default {
+  props: {
+    user: {
+      type: Object,
+      default: () => ({}),
+    },
+  },
+  mounted() {
+    if (this.user?.id?.includes('active-instructor')) {
+      this.setup();
+    }
+  },
   data() {
     return {
-      totalStudents: 4523,
-      totalCourses: 12,
-      avgRating: 4.5,
-      courses: [
+      totalStudents: 0,
+      totalCourses: 0,
+      avgRating: 0,
+      totalVideos: 0,
+      totalViews: 0,
+      totalComments: 0,
+      courses: [],
+      recentFeedback: [],
+      aiRecommendations: [],
+    };
+  },
+  methods: {
+    setup() {
+      this.courses = [
         {
           id: 1,
           title: 'Mastering Vue.js',
@@ -172,8 +194,9 @@ export default {
           duration: 8,
         },
         // ... Add more mock courses as needed
-      ],
-      recentFeedback: [
+      ];
+
+      this.recentFeedback = [
         {
           id: 1,
           course: 'Mastering Vue.js',
@@ -185,8 +208,9 @@ export default {
           comment: 'Wish there were more hands-on exercises.',
         },
         // ... More feedback
-      ],
-      aiRecommendations: [
+      ];
+
+      this.aiRecommendations = [
         {
           id: 1,
           title: 'Update Content',
@@ -200,8 +224,32 @@ export default {
             "The course 'AI for Beginners' has low interaction in the last module. Consider adding quizzes or activities.",
         },
         // ... More AI Recommendations
-      ],
-    };
+      ];
+
+      this.totalStudents = 4523;
+      this.totalCourses = 12;
+      this.avgRating = 4.5;
+      this.totalVideos = 123;
+      this.totalViews = '456k';
+      this.totalComments = 789;
+    },
+  },
+  watch: {
+    'user.id'(newId) {
+      if (newId?.includes('active-instructor')) {
+        this.setup();
+      } else {
+        this.totalStudents = 0;
+        this.totalCourses = 0;
+        this.avgRating = 0;
+        this.totalVideos = 0;
+        this.totalViews = 0;
+        this.totalComments = 0;
+        this.courses = [];
+        this.recentFeedback = [];
+        this.aiRecommendations = [];
+      }
+    },
   },
 };
 </script>

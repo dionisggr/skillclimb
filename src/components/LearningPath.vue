@@ -19,9 +19,9 @@
               ? 'bg-green-500 hover:bg-green-600 focus:ring-green-300'
               : 'bg-blue-500 hover:bg-blue-600 focus:ring-blue-300'
           "
-          @click="$emit('open-course')"
+          @click="user?.id ? $emit('open-course') : $emit('toggle-login-modal')"
         >
-          {{ isLoggedIn ? 'Continue' : 'Start Learning' }} Path
+          {{ isEnrolled ? 'Continue' : 'Begin' }} Path
         </button>
       </div>
       <div class="flex-1 flex flex-col sm:flex-row justify-evenly items-center">
@@ -65,7 +65,7 @@
             isLoggedIn && !index ? 'bg-blue-50' : 'bg-gray-100', // Highlight the third course
             index < 2 ? 'coming-soon' : '',
           ]"
-          @click="$emit('open-course')"
+          @click="$emit('open-course-preview')"
         >
           <!-- Coming Soon Overlay for first 2 courses -->
           <div
@@ -76,7 +76,7 @@
           </div>
 
           <!-- Progress Indicator for the third course -->
-          <div v-if="isLoggedIn && !index" class="ml-auto mb-2">
+          <div v-if="isEnrolled && !index" class="ml-auto mb-2">
             <span
               class="text-yellow-600 font-semibold text-sm bg-yellow-200 px-2 py-1 rounded-full"
             >
@@ -100,7 +100,9 @@
               </div>
             </div>
             <!-- Course Duration -->
-            <div class="duration-block flex flex-col items-center text-center border-solid ml-2">
+            <div
+              class="duration-block flex flex-col items-center text-center border-solid ml-2"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-6 w-6 mr-1"
@@ -137,7 +139,7 @@
               assessments
             </div>
             <span class="text-gray-600 font-semibold">{{
-              course.instructor.name
+              course.instructor?.name
             }}</span>
           </div>
         </div>
@@ -234,6 +236,12 @@
 
 <script>
 export default {
+  props: {
+    user: {
+      type: Object,
+      default: () => ({}),
+    },
+  },
   data() {
     return {
       isLoggedIn: true,
@@ -378,5 +386,13 @@ export default {
       },
     };
   },
+  computed: {
+    isContentCreator() {
+      return this.user?.id?.includes('active-instructor');
+    },
+    isEnrolled() {
+      return this.user?.id?.includes('active-student');
+    }
+  }
 };
 </script>

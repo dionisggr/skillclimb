@@ -165,8 +165,10 @@
   <!-- Home -->
   <Home
     v-if="selectedNavItem === 'home'"
+    :user="user"
     @open-learning-path="selectedNavItem = 'learning-path'"
     @open-dashboard="selectedNavItem = 'dashboard'"
+    @toggle-login="toggleLoginModal"
   />
 
   <!-- Courses -->
@@ -178,12 +180,17 @@
   <!-- Course Preview -->
   <CoursePreview
     v-else-if="selectedNavItem === 'course-preview'"
-    @open-course="selectedNavItem = 'course'"
+    :user="user"
+    :isNewCourse="isNewCourse"
+    @create-new-course="createNewCourse"
+    @open-course="openCourse"
   />
 
   <!-- Course -->
   <Course
     v-else-if="selectedNavItem === 'course'"
+    :user="user"
+    :isNewCourse="isNewCourse"
     @open-practice="selectedNavItem = 'practice'"
   />
 
@@ -207,7 +214,10 @@
   <!-- Learning Path -->
   <LearningPath
     v-else-if="selectedNavItem === 'learning-path'"
+    :user="user"
     @open-course="selectedNavItem = 'course'"
+    @open-course-preview="selectedNavItem = 'course-preview'"
+    @toggle-login-modal="toggleLoginModal"
   />
 
   <!-- Video Platform -->
@@ -219,8 +229,9 @@
   <!-- Dashboard -->
   <Dashboard
     v-else-if="selectedNavItem === 'dashboard'"
+    :user="user"
     @open-course="selectedNavItem = 'course'"
-    @open-video-platform="selectedNavItem = 'video-platform'"
+    @create-new-course="createNewCoursePreview"
   />
 
   <!-- Footer Section -->
@@ -388,9 +399,11 @@ export default {
     VideoPlatform,
     Dashboard,
   },
+
   data() {
     return {
       user: null,
+      isNewCourse: false,
       showLoginModal: false,
       selectedNavItem: 'home',
       supplementalInfo:
@@ -676,10 +689,13 @@ export default {
     loginAs(userId) {
       this.user = data.users.find((user) => user.id === userId);
       this.showLoginModal = false;
+
+      this.$forceUpdate();
     },
     logout() {
       this.user = null;
       this.showAccountOptions = false;
+      this.selectedNavItem = 'home';
     },
     toggleAccountOptions() {
       this.showAccountOptions = !this.showAccountOptions;
@@ -728,6 +744,20 @@ export default {
     },
     toggleSidebar() {
       this.isSidebarOpen = !this.isSidebarOpen;
+    },
+    createNewCoursePreview() {
+      this.isNewCourse = true;
+      this.selectedNavItem = 'course-preview';
+    },
+    createNewCourse() {
+      this.selectedNavItem = 'course';
+    },
+    openCourse() {
+      if (!this.user?.id) {
+        this.toggleLoginModal();
+      } else {
+        this.selectedNavItem = 'course';
+      }
     },
   },
 };
