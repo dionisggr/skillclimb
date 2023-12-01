@@ -46,11 +46,23 @@
             class="flex p-1.5 px-2 relative"
             v-for="link in ['Home', 'Courses', 'Certifications', 'Pricing']"
           >
-          <span v-if="link === 'Certifications'" class="absolute top-0 right-0 text-sm font-bold text-red-500">Coming Soon</span>
+            <span
+              v-if="link === 'Certifications'"
+              class="absolute top-0 right-0 text-sm font-bold text-red-500"
+              >Coming Soon</span
+            >
             <a
               href="#"
-              class="rounded hover:bg-gray-200 p-1 font-semibold" :class="link === 'Certifications' ? 'line-through cursor-not-allowed text-gray-600' : 'text-gray-700'"
-              @click="link !== 'Certifications' && (selectedNavItem = link.toLowerCase())"
+              class="rounded hover:bg-gray-200 p-1 font-semibold"
+              :class="
+                link === 'Certifications'
+                  ? 'line-through cursor-not-allowed text-gray-600'
+                  : 'text-gray-700'
+              "
+              @click="
+                link !== 'Certifications' &&
+                  (selectedNavItem = link.toLowerCase())
+              "
               >{{ link }}</a
             >
           </div>
@@ -63,9 +75,30 @@
           />
           <button
             class="rounded-full bg-gray-200 ml-8 mr-6 p-2 hover:shadow-lg transform transition-all duration-200"
+            @click="toggleAccountOptions"
           >
             <account-circle />
           </button>
+          <!-- Account Dropdown -->
+          <div
+            v-if="showAccountOptions"
+            class="absolute mt-24 right-8 bg-white border border-gray-300 shadow-md rounded py-2"
+          >
+            <template v-if="user">
+              <button class="block px-4 py-2 hover:bg-gray-100 cursor-not-allowed">
+                My Account
+              </button>
+              <button class="block px-4 py-2 hover:bg-gray-100" @click="toggleLoginModal">Switch User</button>
+              <button class="block px-4 py-2 hover:bg-gray-100 w-full" @click.stop="logout">Logout</button>
+            </template>
+              <button
+                v-else
+                class="block px-4 py-2 hover:bg-gray-100"
+                @click="toggleLoginModal"
+              >
+                Login As...
+              </button>
+          </div>
         </div>
       </nav>
     </div>
@@ -289,6 +322,38 @@
       &copy; 2023 SkillClimb. All rights reserved.
     </div>
   </section>
+
+  <!-- Modal for Login As -->
+<div v-if="showLoginModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+  <div class="bg-white rounded-lg p-6 px-8 grid grid-cols-2 gap-4 relative">
+    <!-- Close Button -->
+    <button
+      class="absolute top-0 right-2 text-3xl m-2 text-red-400 p-2 hover:text-gray-800"
+      @click="showLoginModal = false"
+    >
+      &times;
+    </button>
+    <div
+      v-for="(role, index) in [
+        'new-student',
+        'active-student',
+        'new-instructor',
+        'active-instructor',
+      ]"
+      :key="role"
+      class="flex flex-col items-center cursor-pointer hover:bg-gray-100 rounded-full p-6 px-10"
+      @click="loginAs(role)"
+    >
+      <img
+        :src="`https://source.unsplash.com/random/100x${100 + index}`"
+        alt="Avatar"
+        class="rounded-full mb-2"
+      />
+      <span class="capitalize">{{ role.replace('-', ' ') }}</span>
+    </div>
+  </div>
+</div>
+
 </template>
 
 <script>
@@ -305,6 +370,7 @@ import Courses from './components/Courses.vue';
 import LearningPath from './components/LearningPath.vue';
 import VideoPlatform from './components/VideoPlatform.vue';
 import Dashboard from './components/Dashboard.vue';
+import data from './data.js';
 
 export default {
   components: {
@@ -324,6 +390,8 @@ export default {
   },
   data() {
     return {
+      user: null,
+      showLoginModal: false,
       selectedNavItem: 'home',
       supplementalInfo:
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sodales ullamcorper vehicula.'.repeat(
@@ -580,6 +648,7 @@ export default {
       selectedLessonIndex: null,
       selectedNavItem: 'home',
       isSidebarOpen: false,
+      showAccountOptions: false,
     };
   },
   computed: {
@@ -600,6 +669,21 @@ export default {
     },
   },
   methods: {
+    toggleLoginModal() {
+      this.showLoginModal = !this.showLoginModal;
+      this.showAccountOptions = false;
+    },
+    loginAs(userId) {
+      this.user = data.users.find((user) => user.id === userId);
+      this.showLoginModal = false;
+    },
+    logout() {
+      this.user = null;
+      this.showAccountOptions = false;
+    },
+    toggleAccountOptions() {
+      this.showAccountOptions = !this.showAccountOptions;
+    },
     toggleSection(index) {
       this.sections[index].show = !this.sections[index].show;
     },
@@ -720,11 +804,11 @@ export default {
 }
 
 ::-webkit-scrollbar {
-    display: none; /* for Chrome, Safari, and Opera */
-  }
-  
-  * {
-    -ms-overflow-style: none;  /* for Internet Explorer, Edge */
-    scrollbar-width: none;  /* for Firefox */
-  }
+  display: none; /* for Chrome, Safari, and Opera */
+}
+
+* {
+  -ms-overflow-style: none; /* for Internet Explorer, Edge */
+  scrollbar-width: none; /* for Firefox */
+}
 </style>

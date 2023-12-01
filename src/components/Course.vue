@@ -74,7 +74,7 @@
           'border-blue-300 shadow-md': courseModule.id === selectedModule.id,
           'border-gray-300': courseModule.id !== selectedModule.id,
         }"
-        class="video-lesson mt-4 flex items-center relative p-2 border rounded-md transition-all duration-300 ease-in-out"
+        class="video-lesson mt-3 flex items-center relative p-2 border rounded-md transition-all duration-300 ease-in-out"
         :style="
           courseModule.id === selectedModule.id && 'background-color: #f3f8ff;'
         "
@@ -95,7 +95,7 @@
           </p>
 
           <!-- Upload Icon Button -->
-          <div class="absolute -bottom-2 -right-2 mb-1 mr-1">
+          <div v-if="isContentCreator" class="absolute -bottom-2 -right-2 mb-1 mr-1">
             <button
               @click="uploadThumbnail(index)"
               class="text-white bg-blue-500 hover:bg-blue-700 rounded-full text-xs p-1 px-2"
@@ -158,6 +158,7 @@
 
         <!-- Icon buttons -->
         <div
+          v-if="isContentCreator"
           class="absolute top-0 right-0 mt-2 mr-2 flex flex-col items-end justify-between text-sm h-5/6"
         >
           <button
@@ -208,6 +209,7 @@
           class="text-2xl font-bold m-1 mt-4 border-b-2 border-gray-300"
         />
         <button
+          v-if="isContentCreator"
           @click="isEditingLessonTitle ? saveLesson(index) : editLessonTitle()"
           class="ml-2"
         >
@@ -334,13 +336,13 @@
                 >
                   <button
                     @click.stop="editLesson(index)"
-                    class="text-blue-500 hover:text-blue-700"
+                    class="text-blue-500 hover:text-blue-700 text-lg"
                   >
                     ✎
                   </button>
                   <button
                     @click.stop="confirmDeleteLesson(index)"
-                    class="text-red-500 hover:text-red-700"
+                    class="text-red-500 hover:text-red-700 text-sm"
                   >
                     🗑
                   </button>
@@ -368,14 +370,14 @@
               <!-- Expanded Details Section for the current Video Entry -->
               <div
                 v-if="lesson.id === selectedLesson.id"
-                class="p-3 bg-gray-50 border rounded-md"
+                class="p-2 bg-gray-50 border rounded-md"
               >
                 <p class="text-xs italic">{{ lesson.description }}</p>
                 <ul class="space-y-2">
                   <li
                     v-for="(topic, topicIndex) in selectedLesson?.topics"
                     :key="topic.id"
-                    class="relative cursor-pointer border rounded-lg px-4 py-2 flex justify-between text-sm font-medium items-center hover:bg-gray-100 hover:text-gray-700 transition-all duration-300"
+                    class="relative cursor-pointer border rounded-lg px-4 py-3 flex justify-between text-sm font-medium items-center hover:bg-gray-100 hover:text-gray-700 transition-all duration-300"
                     :class="{
                       'bg-gray-200 hover:bg-gray-200 text-gray-800 border-gray-300':
                         selectedTopic.id === topic.id,
@@ -383,7 +385,7 @@
                     }"
                   >
                     <div
-                      class="flex items-center my-3"
+                      class="flex items-center my-2"
                       @click="selectTopic(topic)"
                     >
                       <!-- Mocked timestamp -->
@@ -401,6 +403,7 @@
                       />
                     </div>
                     <div
+                      v-if="isContentCreator"
                       class="flex flex-col justify-between h-full absolute right-0"
                     >
                       <!-- Edit and Delete Icons -->
@@ -428,7 +431,7 @@
                       <button
                         v-if="!topic.isEditing"
                         @click.stop="confirmDeleteTopic(topicIndex)"
-                        class="text-red-500 hover:text-red-700 text-sm mb-0.5"
+                        class="text-red-500 hover:text-red-700 text-sm mb-0.5 mr-1.5"
                       >
                         🗑
                       </button>
@@ -438,7 +441,7 @@
                 <!-- Add Topic Button for the current lesson -->
                 <button
                   @click="addTopic()"
-                  class="my-4 p-1 px-2 bg-amber-400 text-sm block mx-auto text-white rounded-md"
+                  class="my-4 p-1 px-2 bg-amber-500 text-sm block mx-auto text-white rounded-md"
                 >
                   Add Topic
                 </button>
@@ -452,6 +455,149 @@
             >
               Add Lesson
             </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notes Section -->
+      <div v-if="!isContentCreator" class="mt-6">
+        <label class="my-2 mt-8 block text-2xl font-semibold">Notes</label>
+
+        <!-- Timestamp Button and Textarea Group -->
+        <div class="relative">
+          <!-- Add Timestamp Button -->
+          <button
+            v-if="timestamp"
+            class="flex absolute top-1 right-1 rounded-full bg-red-200 text-xs px-3 pt-1 text-red-700 hover:bg-red-300 transition-all duration-300 font-semibold"
+            @click="timestamp = null"
+          >
+            {{ timestamp }}
+            <!-- X icon -->
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 inline-block ml-2 mb-1"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+          <button
+            v-else
+            class="absolute top-1 right-1 rounded-full bg-blue-100 text-xs px-3 py-1 text-blue-700 hover:bg-blue-300 transition-all duration-300 font-semibold"
+            @click="addTimestamp"
+          >
+            + Timestamp
+          </button>
+
+          <!-- Textarea -->
+          <textarea
+            class="w-full rounded-lg border p-2"
+            rows="4"
+            placeholder="Write your note..."
+            v-model="noteContent"
+          ></textarea>
+        </div>
+
+        <div class="flex items-center justify-between my-2 mb-8">
+          <!-- Save Note Button -->
+          <button
+            class="bg-blue-500 px-5 py-2 text-white rounded-full shadow-md hover:bg-blue-600 transition-all duration-300 transform hover:scale-105"
+            @click="saveNote"
+          >
+            Save Note
+          </button>
+
+          <!-- Expand Notes Button Styled as Hyperlink -->
+          <button
+            @click="expandNotes"
+            class="text-blue-500 hover:text-blue-700 hover:underline mr-8 font-medium"
+          >
+            {{ notesExpanded ? 'Collapse Notes' : 'Expand Notes' }}
+          </button>
+        </div>
+
+        <!-- Expanded Notes Display -->
+        <div
+          v-if="notesExpanded"
+          class="mt-4 p-4 bg-white border border-gray-300 rounded-md"
+        >
+          <div class="grid grid-cols-12 gap-4 mb-2 font-semibold text-gray-800">
+            <div class="col-span-2">Timestamp</div>
+            <div class="col-span-4 text-center">Note</div>
+            <div class="col-span-5 text-center">Transcript</div>
+            <div class="col-span-1 text-center">Actions</div>
+          </div>
+          <div
+            v-for="(note, index) in course.notes"
+            :key="note.id"
+            class="mb-4 grid grid-cols-12 gap-4"
+          >
+            <!-- Timestamp Column -->
+            <div class="col-span-2 text-sm text-gray-600 p-2">
+              [{{ note.timestamp }}]
+            </div>
+
+            <!-- Note Content Column -->
+            <div class="col-span-4 p-2">
+              <div v-if="!note.isEditing" class="text-gray-700">
+                {{ note.content }}
+              </div>
+              <textarea
+                v-else
+                rows="4"
+                :key="note.id"
+                v-model="note.editedContent"
+                class="w-full"
+                autofocus
+              ></textarea>
+            </div>
+
+            <!-- Video Transcript Column -->
+            <div
+              v-html="generateLoremIpsum()"
+              class="col-span-5 overflow-auto max-h-32 border border-gray-300 rounded-lg p-2 text-gray-500 text-sm"
+            ></div>
+
+            <!-- Edit and Delete Icons Column -->
+            <div
+              class="col-span-1 flex space-x-4 justify-center items-center space-y-1"
+            >
+              <button
+                v-if="!note.isEditing"
+                @click="editNote(note)"
+                class="text-blue-500 hover:text-blue-700 mt-1"
+              >
+                <i class="fas fa-pencil-alt"></i>
+              </button>
+              <button
+                v-if="note.isEditing"
+                @click="saveNoteEdit(note)"
+                class="text-green-500 hover:text-green-700"
+              >
+                ✔️
+              </button>
+              <button
+                v-if="note.isEditing"
+                @click="cancelNoteEdit(note)"
+                class="text-red-500 hover:text-red-700"
+              >
+                ❌
+              </button>
+              <button
+                v-if="!note.isEditing"
+                @click="confirmDeleteNote(index)"
+                class="text-red-500 hover:text-red-700"
+              >
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -483,34 +629,49 @@
             :key="subtopic.id"
             class="border p-4 py-6 rounded-lg mb-3 hover:shadow-lg transition-shadow"
           >
- <!-- Collapsible Header -->
-  <div class="flex items-center cursor-pointer" @click="toggleCollapse(subtopic.id)">
-    <span :class="['rotate-icon', { open: isOpen(subtopic.id) }]" class="text-lg">▼</span>
-    <div class="flex-grow ml-3 flex items-center">
-      <h4 v-if="!subtopic.isEditing" class="text-lg font-semibold">{{ subtopic.title }}</h4>
-      <input v-else type="text" v-model="editedSubtopic.title" class="text-lg font-semibold flex-grow mr-2" @click.stop="" />
+            <!-- Collapsible Header -->
+            <div
+              class="flex items-center cursor-pointer"
+              @click="toggleCollapse(subtopic.id)"
+            >
+              <span
+                :class="['rotate-icon', { open: isOpen(subtopic.id) }]"
+                class="text-lg"
+                >▼</span
+              >
+              <div class="flex-grow ml-3 flex items-center">
+                <h4 v-if="!subtopic.isEditing" class="text-lg font-semibold">
+                  {{ subtopic.title }}
+                </h4>
+                <input
+                  v-else
+                  type="text"
+                  v-model="editedSubtopic.title"
+                  class="text-lg font-semibold flex-grow mr-2"
+                  @click.stop=""
+                />
 
-      <!-- Edit Button -->
-      <button
-        v-if="isContentCreator && !subtopic.isEditing"
-        @click.stop="editSubtopic(subtopic)"
-        class="ml-2 mt-0.5 text-gray-600 text-sm hover:text-blue-700 px-2"
-      >
-        <i class="fas fa-pencil-alt"></i>
-      </button>
+                <!-- Edit Button -->
+                <button
+                  v-if="isContentCreator && !subtopic.isEditing"
+                  @click.stop="editSubtopic(subtopic)"
+                  class="ml-2 mt-0.5 text-gray-600 text-sm hover:text-blue-700 px-2"
+                >
+                  <i class="fas fa-pencil-alt"></i>
+                </button>
 
-      <!-- Delete Button -->
-      <button
-        v-if="isContentCreator && !subtopic.isEditing"
-        @click.stop="confirmDeleteSubtopic(subtopicIndex)"
-        class="text-gray-600 text-sm hover:text-red-700 px-2 ml-auto"
-      >
-        <i class="fas fa-trash"></i>
-      </button>
+                <!-- Delete Button -->
+                <button
+                  v-if="isContentCreator && !subtopic.isEditing"
+                  @click.stop="confirmDeleteSubtopic(subtopicIndex)"
+                  class="text-gray-600 text-sm hover:text-red-700 px-2 ml-auto"
+                >
+                  <i class="fas fa-trash"></i>
+                </button>
 
-      <div class="mx-4">
-<!-- Save Button -->
-<button
+                <div class="mx-4">
+                  <!-- Save Button -->
+                  <button
                     v-if="isContentCreator && subtopic.isEditing"
                     @click.stop="saveSubtopicEdit(subtopic)"
                     class="bg-blue-500 text-white hover:bg-blue-700 p-1 px-2 rounded-md"
@@ -526,9 +687,9 @@
                   >
                     Cancel
                   </button>
-      </div>
-    </div>
-  </div>
+                </div>
+              </div>
+            </div>
 
             <!-- Collapsible Content -->
             <transition name="fade">
@@ -552,6 +713,7 @@
 
           <!-- Add Subtopic Button -->
           <button
+            v-if="isContentCreator"
             @click="addSubtopic(selectedInformation)"
             class="mt-8 mb-4 p-2 bg-blue-500 text-white rounded-md mx-auto block"
           >
@@ -560,84 +722,32 @@
         </template>
       </div>
 
-      <!-- Notes Section -->
-      <div class="mt-6">
-        <label class="my-2 block text-xl font-semibold">Notes</label>
+<!-- Practice Section -->
+<div class="my-12 cursor-pointer">
+  <div class="flex items-center justify-between border-b-2 mt-6 pb-2" @click="showPractice = !showPractice">
+    <h3 class="ml-2 text-2xl font-semibold">Mini-Practice</h3>
+  </div>
 
-        <!-- Timestamp Button and Textarea Group -->
-        <div class="relative">
-          <!-- Add Timestamp Button -->
-          <button
-            class="absolute top-1 right-1 rounded-full bg-blue-200 text-xs px-2 py-1 text-blue-700 hover:bg-blue-300 transition-all duration-300"
-            @click="addTimestamp"
-          >
-            + Timestamp
-          </button>
-
-          <!-- Textarea -->
-          <textarea
-            class="w-full rounded-lg border p-2"
-            rows="4"
-            placeholder="Write your note..."
-          ></textarea>
-        </div>
-
-        <!-- Save Note Button -->
-        <button
-          class="mt-2 bg-blue-500 px-5 py-2 text-white rounded-full shadow-md hover:bg-blue-600 transition-all duration-300 transform hover:scale-105"
-          @click="saveNote"
-        >
-          Save Note
-        </button>
-
-        <!-- Timestamped Notes -->
-        <ul class="mt-4">
-          <li v-for="(note, index) in notes" :key="index" class="mb-2">
-            <span
-              class="text-blue-500 cursor-pointer hover:underline"
-              @click="seekVideo(note.timestamp)"
-            >
-              [{{ note.timestamp }}]
-            </span>
-            {{ note.content }}
-          </li>
-        </ul>
+  <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+    <template v-for="practice in practices" :key="practice.id">
+      <div
+        v-if="isContentCreator || !practice.hide"
+        class="h-fit w-full rounded-lg border p-4 shadow-sm transition-shadow duration-300 hover:shadow-md relative"
+        :class="{
+          'bg-blue-100 border-blue-300 shadow-md': selectedPractice?.title === practice.title || selectedPracticeIds.includes(practice.id),
+        }"
+        @click="togglePractice(practice)"
+      >
+        <h4 class="text-sm font-bold">{{ practice.title }}</h4>
+        <p class="text-xs my-2 italic">{{ practice.description }}</p>
+        <p class="text-xs font-bold">{{ practice.exerciseCount }} exercises</p>
       </div>
+    </template>
+  </div>
 
-      <!-- Practice Section -->
-      <div class="my-12 cursor-pointer">
-        <div
-          class="flex items-center justify-between border-b-2 mt-6 pb-2"
-          @click="showPractice = !showPractice"
-        >
-          <h3 class="ml-2 text-2xl font-semibold">Mini-Practice</h3>
-        </div>
+  <Practice v-if="!isContentCreator" :name="selectedPractice?.title" />
+</div>
 
-        <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <template v-for="practice in practices">
-            <div
-              v-if="
-                !selectedPractice || selectedPractice?.title === practice.title
-              "
-              :key="practice.title"
-              class="h-fit w-full rounded-lg border p-4 shadow-sm transition-shadow duration-300 hover:shadow-md"
-              :class="{
-                'bg-blue-100 border-blue-300 shadow-md':
-                  selectedPractice?.title === practice.title,
-              }"
-              @click="togglePractice(practice)"
-            >
-              <h4 class="text-sm font-bold">{{ practice.title }}</h4>
-              <p class="text-xs my-2 italic">{{ practice.description }}</p>
-              <p class="text-xs font-bold">
-                {{ practice.exerciseCount }} exercises
-              </p>
-            </div>
-          </template>
-        </div>
-
-        <Practice :name="selectedPractice?.title" />
-      </div>
     </section>
   </main>
 </template>
@@ -676,6 +786,7 @@ export default {
   data() {
     return {
       selectedPractice: null,
+      timestamp: null,
       selectedNavItem: 'home',
       supplementalInfo:
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sodales ullamcorper vehicula.'.repeat(
@@ -691,6 +802,49 @@ export default {
           id: 'admin',
         },
         name: 'ChatGPT for Job Searching & Interview Prep',
+        notes: [
+          {
+            id: 1,
+            content:
+              "Discussed the fundamentals of environmental science and its importance in today's world.",
+            module_id: 1,
+            lesson_id: 1,
+            timestamp: '00:02:15',
+          },
+          {
+            id: 2,
+            content:
+              'Key takeaway: Photosynthesis is critical for the energy cycle of the Earth.',
+            module_id: 2,
+            lesson_id: 2,
+            timestamp: '00:05:30',
+          },
+          {
+            id: 3,
+            content:
+              'Learnt about Pythagorean theorem and its applications in calculating the distance between two points.',
+            module_id: 3,
+            lesson_id: 3,
+            timestamp: '00:03:45',
+          },
+          {
+            id: 4,
+            content:
+              "Explored the concept of gravitational force and Newton's law of universal gravitation.",
+            module_id: 4,
+            lesson_id: 4,
+            timestamp: '00:04:20',
+          },
+          {
+            id: 5,
+            content:
+              'Reviewed historical events leading up to World War I, focusing on political alliances.',
+            module_id: 5,
+            lesson_id: 5,
+            timestamp: '00:06:10',
+          },
+          // ... potentially more notes ...
+        ],
         modules: [
           {
             id: 1,
@@ -2122,39 +2276,51 @@ export default {
       ],
       practices: [
         {
+          id: 1,
           title: 'Intent or Structure?',
           description:
             'Identify the location where suggestions fit best in the prompt',
           exerciseCount: 5,
+          hide: false,
         },
         {
+          id: 2,
           title: 'Bias Busters',
           description: 'Identify potentially strong biases in provided prompts',
           exerciseCount: 3,
+          hide: false,
         },
         {
+          id: 3,
           title: 'Parts Of A Prompt',
           description:
             'Identify the location where suggestions fit the prompt best',
           exerciseCount: 5,
+          hide: false,
         },
         {
+          id: 4,
           title: 'Prompt Puzzles',
           description:
             'Identify the location where suggestions fit the prompt best',
           exerciseCount: 5,
+          hide: false,
         },
         {
+          id: 5,
           title: 'Prompt-Off',
           description:
             'Identify the location where suggestions fit the prompt best',
           exerciseCount: 5,
+          hide: false,
         },
         {
+          id: 6,
           title: 'Prompt Crafting',
           description:
             'Identify the location where suggestions fit the prompt best',
           exerciseCount: 5,
+          hide: false,
         },
       ],
       selectedSubtopic: {},
@@ -2181,6 +2347,9 @@ export default {
       editedTopic: {},
       editedSubtopic: {},
       editedLesson: null,
+      noteContent: null,
+      notesExpanded: false,
+      selectedPracticeIds: [],
     };
   },
   computed: {
@@ -2197,10 +2366,14 @@ export default {
       return this.supplementalInfo;
     },
     isContentCreator() {
+      return false;
       return this.course.instructor.id === this.user.id;
     },
   },
   methods: {
+    toggleHide(practice) {
+    practice.hide = !practice.hide;
+  },
     toggleSidebar() {
       this.sidebarOpen = !this.sidebarOpen;
     },
@@ -2284,13 +2457,29 @@ export default {
       this.selectedInformation = selectedOption;
     },
     togglePractice(practice) {
+      if (this.isContentCreator) {
+        if (this.selectedPracticeIds?.includes(practice.id)) {
+          this.selectedPracticeIds = this.selectedPracticeIds.filter(
+            (id) => id !== practice.id
+          );
+        } else {
+          this.selectedPracticeIds.push(practice.id);
+        }
+
+        return;
+      }
+
       if (this.selectedPractice?.title === practice?.title) {
         this.showPractice = false;
         this.selectedPractice = null;
       } else {
         this.showPractice = true;
         this.selectedPractice = practice;
+        this.selectedPractice.edit = true;
       }
+    },
+    selectPractice(practice) {
+      this.selectedPractice = practice;
     },
     selectLesson(index) {
       this.selectedLesson = this.selectedModule.lessons[index];
@@ -2473,10 +2662,67 @@ export default {
       }
     },
     confirmDeleteSubtopic(subtopicIndex) {
-    if (confirm("Are you sure you want to delete this subtopic?")) {
-      this.selectedTopic.subtopics[this.selectedInformation].splice(subtopicIndex, 1);
-    }
-  },
+      if (confirm('Are you sure you want to delete this subtopic?')) {
+        this.selectedTopic.subtopics[this.selectedInformation].splice(
+          subtopicIndex,
+          1
+        );
+      }
+    },
+    expandNotes() {
+      this.notesExpanded = !this.notesExpanded;
+    },
+    generateLoremIpsum() {
+      const loremIpsumText =
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
+
+      // Split the text into sentences.
+      const sentences = loremIpsumText.split('. ');
+      const randomIndex = Math.floor(Math.random() * sentences.length);
+
+      // Highlight a random sentence.
+      sentences[
+        randomIndex
+      ] = `<span class="bg-yellow-200">${sentences[randomIndex]}.</span>`;
+
+      // Reassemble the text.
+      return sentences.join('. ');
+    },
+    editNote(note) {
+      note.isEditing = true;
+      note.editedContent = note.content;
+    },
+
+    saveNoteEdit(note) {
+      note.content = note.editedContent;
+      note.timestamp = this.timestamp;
+      note.isEditing = false;
+    },
+
+    cancelNoteEdit(note) {
+      note.isEditing = false;
+    },
+
+    confirmDeleteNote(index) {
+      if (confirm('Are you sure you want to delete this note?')) {
+        this.course.notes.splice(index, 1);
+      }
+    },
+    addTimestamp() {
+      this.timestamp = new Date().toLocaleTimeString().toString();
+    },
+    saveNote() {
+      console.log(this.noteContent);
+      const newNote = {
+        content: this.noteContent,
+        timestamp: this.timestamp || 'N/A',
+        isEditing: false,
+      };
+
+      this.course.notes.push(newNote);
+      this.noteContent = null;
+      this.timestamp = null;
+    },
   },
 };
 </script>
