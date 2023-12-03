@@ -4,7 +4,7 @@
     <!-- Sidebar -->
     <button
       @click="toggleSidebar"
-      class="lg:hidden fixed bottom-12 left-8 z-30 flex items-center justify-center h-14 w-14 rounded-full bg-blue-500 shadow-xl text-white"
+      class="lg:hidden fixed bottom-8 left-6 z-30 flex items-center justify-center h-14 w-14 rounded-full bg-blue-500 shadow-xl text-white"
     >
       <!-- Menu Icon -->
       <svg
@@ -530,21 +530,18 @@
           </button>
         </div>
 
-        <!-- Expanded Notes Display -->
-        <div
-          v-if="notesExpanded"
-          class="my-4 p-4 bg-white border border-gray-300 rounded-md"
-        >
-          <div class="grid grid-cols-12 gap-4 mb-2 font-semibold text-gray-800">
-            <div class="col-span-2">Timestamp</div>
-            <div class="col-span-4 text-center">Note</div>
-            <div class="col-span-5 text-center">Transcript</div>
-            <div class="col-span-1 text-center">Actions</div>
-          </div>
+<!-- Expanded Notes Display -->
+  <div v-if="notesExpanded" class="my-4 p-4 bg-white border border-gray-300 rounded-md overflow-x-auto w-full">
+    <div class="grid grid-cols-12 gap-10 mb-2 font-semibold text-gray-800 min-w-fit">
+      <div class="col-span-2 text-center">Timestamp</div>
+      <div class="col-span-5 text-center">Note</div>
+      <div class="col-span-4 text-center">Transcript</div>
+      <div class="col-span-1 text-center">Actions</div>
+    </div>
           <div
             v-for="(note, index) in course.notes"
             :key="note.id"
-            class="mb-4 grid grid-cols-12 gap-4"
+            class="mb-4 grid grid-cols-12 gap-10 lg:gap-4 text-center"
           >
             <!-- Timestamp Column -->
             <div class="col-span-2 text-sm text-gray-600 p-2">
@@ -552,7 +549,7 @@
             </div>
 
             <!-- Note Content Column -->
-            <div class="col-span-4 p-2">
+            <div class="col-span-5 p-2">
               <div v-if="!note.isEditing" class="text-gray-700">
                 {{ note.content }}
               </div>
@@ -569,7 +566,7 @@
             <!-- Video Transcript Column -->
             <div
               v-html="generateLoremIpsum()"
-              class="col-span-5 overflow-auto max-h-32 border border-gray-300 rounded-lg p-2 text-gray-500 text-sm"
+              class="col-span-4 overflow-auto max-h-32 border border-gray-300 rounded-lg p-2 text-gray-500 text-sm"
             ></div>
 
             <!-- Edit and Delete Icons Column -->
