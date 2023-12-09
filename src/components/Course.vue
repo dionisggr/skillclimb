@@ -201,9 +201,9 @@
         <chevron-right size="20" class="mx-1" />
       </div>
 
-        <h2 v-if="!isEditingLessonTitle" class="text-2xl font-bold m-1 mt-4">
-          {{ selectedLesson?.title }}
-        </h2>
+      <h2 v-if="!isEditingLessonTitle" class="text-2xl font-bold m-1 mt-4">
+        {{ selectedLesson?.title }}
+      </h2>
 
       <!-- Course Video and Right Section -->
       <div class="mb-6 flex flex-col md:flex-row">
@@ -530,14 +530,19 @@
           </button>
         </div>
 
-<!-- Expanded Notes Display -->
-  <div v-if="notesExpanded" class="my-4 p-4 bg-white border border-gray-300 rounded-md overflow-x-auto w-full">
-    <div class="grid grid-cols-12 gap-10 mb-2 font-semibold text-gray-800 min-w-fit">
-      <div class="col-span-2 text-center">Timestamp</div>
-      <div class="col-span-5 text-center">Note</div>
-      <div class="col-span-4 text-center">Transcript</div>
-      <div class="col-span-1 text-center">Actions</div>
-    </div>
+        <!-- Expanded Notes Display -->
+        <div
+          v-if="notesExpanded"
+          class="my-4 p-4 bg-white border border-gray-300 rounded-md overflow-x-auto w-full"
+        >
+          <div
+            class="grid grid-cols-12 gap-10 mb-2 font-semibold text-gray-800 min-w-fit"
+          >
+            <div class="col-span-2 text-center">Timestamp</div>
+            <div class="col-span-5 text-center">Note</div>
+            <div class="col-span-4 text-center">Transcript</div>
+            <div class="col-span-1 text-center">Actions</div>
+          </div>
           <div
             v-for="(note, index) in course.notes"
             :key="note.id"
@@ -619,15 +624,13 @@
             ⬅️
           </button>
 
-          
-
           <!-- Subtopic Name -->
           <h3 v-if="!selectedSubtopic.name" class="text-3xl font-semibold mb-2">
             General Information
           </h3>
-          
-                    <!-- Toggle Buttons -->
-                    <div
+
+          <!-- Toggle Buttons -->
+          <div
             class="mt-4 lg:mt-0 mb-4 space-x-4 overflow-x-auto no-scrollbar lg:overflow-visible flex lg:justify-center ml-auto p-1 px-2"
           >
             <button
@@ -1291,7 +1294,7 @@ export default {
       );
       this.openSubtopics?.push(newSubtopic.id);
 
-      console.log(this.selectedTopic)
+      console.log(this.selectedTopic);
     },
     saveSubtopicEdit(subtopic) {
       Object.assign(subtopic, this.editedSubtopic);
