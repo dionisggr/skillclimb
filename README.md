@@ -1,7 +1,12 @@
 # SkillClimb
 
+## Disclaimer
+**The source code for SkillClimb is not included in this repository due to its upcoming commercial release. For code review requests from potential employers, recruiters, or collaboration inquiries, please [email me](mailto:dionisggr@gmail.com?subject=Request%20for%20SkillClimb%20Code%20Walkthrough).**
+
 ## What Is It?
-SkillClimb is an innovative AI-powered online platform designed for both learners and content creators in the realm of online education. This application offers a personalized learning experience, tailoring course recommendations and supplemental information to each user’s unique profile, knowledge base, resume, and previously taken courses. Leveraging AI, SkillClimb ensures that learners receive highly relevant material, avoiding the need for mindless browsing. Additionally, for content creators, SkillClimb offers AI-driven tools to generate transcripts, outlines, supplemental material, mini-practices, and quizzes, enhancing the overall quality and engagement of their courses.
+SkillClimb is an innovative AI-powered online platform designed for both learners and content creators in the realm of online education. This application offers a personalized learning experience, tailoring course recommendations and supplemental information to each user’s unique profile, knowledge base, resume, and previously taken courses.
+
+Leveraging AI, SkillClimb ensures that learners receive highly relevant material, avoiding the need for mindless browsing. Additionally, for content creators, SkillClimb offers AI-driven tools to generate transcripts, outlines, supplemental material, mini-practices, and quizzes, enhancing the overall quality and engagement of their courses.
 
 ## Why Build It?
 The motivation behind SkillClimb stems from the need to streamline the online learning process and enhance the quality of educational content. In a world where information is abundant yet scattered, SkillClimb seeks to provide a cohesive and tailored learning journey for each individual. This platform also empowers content creators by automating time-consuming tasks, allowing them to focus more on delivering quality education.
