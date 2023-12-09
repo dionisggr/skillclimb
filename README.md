@@ -54,7 +54,18 @@ Experience personalized learning with AI-generated supplemental information and 
 For educators, use the AI tools to effortlessly create high-quality educational content, including transcripts, outlines, and practice exercises.
 
 ## Screenshots
-[Insert appropriate screenshots of the application's interface]
+![Screenshot 1](./public/home.png)
+![Screenshot 2](./public/learning-paths.png)
+![Screenshot 3](./public/learning-path.png)
+![Screenshot 4](./public/courses.png)
+![Screenshot 7](./public/course-preview.png)
+![Screenshot 7](./public/course-preview-2.png)
+![Screenshot 5](./public/course.png)
+![Screenshot 6](./public/course-notes.png)
+![Screenshot 8](./public/course-supplemental.png)
+![Screenshot 9](./public/course-mini-practice.png)
+![Screenshot 10](./public/creator-dashboard.png)
+![Screenshot 12](./public/pricing.png)
 
 ## Challenges and Learnings
 The primary challenge in developing SkillClimb was designing and implementing efficient data structures and algorithms for matching skills and categories. Another significant task was devising a cost-effective strategy for personalized AI generations, balancing the need for customization with resource constraints.
