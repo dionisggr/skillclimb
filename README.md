@@ -33,7 +33,7 @@ To run SkillClimb locally:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/skillclimb.git
+git clone https://github.com/dionisggr/skillclimb.git
 cd skillclimb
 
 # Install dependencies
