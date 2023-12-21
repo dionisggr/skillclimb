@@ -9,49 +9,31 @@
     <!-- Dashboard Content -->
     <div class="container mx-auto max-w-screen-xl mt-8">
       <!-- Insights Section -->
-      <div
-        class="bg-white p-6 shadow-lg grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8"
-      >
+      <div class="mb-8 bg-white shadow-lg rounded-xl">
         <div
-          class="bg-white p-6 rounded-xl shadow-md flex items-center justify-center sm:justify-start mb-4 sm:mb-0"
+          class="bg-white p-4 grid grid-cols-2 md:grid-cols-4 gap-4 rounded-xl"
         >
-          <div class="mr-4 bg-blue-200 p-4 rounded-full">
-            <i class="fas fa-video text-blue-600 text-xl"></i>
-            <!-- Using Font Awesome icons -->
-          </div>
-          <div>
-            <h2 class="text-xl font-semibold">Total Videos</h2>
-            <p>{{ totalVideos }}</p>
-          </div>
-        </div>
-
-        <div
-          class="bg-white p-6 rounded-xl shadow-md flex items-center justify-center sm:justify-start mb-4 sm:mb-0"
-        >
-          <div class="mr-4 bg-blue-200 p-4 rounded-full">
-            <i class="fas fa-eye text-blue-600 text-xl"></i>
-          </div>
-          <div>
-            <h2 class="text-xl font-semibold">Total Views</h2>
-            <p>{{ totalViews }}</p>
-          </div>
-        </div>
-
-        <div
-          class="bg-white p-6 rounded-xl shadow-md flex items-center justify-center sm:justify-start"
-        >
-          <div class="mr-4 bg-blue-200 p-4 rounded-full">
-            <i class="fas fa-comments text-blue-600 text-xl"></i>
-          </div>
-          <div>
-            <h2 class="text-xl font-semibold">Total Comments</h2>
-            <p>{{ totalComments }}</p>
-          </div>
+          <template v-for="metric in metrics">
+            <div
+              class="bg-white p-4 rounded-xl shadow-md flex flex-col items-center justify-center"
+            >
+              <div :class="'bg-' + metric.color + '-200 p-2 px-3 rounded-full mb-2'">
+                <i
+                  class="text-lg"
+                  :class="
+                    'fas ' + metric.icon + ' text-' + metric.color + '-600'
+                  "
+                ></i>
+              </div>
+              <h2 class="text-sm font-semibold">{{ metric.title }}</h2>
+              <p class="text-xs">{{ metric.value }}</p>
+            </div>
+          </template>
         </div>
       </div>
 
-      <!-- Courses Overview -->
-      <div class="bg-white p-6 rounded-xl shadow-lg mb-10">
+            <!-- Courses Overview -->
+            <div class="bg-white p-6 rounded-xl shadow-lg mb-10">
         <div
           class="flex flex-col md:flex-row justify-between items-center mb-6"
         >
@@ -113,6 +95,32 @@
           >
             <p class="text-gray-700 mb-2">{{ feedback.comment }}</p>
             <span class="text-sm text-blue-500">{{ feedback.course }}</span>
+            <button
+              @click="feedback.showReply = !feedback.showReply"
+              class="ml-4 text-xs px-2 py-0.5 text-white rounded-md transition-colors duration-200"
+              :class="{
+                'bg-blue-500 hover:bg-blue-600': !feedback.showReply,
+                'bg-red-500 hover:bg-red-600': feedback.showReply,
+              }"
+            >
+              {{ feedback.showReply ? 'Hide' : 'Reply' }}
+            </button>
+            <div v-if="feedback.showReply" class="mt-2">
+              <textarea
+                class="border p-2 text-sm w-full h-20"
+                placeholder="Write your reply..."
+              ></textarea>
+              <button
+                class="text-white bg-blue-500 hover:bg-blue-700 rounded px-4 py-1 mt-2"
+              >
+                Send
+              </button>
+              <button
+                class="text-white bg-gray-300 hover:bg-gray-400 rounded px-2 py-1 mt-2 ml-2"
+              >
+                <i class="fas fa-smile"></i>
+              </button>
+            </div>
           </li>
         </ul>
         <!-- Show More Button -->
@@ -126,7 +134,9 @@
       </div>
 
       <!-- Recommendations Section -->
-      <div class="bg-white p-6 rounded-xl shadow-lg">
+      <div
+        class="bg-white p-6 rounded-xl shadow-lg transform transition duration-500 hover:shadow-2xl"
+      >
         <h2 class="text-2xl font-semibold text-gray-700 mb-6">
           AI Recommendations for Your Courses
         </h2>
@@ -134,14 +144,33 @@
           <li
             v-for="recommendation in aiRecommendations"
             :key="recommendation.id"
-            class="mb-4"
+            :class="{
+              'border-blue-300 bg-blue-50 bg-opacity-60':
+                selectedRecommendation?.id === recommendation.id,
+            }"
+            class="mb-4 p-4 border border-gray-200 rounded-lg hover:border-blue-200 hover:bg-blue-50 hover:bg-opacity-60 transform transition duration-300 cursor-pointer"
+            @click="toggleRecommendation(recommendation)"
           >
-            <p>
-              <strong class="text-blue-600">{{ recommendation.title }}</strong>
+            <p class="font-semibold text-lg text-blue-600 mb-2">
+              {{ recommendation.title }}
             </p>
-            <p class="text-gray-600">{{ recommendation.detail }}</p>
+            <p class="text-gray-600">
+              {{ recommendation.detail }}
+            </p>
           </li>
         </ul>
+        <!-- Additional Information Section -->
+        <transition name="slide-fade">
+          <div v-if="selectedRecommendation" class="bg-white p-6 rounded-xl">
+            <h3 class="text-2xl font-semibold text-gray-700 mb-4">
+              {{ selectedRecommendation?.title }}
+            </h3>
+            <p class="text-gray-600">
+              <!-- Here you can add more detailed information based on the selected recommendation -->
+              {{ selectedRecommendation?.supplementalInfo }}
+            </p>
+          </div>
+        </transition>
       </div>
     </div>
   </div>
@@ -171,6 +200,48 @@ export default {
       courses: [],
       recentFeedback: [],
       aiRecommendations: [],
+      selectedRecommendation: null,
+      metricsPerCourseVisible: false,
+      metrics: [
+        { title: 'Total Courses', value: 12, icon: 'fa-book', color: 'green' },
+        {
+          title: 'Total Students',
+          value: 4523,
+          icon: 'fa-users',
+          color: 'blue',
+        },
+        { title: 'Total Videos', value: 123, icon: 'fa-video', color: 'red' },
+        {
+          title: 'Average Rating',
+          value: '4.5 ★',
+          icon: 'fa-star',
+          color: 'yellow',
+        },
+        {
+          title: 'Total Views',
+          value: '456k',
+          icon: 'fa-eye',
+          color: 'indigo',
+        },
+        {
+          title: 'Total Comments',
+          value: 789,
+          icon: 'fa-comments',
+          color: 'purple',
+        },
+        {
+          title: 'Engagement Rate',
+          value: '76%',
+          icon: 'fa-heart',
+          color: 'pink',
+        },
+        {
+          title: 'New Subscribers',
+          value: '250+',
+          icon: 'fa-user-plus',
+          color: 'orange',
+        },
+      ],
     };
   },
   methods: {
@@ -180,20 +251,30 @@ export default {
           id: 1,
           title: 'Mastering Vue.js',
           description: 'Deep dive into Vue.js and its ecosystem.',
-          thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg',
           enrolled: 1500,
           duration: 5,
+          videos: 35,
+          avgRating: 4.8,
+          views: 12000,
+          comments: 150,
+          engagementRate: '78%',
+          thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg',
         },
         {
           id: 2,
           title: 'AI for Beginners',
           description:
             'Introduction to AI, machine learning, and neural networks.',
-          thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg',
           enrolled: 2300,
           duration: 8,
+          videos: 50,
+          avgRating: 4.6,
+          views: 18000,
+          comments: 220,
+          engagementRate: '82%',
+          thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg',
         },
-        // ... Add more mock courses as needed
+        // Add more courses as needed
       ];
 
       this.recentFeedback = [
@@ -207,7 +288,6 @@ export default {
           course: 'AI for Beginners',
           comment: 'Wish there were more hands-on exercises.',
         },
-        // ... More feedback
       ];
 
       this.aiRecommendations = [
@@ -216,14 +296,17 @@ export default {
           title: 'Update Content',
           detail:
             "The topic 'Reactive Properties' in 'Mastering Vue.js' is outdated. Consider updating it for Vue 4.",
+          supplementalInfo:
+            'The Vue team has announced that Vue 4 will be released in 2022. It will have a new API for reactive properties. You can read more about it here: https://vuejs.org/v3/api/reactivity.html#reactive',
         },
         {
           id: 2,
           title: 'Engage Students',
           detail:
             "The course 'AI for Beginners' has low interaction in the last module. Consider adding quizzes or activities.",
+          supplementalInfo:
+            'Students are more likely to complete a course if it has quizzes or activities. You can read more about it here: https://support.udemy.com/hc/en-us/articles/229605008-How-to-Add-Quizzes-and-Practice-Activities',
         },
-        // ... More AI Recommendations
       ];
 
       this.totalStudents = 4523;
@@ -232,6 +315,16 @@ export default {
       this.totalVideos = 123;
       this.totalViews = '456k';
       this.totalComments = 789;
+    },
+    toggleMetricsPerCourse() {
+      this.metricsPerCourseVisible = !this.metricsPerCourseVisible;
+    },
+    toggleRecommendation(recommendation) {
+      if (this.selectedRecommendation?.id === recommendation.id) {
+        this.selectedRecommendation = null;
+      } else {
+        this.selectedRecommendation = recommendation;
+      }
     },
   },
   watch: {
