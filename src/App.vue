@@ -46,23 +46,15 @@
             class="flex p-1.5 px-2 relative"
             v-for="link in ['Home', 'Courses', 'Certifications', 'Pricing']"
           >
-            <span
-              v-if="link === 'Certifications'"
-              class="absolute top-0 right-0 text-sm font-bold text-red-500"
-              >Coming Soon</span
-            >
             <a
               href="#"
               class="rounded hover:bg-gray-200 p-1 font-semibold"
               :class="
                 link === 'Certifications'
-                  ? 'line-through cursor-not-allowed text-gray-600'
+                  ? 'text-gray-600'
                   : 'text-gray-700'
               "
-              @click="
-                link !== 'Certifications' &&
-                  (selectedNavItem = link.toLowerCase())
-              "
+              @click="selectNavItem(link.toLowerCase())"
               >{{ link }}</a
             >
           </div>
@@ -166,7 +158,7 @@
   <Home
     v-if="selectedNavItem === 'home'"
     :user="user"
-    @open-learning-path="selectedNavItem = 'learning-path'"
+    @open-learning-path="openLearningPath"
     @open-dashboard="selectedNavItem = 'dashboard'"
     @toggle-login="toggleLoginModal"
   />
@@ -215,7 +207,7 @@
   <LearningPath
     v-else-if="selectedNavItem === 'learning-path'"
     :user="user"
-    @open-course="selectedNavItem = 'course'"
+    @open-course="openCourse"
     @open-course-preview="selectedNavItem = 'course-preview'"
     @toggle-login-modal="toggleLoginModal"
   />
@@ -411,24 +403,6 @@ export default {
           10
         ),
       selectedSubtopic: null,
-      miniVideos: [
-        // sample data
-        {
-          id: 1,
-          title: 'Topic 1',
-          thumbnail: 'https://via.placeholder.com/150',
-          duration: '5:20',
-          isSelected: false,
-        },
-        {
-          id: 2,
-          title: 'Topic 2',
-          thumbnail: 'https://via.placeholder.com/150',
-          duration: '7:10',
-          isSelected: false,
-        },
-        // ... more mini-videos
-      ],
       showPractice: false,
       showAssessments: false,
       course: {
@@ -709,12 +683,6 @@ export default {
     unhoverMiniVideo(id) {
       // Reset hover effects if required
     },
-    selectMiniVideo(id) {
-      this.miniVideos = this.miniVideos.map((video) => {
-        video.isSelected = video.id === id;
-        return video;
-      });
-    },
     activateVideo(index) {
       this.sections = this.sections.map((section, idx) => ({
         ...section,
@@ -758,7 +726,18 @@ export default {
       } else {
         this.selectedNavItem = 'course';
       }
+
     },
+    openLearningPath() {
+      this.selectedNavItem = 'learning-path';
+      this.selectNavItem('learning-path');
+    },
+    selectNavItem(item) {
+      this.selectedNavItem = item;
+
+      window.scrollTo(0, 0);
+    },
+    
   },
 };
 </script>

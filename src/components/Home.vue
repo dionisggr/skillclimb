@@ -35,7 +35,7 @@
           @click.prevent="toggleHowItWorks"
           class="text-blue-600 hover:text-blue-700 cursor-pointer underline"
         >
-          Explore the Benefits
+          Explore Benefits
         </a>
       </div>
 

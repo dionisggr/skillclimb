@@ -6,25 +6,48 @@
       <p class="text-gray-600">Get a glimpse of what you'll learn.</p>
     </div>
 
-    <!-- Conditional Upload Video Button -->
+    <!-- Conditional Upload Video Button or YouTube Link Input -->
     <div
       v-if="isContentCreator && !videoSrc"
-      class="flex justify-center items-center h-64"
+      class="flex flex-col justify-center items-center h-64 space-y-4"
     >
-      <button
-        @click="triggerFileInput"
-        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-      >
-        Upload Video
-      </button>
-      <input
-        type="file"
-        ref="videoInput"
-        class="hidden"
-        @change="handleFileChange"
-        accept="video/*"
-      />
+      <div class="flex flex-col space-y-6 justify-center items-center">
+        <!-- Upload Button -->
+        <button
+          @click="triggerFileInput"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl"
+        >
+          Upload Video
+        </button>
+        <input
+          type="file"
+          ref="videoInput"
+          class="hidden"
+          @change="handleFileChange"
+          accept="video/*"
+        />
+
+        <!-- Stylish OR Divider -->
+        <div class="mx-4 text-gray-600 font-semibold text-lg">OR</div>
+
+        <div>
+          <!-- YouTube Link Input -->
+          <input
+            type="text"
+            v-model="youtubeLink"
+            placeholder="Enter YouTube link"
+            class="py-2 px-4 rounded-xl border border-gray-300 shadow-sm leading-3"
+          />
+          <button
+            @click="handleYoutubeLink"
+            class="ml-2 bg-green-500 hover:bg-green-700 text-white font-bold py-1.5 px-2 text-sm rounded-xl"
+          >
+            Load Video
+          </button>
+        </div>
+      </div>
     </div>
+
     <!-- Introductory Video Section -->
     <section
       class="relative block rounded-lg shadow-lg overflow-hidden mx-auto w-full max-w-4xl"
@@ -88,7 +111,7 @@
         <!-- Conditional rendering based on isLoggedIn -->
         <button
           @click="$emit(isNewCourse ? 'create-new-course' : 'open-course')"
-          class="text-white font-semibold rounded-lg py-3 px-8 w-full md:w-auto transition-colors duration-300 ease-in-out focus:outline-none active:outline-none border-blue-700"
+          class="text-white font-semibold rounded-xl py-3 px-8 w-full md:w-auto transition-colors duration-300 ease-in-out focus:outline-none active:outline-none border-blue-700"
           :class="
             isLoggedIn
               ? 'bg-green-500 hover:bg-green-600'
@@ -366,6 +389,7 @@ export default {
       isEditingInstructor: false,
       instructor: {},
       course: {},
+      youtubeLink: '',
     };
   },
   computed: {
@@ -379,14 +403,6 @@ export default {
   methods: {
     setup() {
       this.videoSrc = 'https://www.youtube.com/embed/5qap5aO4i9A';
-      this.instructor = {
-        id: 'active-instructor',
-        name: 'John Doe',
-        title: 'Senior Vue.js Developer',
-        bio: 'A passionate web developer and instructor with over 10 years of experience. John has taught over 50,000 students online and has worked on numerous web projects using Vue.js.',
-        imageUrl: '//placekitten.com/200/200',
-        website: 'https://johndoe.com',
-      };
       this.course = {
         id: 1,
         name: 'Job Searching with ChatGPT',
@@ -1481,7 +1497,9 @@ export default {
             ],
           },
         ],
-      }
+      };
+
+      this.setupInstructor();
     },
     triggerFileInput() {
       this.$refs.videoInput.click();
@@ -1542,10 +1560,49 @@ export default {
       this.isEditingLearnings = true;
       this.isEditingInstructor = true;
       this.videoSrc = null;
+
+      this.setupInstructor();
+    },
+    setupInstructor() {
+      this.instructor = {
+        id: 'active-instructor',
+        name: 'John Doe',
+        title: 'Senior Vue.js Developer',
+        bio: 'A passionate web developer and instructor with over 10 years of experience. John has taught over 50,000 students online and has worked on numerous web projects using Vue.js.',
+        imageUrl: '//placekitten.com/200/200',
+        website: 'https://johndoe.com',
+      };
     },
     toggleInstructorEdit() {
       this.isEditingInstructor = !this.isEditingInstructor;
     },
+    triggerFileInput() {
+    this.$refs.videoInput.click();
+  },
+
+  handleFileChange(event) {
+    const file = event.target.files[0];
+    if (file) {
+      // Generate a URL for the selected video file
+      this.videoSrc = URL.createObjectURL(file);
+    }
+  },
+
+  handleYoutubeLink() {
+    if (this.youtubeLink) {
+      // Basic pattern to extract the YouTube video ID from the URL
+      const youtubePattern = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+      const match = this.youtubeLink.match(youtubePattern);
+
+      if (match && match[1]) {
+        // Construct the YouTube embed URL with the extracted video ID
+        this.videoSrc = `https://www.youtube.com/embed/${match[1]}`;
+      } else {
+        // Handle invalid YouTube link
+        alert('Please enter a valid YouTube URL.');
+      }
+    }
+  },
   },
   watch: {
     'user.id'(newId) {
@@ -1554,7 +1611,6 @@ export default {
       }
 
       if (newId?.includes('active-instructor')) {
-
       }
     },
   },
