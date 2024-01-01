@@ -707,7 +707,7 @@
                 <span>{{
                   isSupplementalInfoLoading
                     ? 'Generating Info...'
-                    : 'Supplemental Info'
+                    : 'Generate Supplemental'
                 }}</span>
               </button>
               <button
@@ -803,15 +803,36 @@
           >
             <button
               v-for="button in toggleButtons"
-              @click="button.action"
+              @click="button.action(button.label)"
               :class="[
-                `px-6 py-2 rounded-full font-semibold text-sm transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-${button.color}-500 focus:ring-opacity-50 hover:shadow-md transform hover:-translate-y-1 hover:scale-105 whitespace-nowrap`,
+                `px-3 pl-4 py-2 rounded-full font-semibold text-sm transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-${button.color}-500 focus:ring-opacity-50 hover:shadow-md transform hover:-translate-y-1 hover:scale-105 whitespace-nowrap flex items-center justify-between`,
                 selectedInformation === button.label
                   ? `bg-${button.color}-500 text-${button.color}-800 ring-2 ring-${button.color}-300 ring-offset-1 shadow-2xl scale-105`
                   : `bg-${button.color}-200 text-${button.color}-600 scale-100`,
               ]"
             >
               {{ button.label }}
+
+              <!-- Close Icon inside each toggle button -->
+              <span
+                class="inline-block ml-2 cursor-pointer hover:text-red-800 transform hover:scale-125"
+                @click.stop="deleteToggleButton(button.id)"
+              >
+                <svg
+                  class="w-4 h-4 text-red-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  ></path>
+                </svg>
+              </span>
             </button>
 
             <!-- Add toggle button button -->
@@ -1623,9 +1644,13 @@ export default {
       this.selectedSubtopic = newSubtopic;
       this.editedSubtopic = newSubtopic;
 
-      this.selectedTopic?.subtopics?.[this.selectedInformation]?.push(
-        newSubtopic
-      );
+      if (this.selectedInformation in this.selectedTopic.subtopics) {
+        this.selectedTopic.subtopics[this.selectedInformation].push(
+          newSubtopic
+        );
+      } else {
+        this.selectedTopic.subtopics[this.selectedInformation] = [newSubtopic];
+      }
       this.openSubtopics?.push(newSubtopic.id);
 
       console.log(this.selectedTopic);
@@ -1708,11 +1733,13 @@ export default {
       this.timestamp = null;
     },
     setup() {
+      const firstKey = Object.keys(this.selectedTopic.subtopics)[0];
       this.selectModule(0);
       this.selectLesson(0);
       this.activeVideoIndex = 0;
       this.selectedTopic = this.selectedLesson?.topics[0];
-      this.selectedSubtopic = this.selectedTopic.subtopics.Simplified[0];
+      this.selectedSubtopic = this.selectedTopic.subtopics?.[firstKey]?.[0];
+      this.selectedInformation = firstKey;
 
       this.openSubtopics.push(this.selectedLesson.id);
     },
@@ -4312,20 +4339,20 @@ export default {
     },
     addToggleButton() {
       this.showNewToggleButtonOptions = false;
+
       this.toggleButtons.push({
         id: this.toggleButtons.length + 1,
         color: 'blue',
+        action: (label) => {
+          this.selectedInformation = label;
+        },
         ...this.newToggleButton,
       });
 
-      console.log(this.toggleButtons.length);
-
-      this.newToggleButton = {
+      Object.assign(this.newToggleButton, {
         label: '',
-        color: 'red',
-        action: () => {},
         feature: 'regenerations',
-      };
+      });
     },
     formatPracticeType(type) {
       return type
@@ -4378,6 +4405,15 @@ export default {
         points: 1,
         options: [],
       });
+    },
+    deleteToggleButton(id) {
+      if (confirm('Are you sure you want to delete this toggle button and all of its associated content?')) {
+        this.toggleButtons = this.toggleButtons.filter(
+          (button) => button.id !== id
+        );
+      }
+
+
     },
   },
   watch: {
