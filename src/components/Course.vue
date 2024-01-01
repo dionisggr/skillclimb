@@ -206,10 +206,10 @@
       </h2>
 
       <!-- Course Video and Right Section -->
-      <div class="mb-6 flex flex-col md:flex-row">
+      <div class="mb-6 flex flex-col md:flex-row mr-2">
         <div
           :class="{
-            'relative block rounded-lg overflow-hidden max-w-4xl md:w-3/5': true,
+            'relative block rounded-xl overflow-hidden max-w-4xl md:w-8/12': true,
             'shadow-lg': selectedLesson?.videoUrl,
           }"
         >
@@ -221,7 +221,7 @@
             frameborder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowfullscreen
-            class="h-80 rounded-2xl w-full mb-4 md:mb-0"
+            class="h-[375px] rounded-xl w-full mb-4 md:mb-0"
             :autoplay="false"
           ></iframe>
 
@@ -260,9 +260,9 @@
               />
               <button
                 @click="handleYoutubeLink"
-                class="ml-2 bg-green-500 hover:bg-green-700 text-white font-bold py-1.5 px-2 text-sm rounded-xl"
+                class="ml-2 bg-green-500 hover:bg-green-700 text-white font-bold py-1.5 px-3 text-sm rounded-xl"
               >
-                Load Video
+                Load
               </button>
             </div>
           </div>
@@ -279,11 +279,11 @@
 
         <!-- Right Section: Video Description and Topics -->
         <div
-          class="flex-grow ml-0 md:ml-4 flex w-96 flex-col space-y-4 absolute right-0 top-0"
+          class="ml-0 md:ml-4 flex w-4/12 flex-col space-y-4 absolute right-0 top-4"
         >
           <!-- Video Topics -->
           <div class="h-[400px] overflow-y-auto pb-12">
-            <p class="mb-2 font-semibold text-lg text-gray-800">
+            <p class="m-2 font-semibold text-lg text-gray-800">
               Module Lessons:
             </p>
 
@@ -293,7 +293,7 @@
             >
               <!-- Video Entry -->
               <div
-                class="relative video-lesson mt-3 flex items-center p-3 border border-blue-500 rounded-md shadow-md hover:shadow-lg border-opacity-30"
+                class="relative video-lesson flex items-center p-3 border border-blue-500 rounded-md shadow-md hover:shadow-lg border-opacity-30"
                 @click="selectLesson(index)"
                 :class="{
                   'border-blue-800 shadow-lg': selectedLesson?.id === lesson.id,
@@ -653,7 +653,10 @@
       </div>
 
       <!-- Video Tools Section -->
-      <div class="w-full my-8">
+      <div
+        class="w-full mb-6 shadow-md rounded-lg p-2"
+        :class="{ 'py-6': videoToolsOpen }"
+      >
         <div
           class="flex justify-between items-center p-3 rounded-md cursor-pointer"
           @click="toggleVideoTools"
@@ -779,7 +782,7 @@
       <!-- General Information Section -->
       <div class="bg-gray-100 p-2 lg:p-6 mb-6 rounded-lg shadow-lg relative">
         <!-- Back Button and Subtopic Name Wrapper -->
-        <div class="flex items-center mb-4 flex-wrap m-3">
+        <div class="flex items-center mb-4 flex-wrap m-2">
           <!-- Back Button -->
           <button
             v-if="selectedSubtopic.name"
@@ -796,54 +799,113 @@
 
           <!-- Toggle Buttons -->
           <div
-            class="mt-4 lg:mt-0 mb-4 space-x-4 overflow-x-auto no-scrollbar lg:overflow-visible flex lg:justify-center ml-auto p-1 px-2"
+            class="space-x-4 overflow-x-auto no-scrollbar lg:overflow-visible flex lg:justify-center ml-auto p-1"
           >
             <button
-              @click="setOption('Simplified')"
-              :class="
-                selectedInformation === 'Simplified'
-                  ? 'bg-yellow-500 text-white ring-2 ring-yellow-300 ring-offset-1 shadow-2xl scale-105'
-                  : 'bg-yellow-200 text-yellow-800 scale-100'
-              "
-              class="px-6 py-2 rounded-full font-semibold text-sm transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50 hover:shadow-md transform hover:-translate-y-1 hover:scale-105 whitespace-nowrap"
+              v-for="button in toggleButtons"
+              @click="button.action"
+              :class="[
+                `px-6 py-2 rounded-full font-semibold text-sm transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-${button.color}-500 focus:ring-opacity-50 hover:shadow-md transform hover:-translate-y-1 hover:scale-105 whitespace-nowrap`,
+                selectedInformation === button.label
+                  ? `bg-${button.color}-500 text-${button.color}-800 ring-2 ring-${button.color}-300 ring-offset-1 shadow-2xl scale-105`
+                  : `bg-${button.color}-200 text-${button.color}-600 scale-100`,
+              ]"
             >
-              Simplified
+              {{ button.label }}
             </button>
+
+            <!-- Add toggle button button -->
             <button
-              @click="setOption('Explore')"
-              :class="
-                selectedInformation === 'Explore'
-                  ? 'bg-blue-500 text-white ring-2 ring-blue-300 ring-offset-1 shadow-2xl scale-105'
-                  : 'bg-blue-200 text-blue-800 scale-100'
-              "
-              class="px-6 py-2 rounded-full font-semibold text-sm transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 hover:shadow-md transform hover:-translate-y-1 hover:scale-105 whitespace-nowrap"
+              v-if="isContentCreator"
+              @click="toggleNewToggleButtonOptions"
+              class="text-white px-4 py-2.5 rounded-full font-semibold text-sm transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-opacity-50 hover:shadow-md transform hover:-translate-y-1 hover:scale-105 whitespace-nowrap"
+              :class="{
+                'bg-blue-500 bg-opacity-90 focus:ring-blue-800':
+                  !showNewToggleButtonOptions,
+                'bg-red-500 focus:ring-red-800': showNewToggleButtonOptions,
+                'text-white': showNewToggleButtonOptions,
+              }"
             >
-              Explore
-            </button>
-            <button
-              @click="setOption('For You')"
-              :class="
-                selectedInformation === 'For You'
-                  ? 'bg-green-500 text-white ring-2 ring-green-300 ring-offset-1 shadow-2xl scale-105'
-                  : 'bg-green-200 text-green-800 scale-100'
-              "
-              class="min-w-fit px-6 py-2 rounded-full font-semibold text-sm transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 hover:shadow-md transform hover:-translate-y-1 hover:scale-105 whitespace-nowrap"
-            >
-              For You
-            </button>
-            <button
-              @click="setOption('Examples')"
-              :class="
-                selectedInformation === 'Examples'
-                  ? 'bg-red-500 text-white ring-2 ring-red-300 ring-offset-1 shadow-2xl scale-105'
-                  : 'bg-red-200 text-red-800 scale-100'
-              "
-              class="px-6 py-2 rounded-full font-semibold text-sm transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 hover:shadow-md transform hover:-translate-y-1 hover:scale-105 whitespace-nowrap"
-            >
-              Examples
+              {{ showNewToggleButtonOptions ? '-' : '+' }}
             </button>
           </div>
         </div>
+
+        <template v-if="showNewToggleButtonOptions">
+          <div
+            class="p-4 bg-white rounded-lg shadow-md max-w-md ml-auto min-w-fit"
+          >
+            <div class="flex items-center mb-4">
+              <input
+                type="text"
+                v-model="newToggleButton.label"
+                placeholder="Label"
+                class="border rounded-md p-1 px-2 mr-2 flex-grow"
+              />
+              <button
+                @click="addToggleButton"
+                class="bg-blue-500 text-white px-3 py-1 rounded-full font-semibold text-sm transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 hover:shadow-md transform hover:-translate-y-1 hover:scale-105"
+              >
+                Add
+              </button>
+            </div>
+
+            <!-- 2-way Toggle Switch -->
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <button
+                  @click="toggleFeature('regenerations')"
+                  :class="
+                    newToggleButton.feature === 'regenerations'
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gray-200 text-gray-700'
+                  "
+                  class="px-4 py-2 rounded-l-xl transition-colors duration-300"
+                >
+                  Regenerations
+                </button>
+                <button
+                  @click="toggleFeature('interactive')"
+                  :class="
+                    newToggleButton.feature === 'interactive'
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gray-200 text-gray-700'
+                  "
+                  class="px-4 py-2 rounded-r-xl transition-colors duration-300"
+                >
+                  Interactive
+                </button>
+              </div>
+
+              <!-- Color Picker with Preset Options -->
+              <div class="flex items-center">
+                <div class="flex space-x-1 mr-2">
+                  <button
+                    class="w-6 h-6 rounded-full bg-red-500 focus:outline-none"
+                    @click="setColor('#ff0000')"
+                  ></button>
+                  <button
+                    class="w-6 h-6 rounded-full bg-green-500 focus:outline-none"
+                    @click="setColor('#00ff00')"
+                  ></button>
+                  <button
+                    class="w-6 h-6 rounded-full bg-blue-500 focus:outline-none"
+                    @click="setColor('#0000ff')"
+                  ></button>
+                  <button
+                    class="w-6 h-6 rounded-full bg-yellow-500 focus:outline-none"
+                    @click="setColor('#ffff00')"
+                  ></button>
+                </div>
+                <input
+                  type="color"
+                  v-model="newToggleButton.colorPicker"
+                  class="w-8 h-8 border-none rounded-lg cursor-pointer p-1"
+                />
+              </div>
+            </div>
+          </div>
+        </template>
 
         <template v-if="!selectedSubtopic.name">
           <div
@@ -851,7 +913,7 @@
               selectedInformation
             ]"
             :key="subtopic.id"
-            class="border p-4 py-6 rounded-lg mb-3 hover:shadow-lg transition-shadow"
+            class="border pl-4 py-6 rounded-lg mb-3 hover:shadow-lg transition-shadow"
           >
             <!-- Collapsible Header -->
             <div
@@ -863,7 +925,7 @@
                 class="text-lg"
                 >▼</span
               >
-              <div class="flex-grow ml-3 flex items-center">
+              <div class="w-full ml-3 flex items-center">
                 <h4 v-if="!subtopic.isEditing" class="text-lg font-semibold">
                   {{ subtopic.title }}
                 </h4>
@@ -935,11 +997,18 @@
             </transition>
           </div>
 
+          <!-- No information yet message -->
+          <div v-if="!selectedSubtopic?.name">
+            <p class="text-gray-600 text-center pt-8">
+              No supplemental information provided.
+            </p>
+          </div>
+
           <!-- Add Subtopic Button -->
           <button
             v-if="isContentCreator"
             @click="addSubtopic"
-            class="mt-8 mb-4 p-2 bg-blue-500 text-white rounded-md mx-auto block"
+            class="mt-12 mb-2 p-2 px-3 bg-blue-500 text-white rounded-xl mx-auto block"
           >
             Add Subtopic
           </button>
@@ -952,7 +1021,7 @@
           class="flex items-center justify-between border-b-2 mt-6 pb-2"
           @click="showPractice = !showPractice"
         >
-          <h3 class="ml-2 text-2xl font-semibold">Mini-Practice</h3>
+          <h3 class="ml-2 text-3xl font-semibold">Mini-Practice</h3>
         </div>
 
         <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -968,17 +1037,69 @@
               @click="togglePractice(practice)"
             >
               <h4 class="text-sm font-bold">{{ practice.title }}</h4>
-              <p class="text-xs my-2 italic">{{ practice.description }}</p>
-              <p class="text-xs font-bold">
-                {{ practice.exerciseCount }} exercises
+              <p class="text-xs mt-2 italic">{{ practice.description }}</p>
+              <p class="text-xs font-bold mt-4">
+                {{ practice.exercises?.length }} exercise{{
+                  practice.exercises.length !== 1 ? 's' : ''
+                }}
               </p>
             </div>
           </template>
+
+          <!-- Subtle/Transparent Add Practice button with only a plus icon -->
+          <div
+            v-if="isContentCreator"
+            class="h-fit my-auto w-fit rounded-2xl border p-1 px-4 pb-2.5 shadow-sm transition-shadow duration-300 hover:shadow-md relative"
+          >
+            <button
+              @click="togglePracticeOptionsModal"
+              class="text-4xl text-gray-400 hover:text-gray-600 transition-colors duration-300"
+            >
+              +
+            </button>
+          </div>
         </div>
 
-        <Practice v-if="!isContentCreator" :name="selectedPractice?.title" />
+        <Practice
+          :isContentCreator="isContentCreator"
+          :selectedPractice="selectedPractice"
+          @add-exercise="addExercise"
+        />
       </div>
     </section>
+    <!-- Mini-Practice Selection Modal -->
+    <div
+      v-if="isPracticeOptionsModalShown"
+      class="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center z-50"
+    >
+      <div class="bg-white rounded-lg p-5 w-1/2">
+        <h2 class="text-xl font-bold mb-4">Add Mini-Practice</h2>
+        <div class="space-y-3">
+          <div
+            v-for="(option, index) in practiceOptions"
+            :key="index"
+            class="flex items-center justify-between border p-4 rounded-md shadow-md transition-shadow duration-300 hover:shadow-lg cursor-pointer"
+          >
+            <div class="font-medium">
+              {{ formatPracticeType(option.type) }} |
+              {{ formatPracticeSubtype(option.subtype) }}
+            </div>
+            <button
+              @click="addPractice(option)"
+              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
+              Add
+            </button>
+          </div>
+        </div>
+        <button
+          @click="togglePracticeOptionsModal"
+          class="mt-5 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Close
+        </button>
+      </div>
+    </div>
   </main>
 </template>
 
@@ -1068,52 +1189,48 @@ export default {
           supplementalInfo: 'Lorem ipsum',
         },
       ],
+      practiceOptions: [
+        {
+          type: 'multiple-choice',
+          subtype: 'single-answer',
+        },
+        {
+          type: 'multiple-choice',
+          subtype: 'Multiple Answers',
+        },
+      ],
       practices: [
         {
-          id: 1,
-          title: 'Intent or Structure?',
-          description:
-            'Identify the location where suggestions fit best in the prompt',
-          exerciseCount: 5,
+          id: 'mcsa',
+          title: 'Multiple-Choice | Single Answer',
+          description: 'Users can select only one answer',
+          type: 'multiple-choice',
+          subtype: 'single-answer',
+          exercises: [
+            {
+              text: 'Sample Question 1',
+              points: 1,
+              options: [{ text: 'Option 1' }],
+              selected: [],
+            },
+          ],
           hide: false,
         },
         {
-          id: 2,
-          title: 'Bias Busters',
-          description: 'Identify potentially strong biases in provided prompts',
-          exerciseCount: 3,
-          hide: false,
-        },
-        {
-          id: 3,
-          title: 'Parts Of A Prompt',
-          description:
-            'Identify the location where suggestions fit the prompt best',
-          exerciseCount: 5,
-          hide: false,
-        },
-        {
-          id: 4,
-          title: 'Prompt Puzzles',
-          description:
-            'Identify the location where suggestions fit the prompt best',
-          exerciseCount: 5,
-          hide: false,
-        },
-        {
-          id: 5,
-          title: 'Prompt-Off',
-          description:
-            'Identify the location where suggestions fit the prompt best',
-          exerciseCount: 5,
-          hide: false,
-        },
-        {
-          id: 6,
-          title: 'Prompt Crafting',
-          description:
-            'Identify the location where suggestions fit the prompt best',
-          exerciseCount: 5,
+          id: 'mcma',
+          title: 'Multiple-Choice | Multiple Answers',
+          description: 'Users can select multiple answers',
+          type: 'multiple-choice',
+          subtype: 'Multiple Answers',
+          exercises: [
+            {
+              text: 'Sample Question 1',
+              points: 1,
+              options: [{ text: 'Option 1' }],
+              selected: [],
+            },
+            // More questions...
+          ],
           hide: false,
         },
       ],
@@ -1147,6 +1264,11 @@ export default {
       youtubeLink: '',
       videoToolsOpen: false,
       showTranscript: false,
+      newToggleButton: {
+        label: '',
+        feature: 'regenerations',
+        colorPicker: '#ff0000', // Default color
+      },
       transcriptData: [
         {
           time: '00:00',
@@ -1197,10 +1319,12 @@ export default {
           text: 'That’s a brief overview of AI and Machine Learning. Thank you for watching!',
         },
       ],
-
+      showNewToggleButtonOptions: false,
       isTranscriptLoading: false,
       areTopicsLoading: false,
       isSupplementalInfoLoading: false,
+      toggleButtons: [],
+      isPracticeOptionsModalShown: false,
     };
   },
   computed: {
@@ -1310,18 +1434,6 @@ export default {
       this.selectedInformation = selectedOption;
     },
     togglePractice(practice) {
-      if (this.isContentCreator) {
-        if (this.selectedPracticeIds?.includes(practice.id)) {
-          this.selectedPracticeIds = this.selectedPracticeIds.filter(
-            (id) => id !== practice.id
-          );
-        } else {
-          this.selectedPracticeIds.push(practice.id);
-        }
-
-        return;
-      }
-
       if (this.selectedPractice?.title === practice?.title) {
         this.showPractice = false;
         this.selectedPractice = null;
@@ -4194,6 +4306,78 @@ export default {
         this.isSupplementalInfoLoading = false;
         this.showTopics = true;
       }, 3000);
+    },
+    toggleNewToggleButtonOptions() {
+      this.showNewToggleButtonOptions = !this.showNewToggleButtonOptions;
+    },
+    addToggleButton() {
+      this.showNewToggleButtonOptions = false;
+      this.toggleButtons.push({
+        id: this.toggleButtons.length + 1,
+        color: 'blue',
+        ...this.newToggleButton,
+      });
+
+      console.log(this.toggleButtons.length);
+
+      this.newToggleButton = {
+        label: '',
+        color: 'red',
+        action: () => {},
+        feature: 'regenerations',
+      };
+    },
+    formatPracticeType(type) {
+      return type
+        .split('-')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    },
+    formatPracticeSubtype(subtype) {
+      return subtype
+        .split('-')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    },
+    addPractice(option) {
+      const newPractice = {
+        id: this.practices.length + 1,
+        title: `${this.formatPracticeType(
+          option.type
+        )} | ${this.formatPracticeSubtype(option.subtype)}`,
+        description: 'Custom description', // Modify as needed
+        type: option.type,
+        subtype: option.subtype,
+        exercises: [],
+      };
+      this.selectedPractice = newPractice;
+
+      this.practices.push(newPractice);
+      this.togglePracticeOptionsModal();
+    },
+    formatPracticeType(type) {
+      return type
+        .split('-')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    },
+    formatPracticeSubtype(subtype) {
+      return subtype
+        .split('-')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    },
+    togglePracticeOptionsModal() {
+      this.isPracticeOptionsModalShown = !this.isPracticeOptionsModalShown;
+    },
+    addExercise() {
+      this.selectedPractice.exercises.push({
+        id: this.selectedPractice.exercises.length + 1,
+        question: '',
+        answer: '',
+        points: 1,
+        options: [],
+      });
     },
   },
   watch: {

@@ -17,7 +17,11 @@
             <div
               class="bg-white p-4 rounded-xl shadow-md flex flex-col items-center justify-center"
             >
-              <div :class="'bg-' + metric.color + '-200 p-2 px-3 rounded-full mb-2'">
+              <div
+                :class="
+                  'bg-' + metric.color + '-200 p-2 px-3 rounded-full mb-2'
+                "
+              >
                 <i
                   class="text-lg"
                   :class="
@@ -25,15 +29,15 @@
                   "
                 ></i>
               </div>
-              <h2 class="text-sm font-semibold">{{ metric.title }}</h2>
-              <p class="text-xs">{{ metric.value }}</p>
+              <h2 class="font-semibold">{{ metric.title }}</h2>
+              <p class="text-sm">{{ metric.value }}</p>
             </div>
           </template>
         </div>
       </div>
 
-            <!-- Courses Overview -->
-            <div class="bg-white p-6 rounded-xl shadow-lg mb-10">
+      <!-- Courses Overview -->
+      <div class="bg-white p-6 rounded-xl shadow-lg mb-10">
         <div
           class="flex flex-col md:flex-row justify-between items-center mb-6"
         >
@@ -50,7 +54,7 @@
           </button>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div v-if="courses?.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div
             v-for="course in courses"
             :key="course.id"
@@ -80,6 +84,11 @@
             </button>
           </div>
         </div>
+        <div v-else>
+          <p class="text-gray-500 text-center p-2 pt-4">
+            You don't have any courses.
+          </p>
+        </div>
       </div>
 
       <!-- Feedback Section -->
@@ -87,7 +96,7 @@
         <h2 class="text-2xl font-semibold text-gray-700 mb-6">
           Recent Feedback
         </h2>
-        <ul>
+        <ul v-if="recentFeedback?.length">
           <li
             v-for="feedback in recentFeedback"
             :key="feedback.id"
@@ -123,6 +132,11 @@
             </div>
           </li>
         </ul>
+        <div v-else>
+          <p class="text-gray-500 text-center p-2 pt-4">
+            No feedback yet.
+          </p>
+        </div>
         <!-- Show More Button -->
         <button
           v-if="recentFeedback.length"
@@ -140,7 +154,7 @@
         <h2 class="text-2xl font-semibold text-gray-700 mb-6">
           AI Recommendations for Your Courses
         </h2>
-        <ul>
+        <ul v-if="aiRecommendations?.length">
           <li
             v-for="recommendation in aiRecommendations"
             :key="recommendation.id"
@@ -159,6 +173,12 @@
             </p>
           </li>
         </ul>
+        <div v-else>
+          <p class="text-gray-500 text-center p-2 pt-4">
+            No recommendations yet.
+          </p>
+        </div>
+
         <!-- Additional Information Section -->
         <transition name="slide-fade">
           <div v-if="selectedRecommendation" class="bg-white p-6 rounded-xl">

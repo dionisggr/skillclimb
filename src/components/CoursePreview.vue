@@ -121,7 +121,7 @@
           <!-- Text changes based on isLoggedIn -->
           {{
             isContentCreator
-              ? 'Course Content'
+              ? 'Edit Course'
               : isEnrolled
               ? 'Continue'
               : 'Enroll Now'
@@ -143,7 +143,7 @@
     </section>
 
     <!-- Curriculum Section -->
-    <section class="bg-white rounded-lg p-6 shadow-lg mt-4 relative">
+    <section class="bg-white rounded-lg p-6 shadow-md mt-4 relative">
       <!-- Edit Button for Content Creator -->
       <button
         v-if="isContentCreator"
@@ -154,77 +154,88 @@
       </button>
 
       <h2 class="text-xl font-bold mb-4">Curriculum</h2>
-      <div v-for="(_module, index) in course.modules" :key="index" class="mb-4">
+      <div v-if="course?.modules?.length">
         <div
-          :class="[
-            'mb-3 bg-gray-100 rounded-lg p-3 hover:bg-gray-200 transition-all duration-200 cursor-pointer shadow-md',
-            index < 2 &&
-              isLoggedIn &&
-              'completed-module bg-green-200 hover:bg-green-300',
-          ]"
-          @click="!isEditingCurriculum ? (_module.hide = !_module.hide) : null"
+          v-for="(_module, index) in course.modules"
+          :key="index"
+          class="mb-4"
         >
-          <div class="flex items-center justify-between">
-            <div v-if="!isEditingCurriculum" class="flex items-center">
-              <span
-                class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center mr-4"
-                >{{ index + 1 }}</span
-              >
-              <p class="flex-grow">{{ _module.name }}</p>
-            </div>
-            <div v-else class="flex items-center w-1/2">
-              <input
-                v-model="_module.name"
-                class="flex-grow p-1 border rounded w-fit"
-                placeholder="Module Name"
-              />
-              <button @click="deleteModule(index)" class="ml-2 text-red-500">
-                <i class="fas fa-trash-alt"></i>
-              </button>
-            </div>
-            <span v-if="!isEditingCurriculum" class="text-sm text-gray-600">{{
-              _module.duration
-            }}</span>
-          </div>
-        </div>
-        <transition name="slide-fade">
-          <div v-if="!_module.hide" class="mt-2 ml-6 md:ml-8 lg:ml-12">
-            <div
-              v-for="(lesson, lessonIndex) in _module.lessons"
-              :key="lessonIndex"
-            >
-              <div
-                v-if="!isEditingCurriculum"
-                class="my-1 p-2 bg-gray-100 rounded hover:shadow-md hover:bg-gray-300 transition-all duration-200 cursor-pointer"
-              >
-                {{ lesson.title }}
-              </div>
-              <div
-                v-else
-                class="flex my-1 p-2 bg-gray-100 rounded items-center"
-              >
-                <input
-                  v-model="lesson.title"
-                  class="flex-grow p-1 border rounded"
-                  placeholder="Lesson Title"
-                />
-                <button
-                  @click="deleteLesson(index, lessonIndex)"
-                  class="ml-2 text-red-500"
+          <div
+            :class="[
+              'mb-3 bg-gray-100 rounded-lg p-3 hover:bg-gray-200 transition-all duration-200 cursor-pointer shadow-md',
+              index < 2 &&
+                isLoggedIn &&
+                'completed-module bg-green-200 hover:bg-green-300',
+            ]"
+            @click="
+              !isEditingCurriculum ? (_module.hide = !_module.hide) : null
+            "
+          >
+            <div class="flex items-center justify-between">
+              <div v-if="!isEditingCurriculum" class="flex items-center">
+                <span
+                  class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center mr-4"
+                  >{{ index + 1 }}</span
                 >
+                <p class="flex-grow">{{ _module.name }}</p>
+              </div>
+              <div v-else class="flex items-center w-1/2">
+                <input
+                  v-model="_module.name"
+                  class="flex-grow p-1 border rounded w-fit"
+                  placeholder="Module Name"
+                />
+                <button @click="deleteModule(index)" class="ml-2 text-red-500">
                   <i class="fas fa-trash-alt"></i>
                 </button>
               </div>
+              <span v-if="!isEditingCurriculum" class="text-sm text-gray-600">{{
+                _module.duration
+              }}</span>
             </div>
-            <button
-              v-if="isEditingCurriculum"
-              @click="addLesson(index)"
-              class="mt-2 text-blue-500"
-            >
-              Add Lesson
-            </button>
           </div>
-        </transition>
+          <transition name="slide-fade">
+            <div v-if="!_module.hide" class="mt-2 ml-6 md:ml-8 lg:ml-12">
+              <div
+                v-for="(lesson, lessonIndex) in _module.lessons"
+                :key="lessonIndex"
+              >
+                <div
+                  v-if="!isEditingCurriculum"
+                  class="my-1 p-2 bg-gray-100 rounded hover:shadow-md hover:bg-gray-300 transition-all duration-200 cursor-pointer"
+                >
+                  {{ lesson.title }}
+                </div>
+                <div
+                  v-else
+                  class="flex my-1 p-2 bg-gray-100 rounded items-center"
+                >
+                  <input
+                    v-model="lesson.title"
+                    class="flex-grow p-1 border rounded"
+                    placeholder="Lesson Title"
+                  />
+                  <button
+                    @click="deleteLesson(index, lessonIndex)"
+                    class="ml-2 text-red-500"
+                  >
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </div>
+              </div>
+              <button
+                v-if="isEditingCurriculum"
+                @click="addLesson(index)"
+                class="mt-2 text-blue-500"
+              >
+                Add Lesson
+              </button>
+            </div>
+          </transition>
+        </div>
+      </div>
+      <div v-else class="text-center text-gray-500 my-4 mt-12">
+        No modules added yet.
       </div>
       <button
         v-if="isEditingCurriculum"
@@ -236,7 +247,7 @@
     </section>
 
     <!-- What You'll Learn Section -->
-    <section class="bg-white rounded-lg p-6 mt-8 relative">
+    <section class="bg-white rounded-lg shadow-md p-6 mt-4 relative">
       <!-- Edit Button for Content Creator -->
       <button
         v-if="isContentCreator"
@@ -247,7 +258,10 @@
       </button>
 
       <h2 class="text-xl font-bold mb-6 text-center">What You'll Learn</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <div
+        v-if="course?.learnings?.length"
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
+      >
         <div
           v-for="(item, index) in course.learnings"
           :key="index"
@@ -275,6 +289,9 @@
           </button>
         </div>
       </div>
+      <div v-else class="text-center text-gray-500 my-4 mt-12">
+        No learning objectives added yet.
+      </div>
       <button
         v-if="isEditingLearnings"
         @click="addLearningItem"
@@ -286,7 +303,7 @@
 
     <!-- Instructor Info Section -->
     <section
-      class="bg-gradient-to-r from-blue-500 to-green-400 rounded-lg p-6 shadow-lg text-white mt-2 relative"
+      class="bg-gradient-to-r from-blue-500 to-green-400 rounded-lg p-6 mt-4 shadow-lg text-white relative"
     >
       <!-- Edit Button -->
       <button
@@ -1556,9 +1573,7 @@ export default {
         learnings: [],
         modules: [],
       };
-      this.isEditingCurriculum = true;
-      this.isEditingLearnings = true;
-      this.isEditingInstructor = true;
+
       this.videoSrc = null;
 
       this.setupInstructor();
@@ -1577,32 +1592,33 @@ export default {
       this.isEditingInstructor = !this.isEditingInstructor;
     },
     triggerFileInput() {
-    this.$refs.videoInput.click();
-  },
+      this.$refs.videoInput.click();
+    },
 
-  handleFileChange(event) {
-    const file = event.target.files[0];
-    if (file) {
-      // Generate a URL for the selected video file
-      this.videoSrc = URL.createObjectURL(file);
-    }
-  },
-
-  handleYoutubeLink() {
-    if (this.youtubeLink) {
-      // Basic pattern to extract the YouTube video ID from the URL
-      const youtubePattern = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-      const match = this.youtubeLink.match(youtubePattern);
-
-      if (match && match[1]) {
-        // Construct the YouTube embed URL with the extracted video ID
-        this.videoSrc = `https://www.youtube.com/embed/${match[1]}`;
-      } else {
-        // Handle invalid YouTube link
-        alert('Please enter a valid YouTube URL.');
+    handleFileChange(event) {
+      const file = event.target.files[0];
+      if (file) {
+        // Generate a URL for the selected video file
+        this.videoSrc = URL.createObjectURL(file);
       }
-    }
-  },
+    },
+
+    handleYoutubeLink() {
+      if (this.youtubeLink) {
+        // Basic pattern to extract the YouTube video ID from the URL
+        const youtubePattern =
+          /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+        const match = this.youtubeLink.match(youtubePattern);
+
+        if (match && match[1]) {
+          // Construct the YouTube embed URL with the extracted video ID
+          this.videoSrc = `https://www.youtube.com/embed/${match[1]}`;
+        } else {
+          // Handle invalid YouTube link
+          alert('Please enter a valid YouTube URL.');
+        }
+      }
+    },
   },
   watch: {
     'user.id'(newId) {
