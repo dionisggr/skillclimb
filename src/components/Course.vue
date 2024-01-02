@@ -1220,41 +1220,7 @@ export default {
           subtype: 'Multiple Answers',
         },
       ],
-      practices: [
-        {
-          id: 'mcsa',
-          title: 'Multiple-Choice | Single Answer',
-          description: 'Users can select only one answer',
-          type: 'multiple-choice',
-          subtype: 'single-answer',
-          exercises: [
-            {
-              text: 'Sample Question 1',
-              points: 1,
-              options: [{ text: 'Option 1' }],
-              selected: [],
-            },
-          ],
-          hide: false,
-        },
-        {
-          id: 'mcma',
-          title: 'Multiple-Choice | Multiple Answers',
-          description: 'Users can select multiple answers',
-          type: 'multiple-choice',
-          subtype: 'Multiple Answers',
-          exercises: [
-            {
-              text: 'Sample Question 1',
-              points: 1,
-              options: [{ text: 'Option 1' }],
-              selected: [],
-            },
-            // More questions...
-          ],
-          hide: false,
-        },
-      ],
+      practices: [],
       selectedSubtopic: {},
       selectedTopic: {},
       selectedOption: null,
@@ -1369,6 +1335,43 @@ export default {
     },
   },
   methods: {
+    setupPractices() {
+      this.practices = [
+        {
+          id: 'mcsa',
+          title: 'Multiple-Choice | Single Answer',
+          description: 'Users can select only one answer',
+          type: 'multiple-choice',
+          subtype: 'single-answer',
+          exercises: [
+            {
+              text: 'Sample Question 1',
+              points: 1,
+              options: [{ text: 'Option 1' }],
+              selected: [],
+            },
+          ],
+          hide: false,
+        },
+        {
+          id: 'mcma',
+          title: 'Multiple-Choice | Multiple Answers',
+          description: 'Users can select multiple answers',
+          type: 'multiple-choice',
+          subtype: 'multiple-answers',
+          exercises: [
+            {
+              text: 'Sample Question 1',
+              points: 1,
+              options: [{ text: 'Option 1' }],
+              selected: [],
+            },
+            // More questions...
+          ],
+          hide: false,
+        },
+      ];
+    },
     toggleHide(practice) {
       practice.hide = !practice.hide;
     },
@@ -1579,11 +1582,15 @@ export default {
       }
     },
     editTopic(topic) {
+      console.log(topic);
       topic.isEditing = true;
       this.editedTopic = { ...topic };
+
+      this.$forceUpdate();
     },
-    addTopic(title = 'New Topic') {
+    addTopic({ title = 'New Topic' }) {
       const newTopic = {
+        id: Date.now().toString(),
         title,
         thumbnail: 'https://via.placeholder.com/150',
         duration: '7m 10s',
@@ -1644,10 +1651,14 @@ export default {
       this.selectedSubtopic = newSubtopic;
       this.editedSubtopic = newSubtopic;
 
+
+
       if (this.selectedInformation in this.selectedTopic.subtopics) {
         this.selectedTopic.subtopics[this.selectedInformation].push(
           newSubtopic
         );
+
+        
       } else {
         this.selectedTopic.subtopics[this.selectedInformation] = [newSubtopic];
       }
@@ -1810,7 +1821,7 @@ export default {
                   id: 1,
                   title: 'Overview of AI and LLMS',
                   thumbnail: 'https://via.placeholder.com/150',
-                  duration: '7:10',
+                  timestamp: '0:00',
                   progress: 100,
                   isSelected: false,
                   subtopics: {
@@ -2001,7 +2012,7 @@ export default {
                   id: 2,
                   title: 'Biases, Inaccuracies & Responsible Use',
                   thumbnail: 'https://via.placeholder.com/150',
-                  duration: '4:10',
+                  timestamp: '1:10',
                   progress: 100,
                   isSelected: false,
                   subtopics: {
@@ -2192,7 +2203,7 @@ export default {
                   id: 3,
                   title: 'Ethical Considerations & Privacy',
                   thumbnail: 'https://via.placeholder.com/150',
-                  duration: '5:10',
+                  timestamp: '2:20',
                   progress: 100,
                   isSelected: false,
                   subtopics: {
@@ -4134,9 +4145,9 @@ export default {
       this.areTopicsLoading = true;
 
       setTimeout(() => {
-        this.addTopic('AI and Large Language Models');
-        this.addTopic('OpenAI, GPT and ChatGPT');
-        this.addTopic("What ChatGPT Can and Can't Do");
+        this.addTopic({ title: 'AI and Large Language Models' });
+        this.addTopic({ title: 'OpenAI, GPT and ChatGPT' });
+        this.addTopic({ title: "What ChatGPT Can and Can't Do" });
 
         this.selectedTopic = this.selectedLesson.topics[0];
         this.areTopicsLoading = false;
@@ -4148,7 +4159,7 @@ export default {
 
       setTimeout(() => {
         if (!this.selectedLesson.topics?.length) {
-          this.addTopic('AI and Large Language Models');
+          this.addTopic({ title: 'AI and Large Language Models' });
         }
 
         this.selectedLesson.topics[0].subtopics = {
@@ -4339,6 +4350,7 @@ export default {
     },
     addToggleButton() {
       this.showNewToggleButtonOptions = false;
+      this.selectedInformation = this.newToggleButton.label;
 
       this.toggleButtons.push({
         id: this.toggleButtons.length + 1,

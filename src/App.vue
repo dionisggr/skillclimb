@@ -1,20 +1,15 @@
 <template>
   <header class="sticky top-0 z-50 bg-white p-4 shadow-md">
     <div class="flex items-center justify-between">
-      <div class="flex items-center">
+      <div class="flex items-center ml-2">
         <!-- Simple SVG ladder icon as a placeholder -->
-        <svg
-          class="h-6 w-6 mr-1"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-        >
-          <path
-            d="M7 0h2v24H7zm8 0h2v24h-2zm-6 4h6v2h-6zm6 5H9v-2h6zm-6 5h6v2h-6zm6 5H9v-2h6z"
-          />
-        </svg>
+        <img
+          src="/src/assets/skillclimb-logo.png"
+          alt="SkillClimb"
+          class="w-20 h-12 mr-1 pb-1.5"
+        />
         <h1
-          class="text-xl font-semibold cursor-pointer"
+          class="text-xl font-bold cursor-pointer mt-1"
           @click="selectedNavItem = 'home'"
         >
           SkillClimb
@@ -50,9 +45,7 @@
               href="#"
               class="rounded hover:bg-gray-200 p-1 font-semibold"
               :class="
-                link === 'Certifications'
-                  ? 'text-gray-600'
-                  : 'text-gray-700'
+                link === 'Certifications' ? 'text-gray-600' : 'text-gray-700'
               "
               @click="selectNavItem(link.toLowerCase())"
               >{{ link }}</a
@@ -77,19 +70,31 @@
             class="absolute mt-24 right-8 bg-white border border-gray-300 shadow-md rounded py-2"
           >
             <template v-if="user">
-              <button class="block px-4 py-2 hover:bg-gray-100 cursor-not-allowed">
+              <button
+                class="block px-4 py-2 hover:bg-gray-100 cursor-not-allowed"
+              >
                 My Account
               </button>
-              <button class="block px-4 py-2 hover:bg-gray-100" @click="toggleLoginModal">Switch User</button>
-              <button class="block px-4 py-2 hover:bg-gray-100 w-full" @click.stop="logout">Logout</button>
-            </template>
               <button
-                v-else
                 class="block px-4 py-2 hover:bg-gray-100"
                 @click="toggleLoginModal"
               >
-                Login As...
+                Switch User
               </button>
+              <button
+                class="block px-4 py-2 hover:bg-gray-100 w-full"
+                @click.stop="logout"
+              >
+                Logout
+              </button>
+            </template>
+            <button
+              v-else
+              class="block px-4 py-2 hover:bg-gray-100"
+              @click="toggleLoginModal"
+            >
+              Login As...
+            </button>
           </div>
         </div>
       </nav>
@@ -158,9 +163,11 @@
   <Home
     v-if="selectedNavItem === 'home'"
     :user="user"
+    :subscriberEmail="subscriberEmail"
     @open-learning-path="openLearningPath"
     @open-dashboard="selectedNavItem = 'dashboard'"
     @toggle-login="toggleLoginModal"
+    @subscribe-to-newsletter="subscribeToNewsletter"
   />
 
   <!-- Courses -->
@@ -226,6 +233,9 @@
     @create-new-course="createNewCoursePreview"
   />
 
+  <!-- Coming Soon -->
+  <ComingSoon v-else />
+
   <!-- Footer Section -->
   <section class="bg-gray-100 py-12 mt-16">
     <div class="container mx-auto px-8 lg:flex">
@@ -234,23 +244,44 @@
         <h2 class="text-lg font-bold mb-4">Information</h2>
         <ul class="text-sm">
           <li class="mb-2">
-            <a href="#" class="text-gray-600 hover:text-gray-800">About Us</a>
-          </li>
-          <li class="mb-2">
-            <a href="#" class="text-gray-600 hover:text-gray-800">Blog</a>
-          </li>
-          <li class="mb-2">
-            <a href="#" class="text-gray-600 hover:text-gray-800">Partners</a>
-          </li>
-          <li class="mb-2">
-            <a href="#" class="text-gray-600 hover:text-gray-800"
-              >Privacy Policy</a
+            <button
+              class="text-gray-600 hover:text-gray-800"
+              @click="selectedNavItem = null"
             >
+              About Us
+            </button>
+          </li>
+          <li class="mb-2">
+            <button
+              class="text-gray-600 hover:text-gray-800"
+              @click="selectedNavItem = null"
+            >
+              Blog
+            </button>
+          </li>
+          <li class="mb-2">
+            <button
+              class="text-gray-600 hover:text-gray-800"
+              @click="selectedNavItem = null"
+            >
+              Partners
+            </button>
+          </li>
+          <li class="mb-2">
+            <button
+              class="text-gray-600 hover:text-gray-800"
+              @click="selectedNavItem = null"
+            >
+              Privacy Policy
+            </button>
           </li>
           <li>
-            <a href="#" class="text-gray-600 hover:text-gray-800"
-              >Terms of Service</a
+            <button
+              class="text-gray-600 hover:text-gray-800"
+              @click="selectedNavItem = null"
             >
+              Terms of Service
+            </button>
           </li>
         </ul>
       </div>
@@ -272,9 +303,12 @@
             >
           </li>
           <li>
-            <a href="#" class="text-gray-600 hover:text-gray-800 underline"
-              >Help Center</a
+            <button
+              class="text-gray-600 hover:text-gray-800 underline"
+              @click="selectedNavItem = null"
             >
+              Help Center
+            </button>
           </li>
         </ul>
       </div>
@@ -284,33 +318,32 @@
         <h2 class="text-lg font-bold mb-4">Stay Connected</h2>
         <ul class="mb-4 text-sm">
           <li class="inline-block mx-2">
-            <a href="#" class="text-gray-600 hover:text-gray-800"
-              ><i class="fab fa-facebook"></i
-            ></a>
+            <button class="text-gray-600 hover:text-gray-800" @click="selectedNavItem = 'coming-soon'">
+              <i class="fab fa-facebook"></i>
+            </button>
           </li>
           <li class="inline-block mx-2">
-            <a href="#" class="text-gray-600 hover:text-gray-800"
-              ><i class="fab fa-twitter"></i
-            ></a>
+            <button class="text-gray-600 hover:text-gray-800" @click="selectedNavItem = 'coming-soon'">
+              <i class="fab fa-twitter"></i>
+            </button>
           </li>
           <li class="inline-block mx-2">
-            <a href="#" class="text-gray-600 hover:text-gray-800"
-              ><i class="fab fa-linkedin"></i
-            ></a>
+            <button class="text-gray-600 hover:text-gray-800" @click="selectedNavItem = 'coming-soon'">
+              <i class="fab fa-linkedin"></i>
+            </button>
           </li>
           <li class="inline-block mx-2">
-            <a href="#" class="text-gray-600 hover:text-gray-800"
-              ><i class="fab fa-instagram"></i
-            ></a>
+            <button class="text-gray-600 hover:text-gray-800" @click="selectedNavItem = 'coming-soon'">
+              <i class="fab fa-instagram"></i>
+            </button>
           </li>
         </ul>
-        <form @submit.prevent="subscribe">
+        <form @submit.prevent="subscribeToNewsletter">
           <input
             type="email"
             placeholder="Your email"
             class="p-2 rounded w-2/3 border"
             v-model="subscriberEmail"
-            required
           />
           <button
             type="submit"
@@ -327,36 +360,38 @@
   </section>
 
   <!-- Modal for Login As -->
-<div v-if="showLoginModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-  <div class="bg-white rounded-lg p-6 px-8 grid grid-cols-2 gap-4 relative">
-    <!-- Close Button -->
-    <button
-      class="absolute top-0 right-2 text-3xl m-2 text-red-400 p-2 hover:text-gray-800"
-      @click="showLoginModal = false"
-    >
-      &times;
-    </button>
-    <div
-      v-for="(role, index) in [
-        'new-student',
-        'active-student',
-        'new-instructor',
-        'active-instructor',
-      ]"
-      :key="role"
-      class="flex flex-col items-center cursor-pointer hover:bg-gray-100 rounded-full p-6 px-10"
-      @click="loginAs(role)"
-    >
-      <img
-        :src="`https://source.unsplash.com/random/100x${100 + index}`"
-        alt="Avatar"
-        class="rounded-full mb-2"
-      />
-      <span class="capitalize">{{ role.replace('-', ' ') }}</span>
+  <div
+    v-if="showLoginModal"
+    class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
+  >
+    <div class="bg-white rounded-lg p-6 px-8 grid grid-cols-2 gap-4 relative">
+      <!-- Close Button -->
+      <button
+        class="absolute top-0 right-2 text-3xl m-2 text-red-400 p-2 hover:text-gray-800"
+        @click="showLoginModal = false"
+      >
+        &times;
+      </button>
+      <div
+        v-for="(role, index) in [
+          'new-student',
+          'active-student',
+          'new-instructor',
+          'active-instructor',
+        ]"
+        :key="role"
+        class="flex flex-col items-center cursor-pointer hover:bg-gray-100 rounded-full p-6 px-10"
+        @click="loginAs(role)"
+      >
+        <img
+          :src="`https://source.unsplash.com/random/100x${100 + index}`"
+          alt="Avatar"
+          class="rounded-full mb-2"
+        />
+        <span class="capitalize">{{ role.replace('-', ' ') }}</span>
+      </div>
     </div>
   </div>
-</div>
-
 </template>
 
 <script>
@@ -373,6 +408,7 @@ import Courses from './components/Courses.vue';
 import LearningPath from './components/LearningPath.vue';
 import VideoPlatform from './components/VideoPlatform.vue';
 import Dashboard from './components/Dashboard.vue';
+import ComingSoon from './components/ComingSoon.vue';
 import data from './data.js';
 
 export default {
@@ -390,6 +426,7 @@ export default {
     LearningPath,
     VideoPlatform,
     Dashboard,
+    ComingSoon,
   },
 
   data() {
@@ -398,6 +435,7 @@ export default {
       isNewCourse: false,
       showLoginModal: false,
       selectedNavItem: 'home',
+      subscriberEmail: '',
       supplementalInfo:
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sodales ullamcorper vehicula.'.repeat(
           10
@@ -726,7 +764,6 @@ export default {
       } else {
         this.selectedNavItem = 'course';
       }
-
     },
     openLearningPath() {
       this.selectedNavItem = 'learning-path';
@@ -737,7 +774,15 @@ export default {
 
       window.scrollTo(0, 0);
     },
-    
+    subscribeToNewsletter({ email }) {
+      if (!(email || this.subscriberEmail)) {
+        alert('Please enter a valid email address.');
+        return;
+      }
+      // Here, you might want to make an API call to subscribe the user to your newsletter.
+      alert(`Thank you for subscribing, ${email || this.subscriberEmail}!`);
+      this.subscriberEmail = ''; // Reset the email input after subscribing.
+    },
   },
 };
 </script>

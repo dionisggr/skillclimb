@@ -13,6 +13,7 @@
     "@ffmpeg/ffmpeg": "^0.12.7",
     "@mdi/font": "^7.2.96",
     "@shopify/draggable": "^1.1.1",
+    "@tailwindcss/typography": "^0.5.10",
     "github-markdown-css": "^5.4.0",
     "marked": "^9.1.5",
     "sass": "^1.69.5",

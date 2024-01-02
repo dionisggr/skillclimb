@@ -192,7 +192,7 @@
         >
           <input
             type="email"
-            v-model="newsletterEmail"
+            v-model="subscriberEmail"
             class="flex-grow px-4 py-2 text-lg rounded-md shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400"
             placeholder="Enter your email"
           />
@@ -247,42 +247,42 @@ export default {
           title: 'Solutions Engineering',
           description: 'Learn how to evaluate and deploy software solutions',
           thumbnail:
-            'https://th.bing.com/th/id/OIG.2r6EZ7PYvfej0iVeIwcM?pid=ImgGn',
+            'https://indoreinstitute.com/wp-content/uploads/2021/09/Innovative-Engineering-Solutions-Devised-to-Fight-the-COVID-19-Pandemic.jpg',
         },
         {
           id: 4,
-          title: 'Job Search',
-          description: 'Learn how to find and land your dream job.',
+          title: 'Data Engineering',
+          description: 'Learn how to build data pipelines and warehouses.',
           thumbnail:
-            'https://th.bing.com/th/id/OIG.Vtt8ARwvcktN5J8tR5CW?pid=ImgGn',
+            'https://www.data-vault.co.uk/wp-content/uploads/2022/04/blog_image_1100x619_DATAENGINEER.jpg',
         },
         {
           id: 5,
           title: 'Artificial Intelligence',
           description: 'Learn about the future of AI and its applications.',
           thumbnail:
-            'https://th.bing.com/th/id/OIG.p2wMsbWVtkSzuBvCuAYV?pid=ImgGn',
+            'https://thebulletin.org/wp-content/uploads/2023/08/AdobeStock_580829354.jpeg',
         },
         {
           id: 6,
           title: 'Machine Learning',
           description: 'Learn to build intelligent systems.',
           thumbnail:
-            'https://th.bing.com/th/id/OIG.KAQROkJX9soTEZ7i_N_w?pid=ImgGn',
+            'https://emeritus.org/in/wp-content/uploads/sites/3/2023/03/types-of-machine-learning.jpg.optimal.jpg',
         },
         {
           id: 8,
           title: 'Prompt Engineering',
           description: 'Learn how to communicate with generative AI',
           thumbnail:
-            'https://th.bing.com/th/id/OIG.ppWopHWbrsfbgrzJhe_2?pid=ImgGn',
+            'https://miro.medium.com/v2/resize:fit:800/1*csEMmQ-po3jOFGMFAtwKrg.png',
         },
         {
           id: 7,
           title: 'Data Science',
           description: 'Learn to extract insights from data.',
           thumbnail:
-            'https://th.bing.com/th/id/OIG.6Ju.JlNuDRwzMEEA4qYT?pid=ImgGn',
+            'https://imageio.forbes.com/specials-images/imageserve/615a844b0e678d9d11c5fc26/0x0.jpg?format=jpg&height=900&width=1600&fit=bounds',
         },
       ],
       reviews: [
@@ -290,7 +290,7 @@ export default {
           id: 1,
           userName: 'John Doe',
           userThumbnail:
-            'https://th.bing.com/th/id/OIG.kMOdQ0SnPAAMGkSvGmNh?pid=ImgGn',
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTv5T9G-B_94Liv4WQ2W-ulYpOqYM_0Yq6su6KgzQEzHU1InT6k-xEMNQvydTUrtqcPQio&usqp=CAU',
           stars: 5,
           text: 'Amazing platform! I have learned so much in just a few weeks. Highly recommended!',
         },
@@ -334,13 +334,9 @@ export default {
       this.showHowItWorks = !this.showHowItWorks;
     },
     subscribeToNewsletter() {
-      if (!this.subscriberEmail) {
-        alert('Please enter a valid email address.');
-        return;
-      }
-      // Here, you might want to make an API call to subscribe the user to your newsletter.
-      alert(`Thank you for subscribing, ${this.subscriberEmail}!`);
-      this.subscriberEmail = ''; // Reset the email input after subscribing.
+      this.$emit('subscribe-to-newsletter', { email: this.subscriberEmail });
+
+      this.subscriberEmail = '';
     },
   },
 };
