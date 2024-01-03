@@ -205,9 +205,19 @@ export default {
     },
   },
   mounted() {
-    if (this.user?.id?.includes('active-instructor')) {
-      this.setup();
-    }
+    if (this.user.id?.includes('active-instructor')) {
+        this.setup();
+      } else {
+        this.totalStudents = 0;
+        this.totalCourses = 0;
+        this.avgRating = 0;
+        this.totalVideos = 0;
+        this.totalViews = 0;
+        this.totalComments = 0;
+        this.courses = [];
+        this.recentFeedback = [];
+        this.aiRecommendations = [];
+      }
   },
   data() {
     return {
@@ -223,41 +233,41 @@ export default {
       selectedRecommendation: null,
       metricsPerCourseVisible: false,
       metrics: [
-        { title: 'Total Courses', value: 12, icon: 'fa-book', color: 'green' },
+        { title: 'Total Courses', value: 0, icon: 'fa-book', color: 'green' },
         {
           title: 'Total Students',
-          value: 4523,
+          value: 0,
           icon: 'fa-users',
           color: 'blue',
         },
-        { title: 'Total Videos', value: 123, icon: 'fa-video', color: 'red' },
+        { title: 'Total Videos', value: 0, icon: 'fa-video', color: 'red' },
         {
           title: 'Average Rating',
-          value: '4.5 ★',
+          value: '0.0 ★',
           icon: 'fa-star',
           color: 'yellow',
         },
         {
           title: 'Total Views',
-          value: '456k',
+          value: '0',
           icon: 'fa-eye',
           color: 'indigo',
         },
         {
           title: 'Total Comments',
-          value: 789,
+          value: 0,
           icon: 'fa-comments',
           color: 'purple',
         },
         {
           title: 'Engagement Rate',
-          value: '76%',
+          value: '0%',
           icon: 'fa-heart',
           color: 'pink',
         },
         {
           title: 'New Subscribers',
-          value: '250+',
+          value: '0',
           icon: 'fa-user-plus',
           color: 'orange',
         },
@@ -329,12 +339,46 @@ export default {
         },
       ];
 
-      this.totalStudents = 4523;
-      this.totalCourses = 12;
-      this.avgRating = 4.5;
-      this.totalVideos = 123;
-      this.totalViews = '456k';
-      this.totalComments = 789;
+      this.metrics = [
+        { title: 'Total Courses', value: 12, icon: 'fa-book', color: 'green' },
+        {
+          title: 'Total Students',
+          value: 4523,
+          icon: 'fa-users',
+          color: 'blue',
+        },
+        { title: 'Total Videos', value: 123, icon: 'fa-video', color: 'red' },
+        {
+          title: 'Average Rating',
+          value: '4.5 ★',
+          icon: 'fa-star',
+          color: 'yellow',
+        },
+        {
+          title: 'Total Views',
+          value: '456k',
+          icon: 'fa-eye',
+          color: 'indigo',
+        },
+        {
+          title: 'Total Comments',
+          value: 789,
+          icon: 'fa-comments',
+          color: 'purple',
+        },
+        {
+          title: 'Engagement Rate',
+          value: '76%',
+          icon: 'fa-heart',
+          color: 'pink',
+        },
+        {
+          title: 'New Subscribers',
+          value: '250+',
+          icon: 'fa-user-plus',
+          color: 'orange',
+        },
+      ];
     },
     toggleMetricsPerCourse() {
       this.metricsPerCourseVisible = !this.metricsPerCourseVisible;
@@ -352,15 +396,49 @@ export default {
       if (newId?.includes('active-instructor')) {
         this.setup();
       } else {
-        this.totalStudents = 0;
-        this.totalCourses = 0;
-        this.avgRating = 0;
-        this.totalVideos = 0;
-        this.totalViews = 0;
-        this.totalComments = 0;
         this.courses = [];
         this.recentFeedback = [];
         this.aiRecommendations = [];
+        this.metrics = [
+        { title: 'Total Courses', value: 0, icon: 'fa-book', color: 'green' },
+        {
+          title: 'Total Students',
+          value: 0,
+          icon: 'fa-users',
+          color: 'blue',
+        },
+        { title: 'Total Videos', value: 0, icon: 'fa-video', color: 'red' },
+        {
+          title: 'Average Rating',
+          value: '0.0 ★',
+          icon: 'fa-star',
+          color: 'yellow',
+        },
+        {
+          title: 'Total Views',
+          value: '0',
+          icon: 'fa-eye',
+          color: 'indigo',
+        },
+        {
+          title: 'Total Comments',
+          value: 0,
+          icon: 'fa-comments',
+          color: 'purple',
+        },
+        {
+          title: 'Engagement Rate',
+          value: '0%',
+          icon: 'fa-heart',
+          color: 'pink',
+        },
+        {
+          title: 'New Subscribers',
+          value: '0',
+          icon: 'fa-user-plus',
+          color: 'orange',
+        },
+      ]
       }
     },
   },

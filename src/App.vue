@@ -1,19 +1,17 @@
 <template>
   <header class="sticky top-0 z-50 bg-white p-4 shadow-md">
     <div class="flex items-center justify-between">
-      <div class="flex items-center ml-2">
+      <div
+        class="flex items-center ml-2 cursor-pointer"
+        @click="selectedNavItem = 'home'"
+      >
         <!-- Simple SVG ladder icon as a placeholder -->
         <img
           src="/src/assets/skillclimb-logo.png"
           alt="SkillClimb"
           class="w-20 h-12 mr-1 pb-1.5"
         />
-        <h1
-          class="text-xl font-bold cursor-pointer mt-1"
-          @click="selectedNavItem = 'home'"
-        >
-          SkillClimb
-        </h1>
+        <h1 class="text-xl font-bold mt-1 text-gray-700">SkillClimb</h1>
       </div>
       <!-- Hamburger Icon -->
       <div class="md:hidden">
@@ -55,7 +53,7 @@
         <div class="flex items-center">
           <input
             type="text"
-            placeholder="Search course..."
+            placeholder="Search platform..."
             class="hidden lg:block w-80 rounded-xl border p-2 px-4 ml-8"
           />
           <button
@@ -64,25 +62,31 @@
           >
             <account-circle />
           </button>
-          <!-- Account Dropdown -->
+          <!-- Account Dropdown with User ID Display -->
           <div
             v-if="showAccountOptions"
-            class="absolute mt-24 right-8 bg-white border border-gray-300 shadow-md rounded py-2"
+            class="absolute top-16 right-8 bg-white border border-gray-300 shadow-md rounded py-2"
           >
             <template v-if="user">
+              <!-- User ID Display -->
+              <div class="px-4 py-2 text-sm text-gray-600 capitalize">
+                Logged as: {{ user?.id?.replace('-', ' ') }}
+              </div>
+              <hr class="my-1" />
+              <!-- Divider line -->
               <button
-                class="block px-4 py-2 hover:bg-gray-100 cursor-not-allowed"
+                class="block px-4 py-2 bg-gray-100 text-gray-400 cursor-not-allowed w-full text-left"
               >
                 My Account
               </button>
               <button
-                class="block px-4 py-2 hover:bg-gray-100"
+                class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
                 @click="toggleLoginModal"
               >
                 Switch User
               </button>
               <button
-                class="block px-4 py-2 hover:bg-gray-100 w-full"
+                class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
                 @click.stop="logout"
               >
                 Logout
@@ -90,7 +94,7 @@
             </template>
             <button
               v-else
-              class="block px-4 py-2 hover:bg-gray-100"
+              class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
               @click="toggleLoginModal"
             >
               Login As...
@@ -159,24 +163,22 @@
     </div>
   </transition>
 
-  <!-- Home -->
   <Home
     v-if="selectedNavItem === 'home'"
     :user="user"
     :subscriberEmail="subscriberEmail"
     @open-learning-path="openLearningPath"
-    @open-dashboard="selectedNavItem = 'dashboard'"
+    @open-creator-dashboard="selectedNavItem = 'creator-dashboard'"
+    @open-business-dashboard="selectedNavItem = 'business-dashboard'"
     @toggle-login="toggleLoginModal"
     @subscribe-to-newsletter="subscribeToNewsletter"
   />
 
-  <!-- Courses -->
   <Courses
     v-else-if="selectedNavItem === 'courses'"
     @preview-course="selectedNavItem = 'course-preview'"
   />
 
-  <!-- Course Preview -->
   <CoursePreview
     v-else-if="selectedNavItem === 'course-preview'"
     :user="user"
@@ -185,7 +187,6 @@
     @open-course="openCourse"
   />
 
-  <!-- Course -->
   <Course
     v-else-if="selectedNavItem === 'course'"
     :user="user"
@@ -193,7 +194,6 @@
     @open-practice="selectedNavItem = 'practice'"
   />
 
-  <!-- Certifications -->
   <Certifications
     v-else-if="selectedNavItem === 'certifications'"
     @go-back="selectedNavItem = 'certifications'"
@@ -201,16 +201,13 @@
     @view-certification="selectedNavItem = 'certification'"
   />
 
-  <!-- Certification -->
   <Certification
     v-else-if="selectedNavItem === 'certification'"
     @go-back="selectedNavItem = 'certifications'"
   />
 
-  <!-- Pricing -->
   <Pricing v-else-if="selectedNavItem === 'pricing'" />
 
-  <!-- Learning Path -->
   <LearningPath
     v-else-if="selectedNavItem === 'learning-path'"
     :user="user"
@@ -219,25 +216,29 @@
     @toggle-login-modal="toggleLoginModal"
   />
 
-  <!-- Video Platform -->
   <VideoPlatform
     v-else-if="selectedNavItem === 'video-platform'"
     @open-course="selectedNavItem = 'course'"
   />
 
-  <!-- Dashboard -->
-  <Dashboard
-    v-else-if="selectedNavItem === 'dashboard'"
+  <CreatorDashboard
+    v-else-if="selectedNavItem === 'creator-dashboard'"
     :user="user"
     @open-course="selectedNavItem = 'course'"
     @create-new-course="createNewCoursePreview"
   />
 
-  <!-- Coming Soon -->
+  <BusinessDashboard
+    v-else-if="selectedNavItem === 'business-dashboard'"
+    :user="user"
+    @open-course="selectedNavItem = 'course'"
+    @create-new-course="createNewCoursePreview"
+  />
+
   <ComingSoon v-else />
 
   <!-- Footer Section -->
-  <section class="bg-gray-100 py-12 mt-16">
+  <footer class="bg-gray-100 py-12 mt-16">
     <div class="container mx-auto px-8 lg:flex">
       <!-- Column 1: Information & Navigation Links -->
       <div class="lg:w-1/3 mb-8 lg:mb-0">
@@ -291,10 +292,13 @@
         <h2 class="text-lg font-bold mb-4">Contact & Support</h2>
         <ul class="text-sm">
           <li class="mb-2">
-            <span class="text-gray-600">Email: </span
-            ><a href="mailto:support@skillclimb.com" class="hover:text-gray-800"
-              >support@skillclimb.com</a
-            >
+            <span class="text-gray-600">Email: </span>
+            <!-- <a href="mailto:support@skillclimb.com" class="hover:text-gray-800">
+              support@skillclimb.com
+            </a> -->
+            <a href="mailto:support@skillclimb.com" class="hover:text-gray-800">
+              dionisggr@gmail.com
+            </a>
           </li>
           <li class="mb-2">
             <span class="text-gray-600">Phone: </span
@@ -318,22 +322,34 @@
         <h2 class="text-lg font-bold mb-4">Stay Connected</h2>
         <ul class="mb-4 text-sm">
           <li class="inline-block mx-2">
-            <button class="text-gray-600 hover:text-gray-800" @click="selectedNavItem = 'coming-soon'">
+            <button
+              class="text-gray-600 hover:text-gray-800"
+              @click="selectedNavItem = 'coming-soon'"
+            >
               <i class="fab fa-facebook"></i>
             </button>
           </li>
           <li class="inline-block mx-2">
-            <button class="text-gray-600 hover:text-gray-800" @click="selectedNavItem = 'coming-soon'">
+            <button
+              class="text-gray-600 hover:text-gray-800"
+              @click="selectedNavItem = 'coming-soon'"
+            >
               <i class="fab fa-twitter"></i>
             </button>
           </li>
           <li class="inline-block mx-2">
-            <button class="text-gray-600 hover:text-gray-800" @click="selectedNavItem = 'coming-soon'">
+            <button
+              class="text-gray-600 hover:text-gray-800"
+              @click="selectedNavItem = 'coming-soon'"
+            >
               <i class="fab fa-linkedin"></i>
             </button>
           </li>
           <li class="inline-block mx-2">
-            <button class="text-gray-600 hover:text-gray-800" @click="selectedNavItem = 'coming-soon'">
+            <button
+              class="text-gray-600 hover:text-gray-800"
+              @click="selectedNavItem = 'coming-soon'"
+            >
               <i class="fab fa-instagram"></i>
             </button>
           </li>
@@ -357,12 +373,12 @@
     <div class="text-center text-gray-500 text-sm mt-4">
       &copy; 2023 SkillClimb. All rights reserved.
     </div>
-  </section>
+  </footer>
 
   <!-- Modal for Login As -->
   <div
     v-if="showLoginModal"
-    class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
+    class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-40"
   >
     <div class="bg-white rounded-lg p-6 px-8 grid grid-cols-2 gap-4 relative">
       <!-- Close Button -->
@@ -373,22 +389,17 @@
         &times;
       </button>
       <div
-        v-for="(role, index) in [
-          'new-student',
-          'active-student',
-          'new-instructor',
-          'active-instructor',
-        ]"
-        :key="role"
-        class="flex flex-col items-center cursor-pointer hover:bg-gray-100 rounded-full p-6 px-10"
-        @click="loginAs(role)"
+        v-for="{ id, imageUrl } in demoUsers"
+        :key="id"
+        class="flex flex-col items-center cursor-pointer rounded-full p-6 px-10"
+        :class="{
+          'bg-blue-100 font-semibold': id === user?.id,
+          'hover:bg-gray-100': id !== user?.id,
+        }"
+        @click="loginAs(id)"
       >
-        <img
-          :src="`https://source.unsplash.com/random/100x${100 + index}`"
-          alt="Avatar"
-          class="rounded-full mb-2"
-        />
-        <span class="capitalize">{{ role.replace('-', ' ') }}</span>
+        <img :src="imageUrl" alt="Avatar" class="rounded-full mb-2" />
+        <span class="capitalize">{{ id.replace('-', ' ') }}</span>
       </div>
     </div>
   </div>
@@ -407,7 +418,8 @@ import Pricing from './components/Pricing.vue';
 import Courses from './components/Courses.vue';
 import LearningPath from './components/LearningPath.vue';
 import VideoPlatform from './components/VideoPlatform.vue';
-import Dashboard from './components/Dashboard.vue';
+import CreatorDashboard from './components/CreatorDashboard.vue';
+import BusinessDashboard from './components/BusinessDashboard.vue';
 import ComingSoon from './components/ComingSoon.vue';
 import data from './data.js';
 
@@ -425,7 +437,8 @@ export default {
     Courses,
     LearningPath,
     VideoPlatform,
-    Dashboard,
+    CreatorDashboard,
+    BusinessDashboard,
     ComingSoon,
   },
 
@@ -674,6 +687,7 @@ export default {
       selectedNavItem: 'home',
       isSidebarOpen: false,
       showAccountOptions: false,
+      demoUsers: data.users,
     };
   },
   computed: {

@@ -56,91 +56,62 @@
     <!-- Included Courses -->
     <section class="bg-white p-4 rounded-lg shadow-lg">
       <h2 class="text-2xl font-bold mb-4">Included Courses</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div
           v-for="(course, index) in learningPath.courses"
           :key="index"
-          :class="[
-            'relative flex flex-col justify-between rounded-lg shadow-sm p-4 hover:shadow-lg transition-shadow duration-300 cursor-pointer',
-            isLoggedIn && !index ? 'bg-blue-50' : 'bg-gray-100', // Highlight the third course
-            index < 2 ? 'coming-soon' : '',
-          ]"
+          class="flex flex-col justify-between rounded-lg bg-white shadow-md hover:shadow-lg transition duration-300 cursor-pointer p-4 pl-3 border-l-4 border-transparent hover:border-gray-400 h-full"
           @click="$emit('open-course-preview')"
         >
-          <!-- Coming Soon Overlay for first 2 courses -->
-          <div
-            v-if="index > 1"
-            class="absolute rounded-xl top-0 left-0 right-0 bottom-0 bg-black bg-opacity-30 flex items-center justify-center"
-          >
-            <span class="text-white font-bold text-xl">Coming Soon</span>
-          </div>
-
-          <!-- Progress Indicator for the third course -->
-          <div v-if="isEnrolled && !index" class="ml-auto mb-2">
-            <span
-              class="text-yellow-600 font-semibold text-sm bg-yellow-200 px-2 py-1 rounded-full"
-            >
-              In Progress
-            </span>
-          </div>
-          <!-- Course Header with Thumbnail and Duration -->
-          <div class="flex justify-between mb-4">
-            <div class="flex">
-              <div class="w-12 h-12 bg-white shadow-lg rounded-lg mr-3">
+          <!-- Content above (Thumbnail, Title, Duration, Topics) -->
+          <div>
+            <!-- Course Header with Thumbnail, Title, and Duration -->
+            <div class="flex items-start mb-4">
+              <!-- Thumbnail -->
+              <div class="w-12 h-12 bg-gray-200 mr-3">
                 <img
                   src="https://source.unsplash.com/random/201x126?course"
                   :alt="course.title"
-                  class="w-full h-full object-cover rounded-lg"
+                  class="w-full h-full object-cover rounded"
                 />
               </div>
-              <div class="flex-1 flex items-center">
-                <h3 class="w-11/12 text-base font-semibold mb-1 md:text-lg">
+              <!-- Title and Duration -->
+              <div class="flex-1">
+                <h3 class="text-lg font-semibold">
                   {{ course.title }}
                 </h3>
+                <span class="text-sm text-gray-600 min-w-fit">
+                  {{ course.duration }} weeks
+                </span>
               </div>
             </div>
-            <!-- Course Duration -->
-            <div
-              class="duration-block flex flex-col items-center text-center border-solid ml-2"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-6 w-6 mr-1"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path d="M12 6v6l4 2" />
-                <path d="M12 4a8 8 0 100 16 8 8 0 000-16z" />
-              </svg>
-              <span class="text-xs min-w-fit">{{ course.duration }} weeks</span>
+
+            <!-- Course Topics -->
+            <div class="mb-4">
+              <ul class="flex flex-wrap gap-2">
+                <li
+                  v-for="topic in course.topics"
+                  :key="topic"
+                  class="text-xs px-2 py-1 rounded-full bg-blue-50 text-gray-600"
+                >
+                  {{ topic }}
+                </li>
+              </ul>
             </div>
           </div>
 
-          <!-- Course Topics -->
-          <div class="mb-6">
-            <ul class="flex flex-wrap gap-3">
-              <li
-                v-for="topic in course.topics"
-                :key="topic"
-                class="text-xs px-3 py-1 rounded-full bg-blue-100 text-blue-600"
-              >
-                {{ topic }}
-              </li>
-            </ul>
-          </div>
-
-          <!-- Instructor, Additional Info -->
-          <div class="flex items-center justify-between text-sm mb-2">
-            <div>
-              <span class="font-bold">{{ course.lessons }}</span> lessons
-              <span class="ml-2 font-bold">{{ course.assessments }}</span>
-              assessments
+          <!-- Instructor, Lessons, and Assessments (Stuck to the bottom) -->
+          <div class="mt-auto">
+            <div class="flex justify-between items-center text-sm">
+              <div>
+                <span class="font-bold">{{ course.lessons }}</span> lessons,
+                <span class="font-bold">{{ course.assessments }}</span>
+                assessments
+              </div>
+              <div class="text-gray-600 font-semibold">
+                {{ course.instructor?.name }}
+              </div>
             </div>
-            <span class="text-gray-600 font-semibold">{{
-              course.instructor?.name
-            }}</span>
           </div>
         </div>
       </div>
@@ -154,7 +125,7 @@
         <div
           v-for="skill in learningPath.skills"
           :key="skill"
-          class="p-4 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition duration-200 ease-in-out"
+          class="text-center cursor-pointer font-medium p-4 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition duration-200 ease-in-out"
         >
           {{ skill }}
         </div>
@@ -392,7 +363,7 @@ export default {
     },
     isEnrolled() {
       return this.user?.id?.includes('active-student');
-    }
-  }
+    },
+  },
 };
 </script>

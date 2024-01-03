@@ -6,141 +6,115 @@
       <p class="text-gray-600">Get a glimpse of what you'll learn.</p>
     </div>
 
-    <!-- Conditional Upload Video Button or YouTube Link Input -->
-    <div
-      v-if="isContentCreator && !videoSrc"
-      class="flex flex-col justify-center items-center h-64 space-y-4"
-    >
-      <div class="flex flex-col space-y-6 justify-center items-center">
-        <!-- Upload Button -->
-        <button
-          @click="triggerFileInput"
-          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl"
-        >
-          Upload Video
-        </button>
-        <input
-          type="file"
-          ref="videoInput"
-          class="hidden"
-          @change="handleFileChange"
-          accept="video/*"
-        />
-
-        <!-- Stylish OR Divider -->
-        <div class="mx-4 text-gray-600 font-semibold text-lg">OR</div>
-
-        <div>
-          <!-- YouTube Link Input -->
-          <input
-            type="text"
-            v-model="youtubeLink"
-            placeholder="Enter YouTube link"
-            class="py-2 px-4 rounded-xl border border-gray-300 shadow-sm leading-3"
-          />
-          <button
-            @click="handleYoutubeLink"
-            class="ml-2 bg-green-500 hover:bg-green-700 text-white font-bold py-1.5 px-2 text-sm rounded-xl"
-          >
-            Load Video
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Introductory Video Section -->
-    <section
-      class="relative block rounded-lg shadow-lg overflow-hidden mx-auto w-full max-w-4xl"
-      v-else
-    >
-      <iframe
-        :src="videoSrc"
-        title="YouTube video player"
-        frameborder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        allowfullscreen
-        class="w-full min-h-52 h-[50vw] max-h-[450px] object-cover"
-      ></iframe>
-      <!-- Remove Video Button -->
+   <!-- Conditional Upload Video Button or YouTube Link Input -->
+  <div
+    v-if="isContentCreator && !videoSrc"
+  >
+    <div class="flex flex-col space-y-6 justify-center items-center">
+      <!-- Upload Button with Hover Effect -->
       <button
-        v-if="videoSrc && isContentCreator"
-        @click="removeVideo"
-        class="absolute bottom-2 right-2 text-sm bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+        @click="triggerFileInput"
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl transition duration-300"
       >
-        Remove
+        Upload Video
       </button>
-    </section>
+      <input
+        type="file"
+        ref="videoInput"
+        class="hidden"
+        @change="handleFileChange"
+        accept="video/*"
+      />
 
-    <!-- Confirmation Modal -->
-    <div
-      v-if="showRemoveConfirmation"
-      class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
-    >
-      <div class="bg-white p-6 rounded-lg shadow-lg">
-        <h2 class="font-bold text-lg mb-4">Confirm Removal</h2>
-        <p>Are you sure you want to remove the video?</p>
-        <div class="flex justify-end mt-4">
-          <button
-            @click="showRemoveConfirmation = false"
-            class="bg-gray-200 text-black py-2 px-4 rounded mr-2"
-          >
-            Cancel
-          </button>
-          <button
-            @click="removeVideo"
-            class="bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded"
-          >
-            Confirm
-          </button>
-        </div>
-      </div>
-    </div>
+      <!-- Stylish OR Divider -->
+      <div class="mx-4 text-gray-600 font-semibold text-lg">OR</div>
 
-    <!-- CTA Section -->
-    <section class="bg-white rounded-lg p-6 mt-8 text-center">
-      <h2 v-if="!isContentCreator" class="text-2xl font-bold mb-6">
-        Start Your Journey Now
-      </h2>
-      <p v-if="!isContentCreator" class="text-gray-600 mb-6">
-        Enroll in the "{{ course.title }}" course and begin your learning
-        adventure with {{ instructor.name }} as your guide.
-      </p>
-      <div
-        class="flex flex-col md:flex-row md:justify-center items-center space-y-4 md:space-y-0 md:space-x-4"
-      >
-        <!-- Conditional rendering based on isLoggedIn -->
+      <div>
+        <!-- YouTube Link Input with Hover Effect -->
+        <input
+          type="text"
+          v-model="youtubeLink"
+          placeholder="Enter YouTube link"
+          class="py-2 px-4 rounded-xl border border-gray-300 shadow-sm leading-3 hover:shadow-md transition duration-300"
+        />
         <button
-          @click="$emit(isNewCourse ? 'create-new-course' : 'open-course')"
-          class="text-white font-semibold rounded-xl py-3 px-8 w-full md:w-auto transition-colors duration-300 ease-in-out focus:outline-none active:outline-none border-blue-700"
-          :class="
-            isLoggedIn
-              ? 'bg-green-500 hover:bg-green-600'
-              : 'bg-blue-500 hover:bg-blue-600'
-          "
+          @click="handleYoutubeLink"
+          class="ml-2 bg-green-500 hover:bg-green-700 text-white font-bold py-1.5 px-2 text-sm rounded-xl transition duration-300"
         >
-          <!-- Text changes based on isLoggedIn -->
-          {{
-            isContentCreator
-              ? 'Edit Course'
-              : isEnrolled
-              ? 'Continue'
-              : 'Enroll Now'
-          }}
+          Load Video
         </button>
       </div>
-      <div
-        v-if="showCourseStarting"
-        class="mt-6 bg-gray-100 border-t border-gray-300 pt-6"
+    </div>
+  </div>
+
+  <!-- Introductory Video Section with Hover Effect -->
+  <section
+    class="relative block rounded-lg shadow-lg overflow-hidden mx-auto w-full max-w-4xl transition duration-300 transform hover:scale-105 hover:shadow-xl"
+    v-else
+  >
+    <iframe
+      :src="videoSrc"
+      title="YouTube video player"
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowfullscreen
+      class="w-full min-h-52 h-[50vw] max-h-[450px] object-cover"
+    ></iframe>
+    <!-- Remove Video Button with Hover Effect -->
+    <button
+      v-if="videoSrc && isContentCreator"
+      @click="removeVideo"
+      class="absolute bottom-2 right-2 text-sm bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-300 hover:scale-110"
+    >
+      Remove
+    </button>
+  </section>
+
+  <!-- CTA Section with Hover Effect -->
+  <section class="bg-white rounded-lg p-6 mt-8 text-center transition duration-300">
+    <h2 v-if="!isContentCreator" class="text-2xl font-bold mb-6">
+      Start Your Journey Now
+    </h2>
+    <p v-if="!isContentCreator" class="text-gray-600 mb-6">
+      Enroll in the "{{ course.title }}" course and begin your learning
+      adventure with {{ instructor.name }} as your guide.
+    </p>
+    <div
+      class="flex flex-col md:flex-row md:justify-center items-center space-y-4 md:space-y-0 md:space-x-4"
+    >
+      <!-- Conditional rendering based on isLoggedIn with Hover Effect -->
+      <button
+        @click="$emit(isNewCourse ? 'create-new-course' : 'open-course')"
+        class="text-white font-semibold rounded-xl py-3 px-8 w-full md:w-auto transition-colors duration-300 ease-in-out focus:outline-none active:outline-none border-blue-700 hover:bg-blue-600 hover:text-white hover:shadow-md transform hover:scale-105"
+        :class="
+          isLoggedIn
+            ? 'bg-green-500'
+            : 'bg-blue-500'
+        "
       >
-        <h3 class="text-xl font-semibold mb-3">Course Starting...</h3>
-        <div class="relative h-5 w-full bg-gray-300 rounded-lg overflow-hidden">
-          <div
-            class="absolute h-5 bg-green-500 transition-width"
-            :style="{ width: courseStartingProgress + '%' }"
-          ></div>
-        </div>
+        <!-- Text changes based on isLoggedIn -->
+        {{
+          isContentCreator
+            ? 'Edit Course'
+            : isEnrolled
+            ? 'Continue'
+            : 'Enroll Now'
+        }}
+      </button>
+    </div>
+    <div
+      v-if="showCourseStarting"
+      class="mt-6 bg-gray-100 border-t border-gray-300 pt-6 hover:bg-gray-200 transition duration-300"
+    >
+      <h3 class="text-xl font-semibold mb-3">Course Starting...</h3>
+      <div class="relative h-5 w-full bg-gray-300 rounded-lg overflow-hidden">
+        <div
+          class="absolute h-5 bg-green-500 transition-width"
+          :style="{ width: courseStartingProgress + '%' }"
+        ></div>
       </div>
-    </section>
+    </div>
+  </section>
 
     <!-- Curriculum Section -->
     <section class="bg-white rounded-lg p-6 shadow-md mt-4 relative">
@@ -375,6 +349,31 @@
         </div>
       </div>
     </section>
+
+    <!-- Confirmation Modal -->
+    <div
+      v-if="showRemoveConfirmation"
+      class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
+    >
+      <div class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="font-bold text-lg mb-4">Confirm Removal</h2>
+        <p>Are you sure you want to remove the video?</p>
+        <div class="flex justify-end mt-4">
+          <button
+            @click="showRemoveConfirmation = false"
+            class="bg-gray-200 text-black py-2 px-4 rounded mr-2"
+          >
+            Cancel
+          </button>
+          <button
+            @click="removeVideo"
+            class="bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded"
+          >
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
   </main>
 </template>
 
@@ -400,7 +399,7 @@ export default {
   data() {
     return {
       isLoggedIn: false,
-      videoSrc: '',
+      videoSrc: 'https://www.youtube.com/embed/5qap5aO4i9A',
       isEditingCurriculum: false,
       isEditingLearnings: false,
       isEditingInstructor: false,
@@ -419,7 +418,6 @@ export default {
   },
   methods: {
     setup() {
-      this.videoSrc = 'https://www.youtube.com/embed/5qap5aO4i9A';
       this.course = {
         id: 1,
         name: 'Job Searching with ChatGPT',
@@ -1574,7 +1572,7 @@ export default {
         modules: [],
       };
 
-      this.videoSrc = null;
+      this.videoSrc = 'https://www.youtube.com/embed/5qap5aO4i9A';
 
       this.setupInstructor();
     },
@@ -1624,9 +1622,6 @@ export default {
     'user.id'(newId) {
       if (newId?.includes('new-instructor')) {
         this.createNewCourse();
-      }
-
-      if (newId?.includes('active-instructor')) {
       }
     },
   },

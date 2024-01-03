@@ -124,7 +124,7 @@
       </h2>
       <form @submit.prevent="submitAnswers">
         <div
-          v-for="(question, qIndex) in questions"
+          v-for="(question, qIndex) in selectedPractice.exercises"
           :key="qIndex"
           class="mb-4 p-4 border rounded-lg shadow"
         >
@@ -164,19 +164,6 @@ export default {
     selectedPractice: {
       type: Object,
     },
-  },
-  data() {
-    return {
-      questions: [
-        {
-          text: 'Sample Question 1',
-          points: 1,
-          options: [{ text: 'Option 1' }],
-          selected: [],
-        },
-        // More questions...
-      ],
-    };
   },
   computed: {
     calculateTotalPoints() {

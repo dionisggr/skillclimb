@@ -21,7 +21,7 @@
         </a>
         <a
           href="#"
-          @click="user?.id ? $emit('open-dashboard') : $emit('toggle-login')"
+          @click="openDashboard"
           class="w-full lg:w-auto block mt-4 lg:mt-0 px-6 py-3 lg:px-10 lg:py-4 bg-green-500 text-white rounded-full shadow-md hover:bg-green-600 transition-colors text-lg cursor-pointer"
         >
           I'm a Content Creator
@@ -337,6 +337,15 @@ export default {
       this.$emit('subscribe-to-newsletter', { email: this.subscriberEmail });
 
       this.subscriberEmail = '';
+    },
+    openDashboard() {
+      if (this.user?.id.includes('business')) {
+        this.$emit('open-business-dashboard');
+      } else if (this.user?.id) {
+        this.$emit('open-creator-dashboard');
+      } else {
+        this.$emit('toggle-login');
+      }
     },
   },
 };

@@ -30,7 +30,7 @@
       :class="
         sidebarOpen ? 'translate-x-0 ease-out' : '-translate-x-full ease-in'
       "
-      class="w-11/12 max-w-[325px] mt-16 pt-12 fixed inset-y-0 left-0 transform overflow-y-auto bg-white p-4 shadow-md transition duration-300 z-40 lg:relative lg:translate-x-0 lg:block lg:mt-0 lg:w-full"
+      class="w-11/12 max-w-[325px] mt-16 pt-12 fixed inset-y-0 left-0 transform overflow-y-auto bg-white p-4 shadow-md transition duration-300 z- lg:relative lg:translate-x-0 lg:block lg:mt-0 lg:w-full"
     >
       <h2
         class="mb-6 text-center text-lg font-bold border border-solid rounded-md p-1 absolute top-3 w-3/4 lg:w-11/12"
@@ -192,7 +192,7 @@
 
     <!-- Course Content -->
     <section
-      class="w-full md:w-3/4 rounded bg-white p-5 pb-0 shadow-md relative lg:ml-4"
+      class="w-full md:w-3/4 rounded bg-white p-5 pb-0 shadow-md relative lg:pl-5"
     >
       <div class="flex items-center text-sm mb-2">
         <a href="#" class="hover:underline hover:text-blue-500 font-medium">{{
@@ -281,217 +281,221 @@
         <div
           class="ml-0 md:ml-4 flex w-4/12 flex-col space-y-4 absolute right-0 top-4"
         >
+          <p
+            class="font-semibold text-lg text-gray-800 absolute top-0 z-20 pb-2 bg-white w-full"
+          >
+            Module Lessons:
+          </p>
           <!-- Video Topics -->
-          <div class="h-[400px] overflow-y-auto pb-12">
-            <p class="m-2 font-semibold text-lg text-gray-800">
-              Module Lessons:
-            </p>
-
-            <div
-              v-for="(lesson, index) in selectedModule.lessons"
-              :key="lesson.title"
-            >
-              <!-- Video Entry -->
+          <div class="h-[435px] overflow-y-auto pb-12 relative">
+            <div class="pt-6 pr-2 space-y-1">
               <div
-                class="relative video-lesson flex items-center p-3 border border-blue-500 rounded-md shadow-md hover:shadow-lg border-opacity-30"
-                @click="selectLesson(index)"
-                :class="{
-                  'border-blue-800 shadow-lg': selectedLesson?.id === lesson.id,
-                  'hover:bg-blue-50': selectedLesson?.id !== lesson.id,
-                }"
-                :style="{
-                  'background-color':
-                    selectedLesson.id === lesson.id ? '#f3f8ff' : 'white',
-                }"
+                v-for="(lesson, index) in selectedModule.lessons"
+                :key="lesson.title"
               >
-                <div class="relative mr-2 inline-block w-16">
-                  <img
-                    :src="
-                      editedLesson?.id === lesson.id
-                        ? editedLesson?.thumbnail
-                        : lesson.thumbnail
-                    "
-                    :alt="lesson.title"
-                    class="rounded-md"
-                  />
-                  <p
-                    v-if="!lesson.isEditing"
-                    class="absolute bottom-0 left-0 right-0 text-center bg-black bg-opacity-50 text-white rounded-b-md px-1 text-[11px]"
-                  >
-                    {{ lesson.duration }}
-                  </p>
-
-                  <!-- Upload Button and File Input (Visible only when editing) -->
-                  <div
-                    v-if="lesson.isEditing"
-                    class="absolute -bottom-0.5 -left-0.5 w-1/2"
-                  >
-                    <input
-                      type="file"
-                      :ref="`thumbnail-${index}`"
-                      class="hidden"
-                      @change="handleThumbnailChange($event, index)"
-                      accept="image/*"
+                <!-- Video Entry -->
+                <div
+                  class="relative video-lesson flex items-center p-3 border border-blue-500 rounded-md shadow-md hover:shadow-lg border-opacity-30"
+                  @click="selectLesson(index)"
+                  :class="{
+                    'border-blue-800 shadow-lg':
+                      selectedLesson?.id === lesson.id,
+                    'hover:bg-blue-50': selectedLesson?.id !== lesson.id,
+                  }"
+                  :style="{
+                    'background-color':
+                      selectedLesson.id === lesson.id ? '#f3f8ff' : 'white',
+                  }"
+                >
+                  <div class="relative mr-2 inline-block w-16">
+                    <img
+                      :src="
+                        editedLesson?.id === lesson.id
+                          ? editedLesson?.thumbnail
+                          : lesson.thumbnail
+                      "
+                      :alt="lesson.title"
+                      class="rounded-md"
                     />
-                    <button
-                      @click="openThumbnailInput(index)"
-                      class="bg-blue-500 text-white text-xs p-2 rounded-full flex justify-center items-center"
+                    <p
+                      v-if="!lesson.isEditing"
+                      class="absolute bottom-0 left-0 right-0 text-center bg-black bg-opacity-50 text-white rounded-b-md px-1 text-[11px]"
                     >
-                      <i class="fa fa-upload"></i>
+                      {{ lesson.duration }}
+                    </p>
+
+                    <!-- Upload Button and File Input (Visible only when editing) -->
+                    <div
+                      v-if="lesson.isEditing"
+                      class="absolute -bottom-0.5 -left-0.5 w-1/2"
+                    >
+                      <input
+                        type="file"
+                        :ref="`thumbnail-${index}`"
+                        class="hidden"
+                        @change="handleThumbnailChange($event, index)"
+                        accept="image/*"
+                      />
+                      <button
+                        @click="openThumbnailInput(index)"
+                        class="bg-blue-500 text-white text-xs p-2 rounded-full flex justify-center items-center"
+                      >
+                        <i class="fa fa-upload"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div v-if="!lesson.isEditing" class="inline-block w-2/3">
+                    <p class="text-sm font-bold ml-1">{{ lesson.title }}</p>
+                    <div
+                      v-if="!isContentCreator"
+                      class="relative h-2 w-full rounded-full bg-gray-300 mt-2 mb-2"
+                    >
+                      <div
+                        class="absolute left-0 h-full rounded-full bg-green-400"
+                        :style="{ width: lesson.progress + '%' }"
+                      ></div>
+                    </div>
+                  </div>
+                  <!-- Editable Lesson Title -->
+                  <div v-else class="inline-block w-2/3 mt-2">
+                    <input
+                      type="text"
+                      v-model="editedLesson.timestamp"
+                      class="w-1/3 p-1 border rounded-md text-sm m-0.5"
+                    />
+                    <input
+                      type="text"
+                      v-model="editedLesson.title"
+                      class="w-full p-1 border rounded-md text-sm"
+                    />
+                  </div>
+                  <!-- Edit and Delete Icons (Absolute Positioning) -->
+                  <div
+                    v-if="isContentCreator && !lesson.isEditing"
+                    class="absolute top-1 right-3 flex flex-col h-5/6 justify-between"
+                  >
+                    <button
+                      @click.stop="editLesson(index)"
+                      class="text-blue-500 hover:text-blue-700 text-lg"
+                    >
+                      ✎
+                    </button>
+                    <button
+                      @click.stop="confirmDeleteLesson(index)"
+                      class="text-red-500 hover:text-red-700 text-sm"
+                    >
+                      🗑
                     </button>
                   </div>
-                </div>
-                <div v-if="!lesson.isEditing" class="inline-block w-2/3">
-                  <p class="text-sm font-bold ml-1">{{ lesson.title }}</p>
+                  <!-- Save and Cancel Icons for Editing -->
                   <div
-                    v-if="!isContentCreator"
-                    class="relative h-2 w-full rounded-full bg-gray-300 mt-2 mb-2"
+                    v-if="isContentCreator && lesson.isEditing"
+                    class="absolute top-2.5 right-4 flex space-x-3 text-xs"
                   >
-                    <div
-                      class="absolute left-0 h-full rounded-full bg-green-400"
-                      :style="{ width: lesson.progress + '%' }"
-                    ></div>
+                    <button
+                      @click="saveLesson(index)"
+                      class="text-green-500 hover:text-green-700"
+                    >
+                      ✔️
+                    </button>
+                    <button
+                      @click="cancelLessonEdit(index)"
+                      class="text-red-500 hover:text-red-700"
+                    >
+                      ❌
+                    </button>
                   </div>
-                </div>
-                <!-- Editable Lesson Title -->
-                <div v-else class="inline-block w-2/3 mt-2">
-                  <input
-                    type="text"
-                    v-model="editedLesson.timestamp"
-                    class="w-1/3 p-1 border rounded-md text-sm m-0.5"
-                  />
-                  <input
-                    type="text"
-                    v-model="editedLesson.title"
-                    class="w-full p-1 border rounded-md text-sm"
-                  />
-                </div>
-                <!-- Edit and Delete Icons (Absolute Positioning) -->
-                <div
-                  v-if="isContentCreator && !lesson.isEditing"
-                  class="absolute top-1 right-3 flex flex-col h-5/6 justify-between"
-                >
+
+                  <!-- "Current Time" button for adding custom timestamp to video -->
                   <button
-                    @click.stop="editLesson(index)"
-                    class="text-blue-500 hover:text-blue-700 text-lg"
+                    v-if="lesson.isEditing"
+                    @click="addTimestamp"
+                    class="absolute font-medium top-7 left-1/2 ml-3 mb-2 mr-2 text-xs bg-blue-500 text-white rounded-full p-0.5 px-2"
                   >
-                    ✎
-                  </button>
-                  <button
-                    @click.stop="confirmDeleteLesson(index)"
-                    class="text-red-500 hover:text-red-700 text-sm"
-                  >
-                    🗑
-                  </button>
-                </div>
-                <!-- Save and Cancel Icons for Editing -->
-                <div
-                  v-if="isContentCreator && lesson.isEditing"
-                  class="absolute top-2.5 right-4 flex space-x-3 text-xs"
-                >
-                  <button
-                    @click="saveLesson(index)"
-                    class="text-green-500 hover:text-green-700"
-                  >
-                    ✔️
-                  </button>
-                  <button
-                    @click="cancelLessonEdit(index)"
-                    class="text-red-500 hover:text-red-700"
-                  >
-                    ❌
+                    Current
                   </button>
                 </div>
 
-                <!-- "Current Time" button for adding custom timestamp to video -->
-                <button
-                  v-if="lesson.isEditing"
-                  @click="addTimestamp"
-                  class="absolute font-medium top-7 left-1/2 ml-3 mb-2 mr-2 text-xs bg-blue-500 text-white rounded-full p-0.5 px-2"
+                <!-- Expanded Details Section for the current Video Entry -->
+                <div
+                  v-if="lesson.id === selectedLesson.id"
+                  class="p-2 bg-gray-50 border rounded-md mx-1"
                 >
-                  Current
-                </button>
-              </div>
-
-              <!-- Expanded Details Section for the current Video Entry -->
-              <div
-                v-if="lesson.id === selectedLesson.id"
-                class="p-2 bg-gray-50 border rounded-md"
-              >
-                <p class="text-xs italic">{{ lesson.description }}</p>
-                <ul class="space-y-2">
-                  <li
-                    v-for="(topic, topicIndex) in selectedLesson?.topics"
-                    :key="topic.id"
-                    class="relative cursor-pointer border rounded-lg px-4 py-3 flex justify-between text-sm font-medium items-center hover:bg-gray-100 hover:text-gray-700 transition-all duration-300"
-                    :class="{
-                      'bg-gray-200 hover:bg-gray-200 text-gray-800 border-gray-300':
-                        selectedTopic?.id === topic.id,
-                      'line-through': topic.discussed,
-                    }"
+                  <p class="text-xs italic">{{ lesson.description }}</p>
+                  <ul class="space-y-2">
+                    <li
+                      v-for="(topic, topicIndex) in selectedLesson?.topics"
+                      :key="topic.id"
+                      class="relative cursor-pointer border rounded-lg px-4 py-3 flex justify-between text-sm font-medium items-center hover:bg-gray-100 hover:text-gray-700 transition-all duration-300"
+                      :class="{
+                        'bg-gray-200 hover:bg-gray-200 text-gray-800 border-gray-300':
+                          selectedTopic?.id === topic.id,
+                        'line-through': topic.discussed,
+                      }"
+                    >
+                      <div
+                        class="flex items-center my-2"
+                        @click="selectTopic(topic)"
+                      >
+                        <!-- Mocked timestamp -->
+                        <span class="mr-4 text-xs text-gray-500">{{
+                          topic.timestamp || '00:00'
+                        }}</span>
+                        <span v-if="!topic.isEditing" class="mr-4 block">{{
+                          topic.title
+                        }}</span>
+                        <input
+                          v-else
+                          type="text"
+                          v-model="editedTopic.title"
+                          class="text-sm w-full"
+                        />
+                      </div>
+                      <div
+                        v-if="isContentCreator"
+                        class="flex flex-col justify-between h-full absolute right-0"
+                      >
+                        <!-- Edit and Delete Icons -->
+                        <button
+                          v-if="!topic.isEditing"
+                          @click.stop="editTopic(topic)"
+                          class="text-blue-500 hover:text-blue-700 mr-2 text-lg mt-0.5"
+                        >
+                          ✎
+                        </button>
+                        <button
+                          v-if="topic.isEditing"
+                          @click.stop="saveTopicEdit(topicIndex)"
+                          class="text-green-500 hover:text-green-700 mr-2 text-xs mt-0.5"
+                        >
+                          ✔️
+                        </button>
+                        <button
+                          v-if="topic.isEditing"
+                          @click.stop="cancelTopicEdit(topicIndex)"
+                          class="text-red-500 hover:text-red-700 mr-2 text-xs mb-0.5"
+                        >
+                          ❌
+                        </button>
+                        <button
+                          v-if="!topic.isEditing"
+                          @click.stop="confirmDeleteTopic(topicIndex)"
+                          class="text-red-500 hover:text-red-700 text-sm mb-0.5 mr-1.5"
+                        >
+                          🗑
+                        </button>
+                      </div>
+                    </li>
+                  </ul>
+                  <!-- Add Topic Button for the current lesson -->
+                  <button
+                    v-if="isContentCreator"
+                    @click="addTopic"
+                    class="my-4 p-1 px-2 bg-amber-500 text-sm block mx-auto text-white rounded-md"
                   >
-                    <div
-                      class="flex items-center my-2"
-                      @click="selectTopic(topic)"
-                    >
-                      <!-- Mocked timestamp -->
-                      <span class="mr-4 text-xs text-gray-500">{{
-                        topic.timestamp || '00:00'
-                      }}</span>
-                      <span v-if="!topic.isEditing" class="mr-4 block">{{
-                        topic.title
-                      }}</span>
-                      <input
-                        v-else
-                        type="text"
-                        v-model="editedTopic.title"
-                        class="text-sm w-full"
-                      />
-                    </div>
-                    <div
-                      v-if="isContentCreator"
-                      class="flex flex-col justify-between h-full absolute right-0"
-                    >
-                      <!-- Edit and Delete Icons -->
-                      <button
-                        v-if="!topic.isEditing"
-                        @click.stop="editTopic(topic)"
-                        class="text-blue-500 hover:text-blue-700 mr-2 text-lg mt-0.5"
-                      >
-                        ✎
-                      </button>
-                      <button
-                        v-if="topic.isEditing"
-                        @click.stop="saveTopicEdit(topicIndex)"
-                        class="text-green-500 hover:text-green-700 mr-2 text-xs mt-0.5"
-                      >
-                        ✔️
-                      </button>
-                      <button
-                        v-if="topic.isEditing"
-                        @click.stop="cancelTopicEdit(topicIndex)"
-                        class="text-red-500 hover:text-red-700 mr-2 text-xs mb-0.5"
-                      >
-                        ❌
-                      </button>
-                      <button
-                        v-if="!topic.isEditing"
-                        @click.stop="confirmDeleteTopic(topicIndex)"
-                        class="text-red-500 hover:text-red-700 text-sm mb-0.5 mr-1.5"
-                      >
-                        🗑
-                      </button>
-                    </div>
-                  </li>
-                </ul>
-                <!-- Add Topic Button for the current lesson -->
-                <button
-                  v-if="isContentCreator"
-                  @click="addTopic"
-                  class="my-4 p-1 px-2 bg-amber-500 text-sm block mx-auto text-white rounded-md"
-                >
-                  Add Topic
-                </button>
+                    Add Topic
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -508,7 +512,7 @@
       </div>
 
       <!-- Notes Section -->
-      <div v-if="!isContentCreator" class="mt-6">
+      <div v-if="!isContentCreator" class="mt-4">
         <label class="my-2 mt-8 block text-2xl font-semibold">Notes</label>
 
         <!-- Timestamp Button and Textarea Group -->
@@ -654,6 +658,7 @@
 
       <!-- Video Tools Section -->
       <div
+        v-if="isContentCreator"
         class="w-full mb-6 shadow-md rounded-lg p-2"
         :class="{ 'py-6': videoToolsOpen }"
       >
@@ -780,20 +785,17 @@
       </div>
 
       <!-- General Information Section -->
-      <div class="bg-gray-100 p-2 lg:p-6 mb-6 rounded-lg shadow-lg relative">
-        <!-- Back Button and Subtopic Name Wrapper -->
+      <div
+        v-if="selectedSubtopic?.title || isContentCreator"
+        class="bg-gray-100 p-2 lg:p-6 mb-6 rounded-lg shadow-lg relative"
+      >
+        <!-- Subtopic Name Wrapper -->
         <div class="flex items-center mb-4 flex-wrap m-2">
-          <!-- Back Button -->
-          <button
-            v-if="selectedSubtopic.name"
-            @click="goBack"
-            class="bg-white p-2 rounded-full hover:bg-gray-200 transition-all duration-300 mr-4"
-          >
-            ⬅️
-          </button>
 
           <!-- Subtopic Name -->
-          <h3 v-if="!selectedSubtopic.name" class="text-3xl font-semibold mb-2">
+          <h3
+            class="text-3xl font-semibold mb-2"
+          >
             General Information
           </h3>
 
@@ -807,8 +809,8 @@
               :class="[
                 `px-3 pl-4 py-2 rounded-full font-semibold text-sm transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-${button.color}-500 focus:ring-opacity-50 hover:shadow-md transform hover:-translate-y-1 hover:scale-105 whitespace-nowrap flex items-center justify-between`,
                 selectedInformation === button.label
-                  ? `bg-${button.color}-500 text-${button.color}-800 ring-2 ring-${button.color}-300 ring-offset-1 shadow-2xl scale-105`
-                  : `bg-${button.color}-200 text-${button.color}-600 scale-100`,
+                  ? `bg-${button.color}-500 ${button.selectedTextColor} ring-2 ring-${button.color}-300 ring-offset-1 shadow-2xl scale-105`
+                  : `bg-${button.color}-200 text-${button.color}-500 scale-100`,
               ]"
             >
               {{ button.label }}
@@ -928,7 +930,7 @@
           </div>
         </template>
 
-        <template v-if="!selectedSubtopic.name">
+        <template v-if="selectedSubtopic?.title">
           <div
             v-for="(subtopic, subtopicIndex) in selectedTopic?.subtopics?.[
               selectedInformation
@@ -1018,13 +1020,6 @@
             </transition>
           </div>
 
-          <!-- No information yet message -->
-          <div v-if="!selectedSubtopic?.name">
-            <p class="text-gray-600 text-center pt-8">
-              No supplemental information provided.
-            </p>
-          </div>
-
           <!-- Add Subtopic Button -->
           <button
             v-if="isContentCreator"
@@ -1034,10 +1029,20 @@
             Add Subtopic
           </button>
         </template>
+
+                  <!-- No information yet message -->
+                  <div v-if="!selectedSubtopic?.title">
+            <p class="text-gray-600 text-center pt-8">
+              No supplemental information provided.
+            </p>
+          </div>
       </div>
 
       <!-- Practice Section -->
-      <div class="my-12 cursor-pointer">
+      <div
+        v-if="practices.length || isContentCreator"
+        class="my-12 cursor-pointer"
+      >
         <div
           class="flex items-center justify-between border-b-2 mt-6 pb-2"
           @click="showPractice = !showPractice"
@@ -1091,7 +1096,7 @@
     <!-- Mini-Practice Selection Modal -->
     <div
       v-if="isPracticeOptionsModalShown"
-      class="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center z-50"
+      class="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center"
     >
       <div class="bg-white rounded-lg p-5 w-1/2">
         <h2 class="text-xl font-bold mb-4">Add Mini-Practice</h2>
@@ -1149,22 +1154,28 @@ export default {
     Practice,
   },
   mounted() {
-    if (this.user.id.includes('new-instructor')) {
-      this.course.modules = [];
-      return;
-    } else {
-      this.setupModules();
-    }
+    if (this.user?.id.includes('new-instructor')) {
+        this.course.modules = [];
+        this.selectedModule = {};
+        this.selectedLesson = {};
+        this.selectedTopic = {};
+        this.selectedSubtopic = {};
+        this.toggleButtons = [];
+        this.practices = [];
+        return;
+      } else {
+        this.setupModules();
+      }
 
-    if (this.user.id.includes('new-student')) {
-      this.course.notes = [];
-    }
+      if (this.user?.id.includes('new-student')) {
+        this.course.notes = [];
+      }
 
-    if (this.user.id.includes('active-student')) {
-      this.setupNotes();
-    }
+      if (this.user?.id.includes('active-student')) {
+        this.setupNotes();
+      }
 
-    this.setup();
+      this.setup();
   },
   updated() {
     if (!this.course.modules.length) {
@@ -1184,7 +1195,7 @@ export default {
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sodales ullamcorper vehicula.'.repeat(
           10
         ),
-      selectedSubtopic: null,
+      selectedSubtopic: {},
       showPractice: false,
       selectedInformation: 'Simplified',
       showPractice: false,
@@ -1312,6 +1323,12 @@ export default {
       isSupplementalInfoLoading: false,
       toggleButtons: [],
       isPracticeOptionsModalShown: false,
+      selectedTextColors: {
+        green: 'text-green-800',
+        red: 'text-red-800',
+        blue: 'text-blue-800',
+        yellow: 'text-yellow-900',
+      },
     };
   },
   computed: {
@@ -1347,7 +1364,7 @@ export default {
             {
               text: 'Sample Question 1',
               points: 1,
-              options: [{ text: 'Option 1' }],
+              options: [{ text: 'Option 1' }, { text: 'Option 2' }],
               selected: [],
             },
           ],
@@ -1363,7 +1380,7 @@ export default {
             {
               text: 'Sample Question 1',
               points: 1,
-              options: [{ text: 'Option 1' }],
+              options: [{ text: 'Option 1' }, { text: 'Option 2' }],
               selected: [],
             },
             // More questions...
@@ -1651,14 +1668,10 @@ export default {
       this.selectedSubtopic = newSubtopic;
       this.editedSubtopic = newSubtopic;
 
-
-
       if (this.selectedInformation in this.selectedTopic.subtopics) {
         this.selectedTopic.subtopics[this.selectedInformation].push(
           newSubtopic
         );
-
-        
       } else {
         this.selectedTopic.subtopics[this.selectedInformation] = [newSubtopic];
       }
@@ -1744,15 +1757,32 @@ export default {
       this.timestamp = null;
     },
     setup() {
-      const firstKey = Object.keys(this.selectedTopic.subtopics)[0];
+      const colors = Object.keys(this.selectedTextColors);
+
       this.selectModule(0);
       this.selectLesson(0);
+      
+      const firstKey = Object.keys(this.selectedTopic.subtopics || {})[0];
+      
       this.activeVideoIndex = 0;
-      this.selectedTopic = this.selectedLesson?.topics[0];
-      this.selectedSubtopic = this.selectedTopic.subtopics?.[firstKey]?.[0];
       this.selectedInformation = firstKey;
-
+      
       this.openSubtopics.push(this.selectedLesson.id);
+      this.selectTopic(this.selectedLesson.topics[0]);
+      this.selectSubtopic(this.selectedTopic.subtopics?.[firstKey]?.[0]);
+
+      this.toggleButtons = Object.keys(this.selectedTopic.subtopics || {}).map(
+        (key, index) => ({
+          id: key,
+          label: key,
+          color: colors[index % colors.length],
+          selectedTextColor: this.selectedTextColors[colors[index % colors.length]],
+          feature: 'regenerations',
+          action: () => { this.selectedInformation = key },
+        })
+      );
+      
+      this.setupPractices();
     },
     setupNotes() {
       this.course.notes = [
@@ -4349,12 +4379,15 @@ export default {
       this.showNewToggleButtonOptions = !this.showNewToggleButtonOptions;
     },
     addToggleButton() {
+      const id = this.toggleButtons.length;
+      const colors = Object.keys(this.selectedTextColors);
+
       this.showNewToggleButtonOptions = false;
       this.selectedInformation = this.newToggleButton.label;
 
       this.toggleButtons.push({
-        id: this.toggleButtons.length + 1,
-        color: 'blue',
+        id,
+        color: colors[id % colors.length],
         action: (label) => {
           this.selectedInformation = label;
         },
@@ -4419,14 +4452,21 @@ export default {
       });
     },
     deleteToggleButton(id) {
-      if (confirm('Are you sure you want to delete this toggle button and all of its associated content?')) {
+      if (
+        confirm(
+          'Are you sure you want to delete this toggle button and all of its associated content?'
+        )
+      ) {
         this.toggleButtons = this.toggleButtons.filter(
           (button) => button.id !== id
         );
       }
-
-
     },
+    getTextColor(button) {
+      return [
+        
+      ]
+    }
   },
   watch: {
     'user.id'(newId) {
@@ -4436,6 +4476,8 @@ export default {
         this.selectedLesson = {};
         this.selectedTopic = {};
         this.selectedSubtopic = {};
+        this.toggleButtons = [];
+        this.practices = [];
         return;
       } else {
         this.setupModules();

@@ -6,7 +6,7 @@
       <p class="text-gray-600">Discover courses tailored for you.</p>
     </div>
 
-    <div class="container mx-auto px-4 max-w-screen-xl">
+    <div class="container mx-auto px-4 max-w-screen-2xl">
       <!-- Filters / Toggles / Search Bar -->
       <div class="mx-auto p-4 mt-6 lg:w-3/4">
         <input
@@ -36,7 +36,7 @@
 
       
       <!-- Course Lists by Category -->
-      <div v-for="subCategory in getFilteredSubCategories()" :key="subCategory">
+      <div class="px-8" v-for="subCategory in getFilteredSubCategories()" :key="subCategory">
         <h2 class="text-2xl font-semibold p-4">{{ subCategory }}</h2>
 
         <div class="p-4 flex overflow-x-auto space-x-4 hide-scrollbar">
