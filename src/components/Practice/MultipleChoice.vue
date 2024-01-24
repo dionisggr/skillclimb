@@ -119,9 +119,25 @@
 
     <div v-else class="space-y-4 mt-4">
       <!-- Student View -->
-      <h2 class="text-xl font-semibold mb-4 px-1">
+      <div class="flex items-center justify-between">
+      <h2 class="text-xl font-semibold mb-2 px-1">
         {{ !isContentCreator ? 'Answer the' : null }} Questions
       </h2>
+      <div class="space-x-2 text-sm">
+        <!-- Start Over button with icon -->
+        <button
+          class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1.5 px-3 rounded-lg mx-2"
+        >
+          <i class="fas fa-redo-alt mr-1"></i> Start Over
+        </button>
+        <button
+          class="bg-green-500 hover:bg-green-700 text-white font-bold py-1.5 px-3 rounded-lg mx-2"
+        >
+          <i class="fas fa-plus mr-1"></i>
+        New AI Exercises
+        </button>
+      </div>
+      </div>
       <form @submit.prevent="submitAnswers">
         <div
           v-for="(question, qIndex) in selectedPractice.exercises"
