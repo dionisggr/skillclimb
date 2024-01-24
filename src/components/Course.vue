@@ -576,81 +576,191 @@
         </div>
 
         <!-- Expanded Notes Display -->
-        <div
-          v-if="notesExpanded"
-          class="my-4 p-4 bg-white border border-gray-300 rounded-md overflow-x-auto w-full"
-        >
+        <div v-if="notesExpanded">
+          <!-- Search Bar -->
           <div
-            class="grid grid-cols-12 gap-10 mb-2 font-semibold text-gray-800 min-w-fit"
+            class="flex items-center bg-white border border-gray-300 rounded-2xl shadow-sm my-4 p-1 w-11/12 mx-auto"
           >
-            <div class="col-span-2 text-center">Timestamp</div>
-            <div class="col-span-5 text-center">Note</div>
-            <div class="col-span-4 text-center">Transcript</div>
-            <div class="col-span-1 text-center">Actions</div>
+            <i class="fas fa-search text-gray-400 ml-3 mr-2"></i>
+            <input
+              type="text"
+              v-model="searchQuery"
+              placeholder="Search notes..."
+              class="w-full py-2 px-3 border-0 rounded-lg focus:outline-none"
+            />
           </div>
+
           <div
-            v-for="(note, index) in course.notes"
-            :key="note.id"
-            class="mb-4 grid grid-cols-12 gap-10 lg:gap-4 text-center"
+            v-if="notesStructure === 'timestamp'"
+            class="my-4 p-4 bg-white border border-gray-300 rounded-md overflow-x-auto w-full"
           >
-            <!-- Timestamp Column -->
-            <div class="col-span-2 text-sm text-gray-600 p-2">
-              [{{ note.timestamp }}]
+          <div class="text-gray-800 text-xl font-semibold mb-10 flex justify-between">
+              <span>By Timestamp</span>
+              <!-- Button to change notesStructure-->
+              <button
+                @click="notesStructure = 'combined'"
+                class="text-blue-500 hover:text-blue-600 border p-0.5 px-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-base"
+              >
+                Combined
+              </button>
             </div>
-
-            <!-- Note Content Column -->
-            <div class="col-span-5 p-2">
-              <div v-if="!note.isEditing" class="text-gray-700">
-                {{ note.content }}
-              </div>
-              <textarea
-                v-else
-                rows="4"
-                :key="note.id"
-                v-model="note.editedContent"
-                class="w-full"
-                autofocus
-              ></textarea>
-            </div>
-
-            <!-- Video Transcript Column -->
             <div
-              v-html="generateLoremIpsum()"
-              class="col-span-4 overflow-auto max-h-32 border border-gray-300 rounded-lg p-2 text-gray-500 text-sm"
-            ></div>
-
-            <!-- Edit and Delete Icons Column -->
-            <div
-              class="col-span-1 flex space-x-4 justify-center items-center space-y-1"
+              class="grid grid-cols-12 gap-10 mb-2 font-semibold text-gray-800 min-w-fit"
             >
-              <button
-                v-if="!note.isEditing"
-                @click="editNote(note)"
-                class="text-blue-500 hover:text-blue-700 mt-1"
+              <div class="col-span-1 text-center">Timestamp</div>
+              <div class="col-span-5 text-center">Note</div>
+              <div class="col-span-4 text-center">Transcript</div>
+              <div class="col-span-2 text-center">Actions</div>
+            </div>
+            <div
+              v-for="(note, index) in filteredNotes"
+              :key="note.id"
+              class="mb-4 grid grid-cols-12 gap-10 lg:gap-4 text-center"
+            >
+              <!-- Timestamp Column -->
+              <div class="col-span-1 text-sm text-gray-600 p-2">
+                {{ note.timestamp }}
+              </div>
+
+              <!-- Note Content Column -->
+              <div class="col-span-5 p-2">
+                <div v-if="!note.isEditing" class="text-gray-700">
+                  {{ note.content }}
+                </div>
+                <textarea
+                  v-else
+                  rows="4"
+                  :key="note.id"
+                  v-model="note.editedContent"
+                  class="w-full"
+                  autofocus
+                ></textarea>
+              </div>
+
+              <!-- Video Transcript Column -->
+              <div
+                v-html="generateLoremIpsum()"
+                class="col-span-4 overflow-auto max-h-32 border border-gray-300 rounded-lg p-2 text-gray-500 text-sm"
+              ></div>
+
+              <!-- Edit and Delete Icons Column -->
+              <div
+                class="col-span-2 flex space-x-4 justify-center items-center space-y-1"
               >
-                <i class="fas fa-pencil-alt"></i>
+                <button
+                  v-if="!note.isEditing"
+                  @click="editNote(note)"
+                  class="text-blue-500 hover:text-blue-700 mt-1"
+                >
+                  <i class="fas fa-pencil-alt"></i>
+                </button>
+                <button
+                  v-if="note.isEditing"
+                  @click="saveNoteEdit(note)"
+                  class="text-green-500 hover:text-green-700"
+                >
+                  ✔️
+                </button>
+                <button
+                  v-if="note.isEditing"
+                  @click="cancelNoteEdit(note)"
+                  class="text-red-500 hover:text-red-700"
+                >
+                  ❌
+                </button>
+                <button
+                  v-if="!note.isEditing"
+                  @click="confirmDeleteNote(index)"
+                  class="text-red-500 hover:text-red-700"
+                >
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Combined View -->
+          <div
+            v-if="notesStructure === 'combined'"
+            class="my-4 p-4 bg-white border border-gray-300 rounded-md"
+          >
+            <div
+              class="text-gray-800 text-xl font-semibold mb-6 flex justify-between"
+            >
+              <span>Combined Notes</span>
+              <!-- Button to change notesStructure-->
+              <div class="space-x-4">
+              <button
+                @click="copyAllNotes"
+                class="text-blue-500 hover:text-blue-600 border p-0.5 px-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-base"
+              >
+                Copy All
               </button>
               <button
-                v-if="note.isEditing"
-                @click="saveNoteEdit(note)"
-                class="text-green-500 hover:text-green-700"
+                @click="notesStructure = 'timestamp'"
+                class="text-blue-500 hover:text-blue-600 border p-0.5 px-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-base"
               >
-                ✔️
+                Timestamps
               </button>
-              <button
-                v-if="note.isEditing"
-                @click="cancelNoteEdit(note)"
-                class="text-red-500 hover:text-red-700"
+            </div>
+            </div>
+            <div
+              v-for="(note, index) in filteredNotes"
+              :key="note.id"
+              class="px-2"
+            >
+              <!-- Note Content and Icons -->
+              <div
+                class="hover:bg-gray-100 p-2 rounded-md flex cursor-pointer group"
+                :class="{ 'bg-gray-100': note.isEditing }"
               >
-                ❌
-              </button>
-              <button
-                v-if="!note.isEditing"
-                @click="confirmDeleteNote(index)"
-                class="text-red-500 hover:text-red-700"
-              >
-                <i class="fas fa-trash"></i>
-              </button>
+                <!-- Note Content -->
+                <div v-if="!note.isEditing" class="text-gray-700">
+                  {{ note.content }}
+                </div>
+                <textarea
+                  v-else
+                  rows="4"
+                  :key="note.id"
+                  v-model="note.editedContent"
+                  class="w-full"
+                  autofocus
+                ></textarea>
+
+                <!-- Edit and Delete Icons -->
+                <div
+                  class="space-x-4 justify-end items-center mx-4 hidden group-hover:flex"
+                >
+                  <button
+                    v-if="!note.isEditing"
+                    @click="editNote(note)"
+                    class="text-blue-500 hover:text-blue-700"
+                  >
+                    <i class="fas fa-pencil-alt"></i>
+                  </button>
+                  <button
+                    v-if="note.isEditing"
+                    @click="saveNoteEdit(note)"
+                    class="text-green-500 hover:text-green-700"
+                  >
+                    ✔️
+                  </button>
+                  <button
+                    v-if="note.isEditing"
+                    @click="cancelNoteEdit(note)"
+                    class="text-red-500 hover:text-red-700"
+                  >
+                    ❌
+                  </button>
+                  <button
+                    v-if="!note.isEditing"
+                    @click="confirmDeleteNote(index)"
+                    class="text-red-500 hover:text-red-700"
+                  >
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -791,23 +901,20 @@
       >
         <!-- Subtopic Name Wrapper -->
         <div class="flex items-center mb-4 flex-wrap m-2">
-
           <!-- Subtopic Name -->
-          <h3
-            class="text-3xl font-semibold mb-2"
-          >
-            General Information
-          </h3>
+          <h3 class="text-3xl font-semibold mb-2">General Information</h3>
 
           <!-- Toggle Buttons -->
           <div
+            v-if="!activeSubtopics.length"
             class="space-x-4 overflow-x-auto no-scrollbar lg:overflow-visible flex lg:justify-center ml-auto p-1"
           >
             <button
               v-for="button in toggleButtons"
               @click="button.action(button.label)"
               :class="[
-                `px-3 pl-4 py-2 rounded-full font-semibold text-sm transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-${button.color}-500 focus:ring-opacity-50 hover:shadow-md transform hover:-translate-y-1 hover:scale-105 whitespace-nowrap flex items-center justify-between`,
+                `px-4 py-2 rounded-full font-semibold text-sm transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-${button.color}-500 focus:ring-opacity-50 hover:shadow-md transform hover:-translate-y-1 hover:scale-105 whitespace-nowrap flex items-center justify-between`,
+                { '': !isContentCreator, 'pl-4': isContentCreator },
                 selectedInformation === button.label
                   ? `bg-${button.color}-500 ${button.selectedTextColor} ring-2 ring-${button.color}-300 ring-offset-1 shadow-2xl scale-105`
                   : `bg-${button.color}-200 text-${button.color}-500 scale-100`,
@@ -817,11 +924,12 @@
 
               <!-- Close Icon inside each toggle button -->
               <span
+                v-if="isContentCreator"
                 class="inline-block ml-2 cursor-pointer hover:text-red-800 transform hover:scale-125"
                 @click.stop="deleteToggleButton(button.id)"
               >
                 <svg
-                  class="w-4 h-4 text-red-500"
+                  class="w-3 h-3 text-gray-500"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -852,6 +960,8 @@
               {{ showNewToggleButtonOptions ? '-' : '+' }}
             </button>
           </div>
+
+          <!-- NEW SECTION -->
         </div>
 
         <template v-if="showNewToggleButtonOptions">
@@ -1030,12 +1140,12 @@
           </button>
         </template>
 
-                  <!-- No information yet message -->
-                  <div v-if="!selectedSubtopic?.title">
-            <p class="text-gray-600 text-center pt-8">
-              No supplemental information provided.
-            </p>
-          </div>
+        <!-- No information yet message -->
+        <div v-if="!selectedSubtopic?.title">
+          <p class="text-gray-600 text-center pt-8">
+            No supplemental information provided.
+          </p>
+        </div>
       </div>
 
       <!-- Practice Section -->
@@ -1155,27 +1265,27 @@ export default {
   },
   mounted() {
     if (this.user?.id.includes('new-instructor')) {
-        this.course.modules = [];
-        this.selectedModule = {};
-        this.selectedLesson = {};
-        this.selectedTopic = {};
-        this.selectedSubtopic = {};
-        this.toggleButtons = [];
-        this.practices = [];
-        return;
-      } else {
-        this.setupModules();
-      }
+      this.course.modules = [];
+      this.selectedModule = {};
+      this.selectedLesson = {};
+      this.selectedTopic = {};
+      this.selectedSubtopic = {};
+      this.toggleButtons = [];
+      this.practices = [];
+      return;
+    } else {
+      this.setupModules();
+    }
 
-      if (this.user?.id.includes('new-student')) {
-        this.course.notes = [];
-      }
+    if (this.user?.id.includes('new-student')) {
+      this.course.notes = [];
+    }
 
-      if (this.user?.id.includes('active-student')) {
-        this.setupNotes();
-      }
+    if (this.user?.id.includes('active-student')) {
+      this.setupNotes();
+    }
 
-      this.setup();
+    this.setup();
   },
   updated() {
     if (!this.course.modules.length) {
@@ -1200,6 +1310,9 @@ export default {
       selectedInformation: 'Simplified',
       showPractice: false,
       showAssessments: false,
+      activeSubtopics: [
+        { id: 1, title: 'Test Title', content: 'Test Content' },
+      ],
       course: {
         id: 1,
         instructor: {
@@ -1258,6 +1371,8 @@ export default {
       editedLesson: null,
       noteContent: null,
       notesExpanded: false,
+      notesStructure: 'timestamp',
+      searchQuery: '',
       selectedPracticeIds: [],
       youtubeLink: '',
       videoToolsOpen: false,
@@ -1350,8 +1465,21 @@ export default {
     isEnrolled() {
       return this.user?.courseIds?.includes(this.course.id);
     },
+    filteredNotes() {
+      return this.course.notes.filter((note) =>
+        note.content.toLowerCase().includes(this.searchQuery.toLowerCase())
+      );
+    },
   },
   methods: {
+    copyAllNotes() {
+      const allNotesContent = this.filteredNotes.map(note => note.content).join('\n');
+      if (navigator.clipboard && allNotesContent) {
+        navigator.clipboard.writeText(allNotesContent);
+      }
+
+      alert('Copied all notes to clipboard!');
+    },
     setupPractices() {
       this.practices = [
         {
@@ -1742,7 +1870,11 @@ export default {
       }
     },
     addTimestamp() {
-      this.timestamp = new Date().toLocaleTimeString().toString();
+      const randomTimestamp = Math.floor(Math.random() * 600);
+      const minutes = Math.floor(randomTimestamp / 60);
+      const seconds = randomTimestamp % 60;
+
+      this.timestamp = `${minutes}:${seconds.toFixed(0).padStart(2, '0')}`;
     },
     saveNote() {
       console.log(this.noteContent);
@@ -1761,12 +1893,12 @@ export default {
 
       this.selectModule(0);
       this.selectLesson(0);
-      
+
       const firstKey = Object.keys(this.selectedTopic.subtopics || {})[0];
-      
+
       this.activeVideoIndex = 0;
       this.selectedInformation = firstKey;
-      
+
       this.openSubtopics.push(this.selectedLesson.id);
       this.selectTopic(this.selectedLesson.topics[0]);
       this.selectSubtopic(this.selectedTopic.subtopics?.[firstKey]?.[0]);
@@ -1776,12 +1908,15 @@ export default {
           id: key,
           label: key,
           color: colors[index % colors.length],
-          selectedTextColor: this.selectedTextColors[colors[index % colors.length]],
+          selectedTextColor:
+            this.selectedTextColors[colors[index % colors.length]],
           feature: 'regenerations',
-          action: () => { this.selectedInformation = key },
+          action: () => {
+            this.selectedInformation = key;
+          },
         })
       );
-      
+
       this.setupPractices();
     },
     setupNotes() {
@@ -1792,7 +1927,7 @@ export default {
             "Discussed the fundamentals of environmental science and its importance in today's world.",
           module_id: 1,
           lesson_id: 1,
-          timestamp: '00:02:15',
+          timestamp: '02:15',
         },
         {
           id: 2,
@@ -1800,7 +1935,7 @@ export default {
             'Key takeaway: Photosynthesis is critical for the energy cycle of the Earth.',
           module_id: 2,
           lesson_id: 2,
-          timestamp: '00:05:30',
+          timestamp: '05:30',
         },
         {
           id: 3,
@@ -1808,7 +1943,7 @@ export default {
             'Learnt about Pythagorean theorem and its applications in calculating the distance between two points.',
           module_id: 3,
           lesson_id: 3,
-          timestamp: '00:03:45',
+          timestamp: '03:45',
         },
         {
           id: 4,
@@ -1816,7 +1951,7 @@ export default {
             "Explored the concept of gravitational force and Newton's law of universal gravitation.",
           module_id: 4,
           lesson_id: 4,
-          timestamp: '00:04:20',
+          timestamp: '04:20',
         },
         {
           id: 5,
@@ -1824,7 +1959,7 @@ export default {
             'Reviewed historical events leading up to World War I, focusing on political alliances.',
           module_id: 5,
           lesson_id: 5,
-          timestamp: '00:06:10',
+          timestamp: '06:10',
         },
         // ... potentially more notes ...
       ];
@@ -4463,10 +4598,8 @@ export default {
       }
     },
     getTextColor(button) {
-      return [
-        
-      ]
-    }
+      return [];
+    },
   },
   watch: {
     'user.id'(newId) {
