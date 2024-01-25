@@ -467,11 +467,11 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div v-for="subscriber in newSubscribers" :key="subscriber.id" class="bg-gray-100 rounded-xl overflow-hidden shadow hover:shadow-2xl transition-shadow duration-300 ease-in-out">
         <!-- Subscriber Info -->
-        <div class="bg-blue-300 p-4 flex items-center">
+        <div class="bg-blue-500 p-4 flex items-center text-white">
           <img :src="subscriber.photo" alt="Subscriber Photo" class="w-12 h-12 rounded-full mr-4">
           <div>
             <h3 class="font-semibold text-lg">{{ subscriber.name }}</h3>
-            <p class="text-sm text-gray-700">Joined: {{ subscriber.joinDate }}</p>
+            <p class="text-sm">Joined: {{ subscriber.joinDate }}</p>
           </div>
         </div>
 
