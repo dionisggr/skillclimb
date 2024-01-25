@@ -219,7 +219,7 @@
                 </p>
                 <p class="flex items-center">
                   <i class="fas fa-comments text-purple-500 mr-1"></i>Comments:
-                  {{ video.comments }}
+                  {{ video.comments.length }}
                 </p>
               </div>
             </div>
@@ -356,7 +356,7 @@
 
             <div v-for="video in videos" :key="video.id">
               <!-- Video Name -->
-              <h4 class="text-md font-semibold mt-2">{{ video.title }}</h4>
+              <h4 class="text-md font-semibold mt-6">{{ video.title }}</h4>
 
               <!-- Comments List -->
               <ul class="space-y-2 mt-2">
@@ -459,45 +459,45 @@
     </div>
   </div>
 
-   <!-- Expanded New Subscribers Metric Details -->
-   <div v-if="selectedMetric.title === 'New Subscribers'" class="bg-white p-6 rounded-xl shadow-lg mb-6">
-    <h2 class="text-2xl font-bold text-gray-700 mb-6">
+<!-- Expanded New Subscribers Metric Details -->
+<div v-if="selectedMetric.title === 'New Subscribers'" class="bg-white p-6 rounded-xl shadow-lg mb-6">
+    <h2 class="text-2xl font-bold mb-6 text-gray-800">
       New Subscribers Insights
     </h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div v-for="subscriber in newSubscribers" :key="subscriber.id" class="bg-gray-100 rounded-xl overflow-hidden shadow hover:shadow-2xl transition-shadow duration-300 ease-in-out">
-        <!-- Subscriber Info -->
-        <div class="bg-blue-500 p-4 flex items-center text-white">
-          <img :src="subscriber.photo" alt="Subscriber Photo" class="w-12 h-12 rounded-full mr-4">
-          <div>
-            <h3 class="font-semibold text-lg">{{ subscriber.name }}</h3>
-            <p class="text-sm">Joined: {{ subscriber.joinDate }}</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div v-for="subscriber in newSubscribers" :key="subscriber.id" class="border p-4 rounded-lg hover:shadow-md transition duration-300 ease-in-out transform hover:-translate-y-1 hover:bg-gray-100">
+        <!-- Subscriber Info with Joined Date -->
+        <div class="flex justify-between items-center mb-3">
+          <div class="flex items-center">
+            <img :src="subscriber.photo" alt="Subscriber Photo" class="w-10 h-10 mr-3 rounded-full shadow-sm">
+            <h3 class="text-lg font-semibold text-blue-600">{{ subscriber.name }}</h3>
           </div>
+          <span class="text-sm text-gray-600">
+            <i class="fas fa-calendar-alt text-orange-500 mr-2"></i>Date: {{ subscriber.joinDate }}
+          </span>
         </div>
-
-        <!-- Subscriber Interaction -->
-        <div class="p-4">
-          <h4 class="text-sm font-semibold text-gray-700 mb-2">
-            Interaction Overview
-          </h4>
-          <ul class="text-xs space-y-1">
-            <li>
-              <i class="fas fa-eye text-indigo-500 mr-2"></i>
-              Total Views: {{ subscriber.totalViews }}
-            </li>
-            <li>
-              <i class="fas fa-comments text-purple-500 mr-2"></i>
-              Comments Made: {{ subscriber.commentsMade }}
-            </li>
-            <li>
-              <i class="fas fa-heart text-pink-500 mr-2"></i>
-              Liked Videos: {{ subscriber.likedVideos }}
-            </li>
-          </ul>
+        <!-- Subscribed Courses -->
+        <div class="mb-3">
+          <p class="text-sm">
+            <i class="fas fa-book-open text-red-500 mr-2"></i>Subscribed to: <span v-for="(course, index) in subscriber.subscribedTo" :key="index" class="text-blue-600">{{ course }}<span v-if="index < subscriber.subscribedTo.length - 1">, </span></span>
+          </p>
+        </div>
+        <!-- Other Metrics -->
+        <div class="grid grid-cols-2 gap-2 text-sm">
+          <p>
+            <i class="fas fa-eye text-indigo-500 mr-2"></i>Total Views: {{ subscriber.totalViews }}
+          </p>
+          <p>
+            <i class="fas fa-comments text-purple-500 mr-2"></i>Comments Made: {{ subscriber.commentsMade }}
+          </p>
+          <p>
+            <i class="fas fa-thumbs-up text-green-500 mr-2"></i>Liked Videos: {{ subscriber.likedVideos }}
+          </p>
         </div>
       </div>
     </div>
   </div>
+
 
       <!-- Courses Overview -->
       <div class="bg-white p-6 rounded-xl shadow-lg mt-6 mb-10">
@@ -707,6 +707,7 @@ export default {
           totalViews: 100,
           commentsMade: 10,
           likedVideos: 5,
+          subscribedTo: ['Vue.js Fundamentals', 'Advanced CSS Techniques'],
         },
         {
           id: 2,
@@ -716,6 +717,7 @@ export default {
           totalViews: 80,
           commentsMade: 8,
           likedVideos: 4,
+          subscribedTo: ['Advanced CSS Techniques'],
         },
         {
           id: 3,
@@ -725,6 +727,7 @@ export default {
           totalViews: 70,
           commentsMade: 7,
           likedVideos: 3,
+          subscribedTo: ['Vue.js Fundamentals'],
         },
         {
           id: 4,
@@ -734,6 +737,7 @@ export default {
           totalViews: 50,
           commentsMade: 5,
           likedVideos: 2,
+          subscribedTo: ['Vue.js Fundamentals', 'Advanced CSS Techniques'],
         },
         {
           id: 5,
@@ -743,6 +747,7 @@ export default {
           totalViews: 40,
           commentsMade: 4,
           likedVideos: 2,
+          subscribedTo: ['Advanced CSS Techniques'],
         },
         {
           id: 6,
@@ -752,6 +757,7 @@ export default {
           totalViews: 30,
           commentsMade: 3,
           likedVideos: 1,
+          subscribedTo: ['Vue.js Fundamentals'],
         },
         {
           id: 7,
@@ -761,6 +767,7 @@ export default {
           totalViews: 20,
           commentsMade: 2,
           likedVideos: 1,
+          subscribedTo: ['Vue.js Fundamentals', 'Advanced CSS Techniques'],
         },
         {
           id: 8,
@@ -770,6 +777,7 @@ export default {
           totalViews: 10,
           commentsMade: 1,
           likedVideos: 1,
+          subscribedTo: ['Advanced CSS Techniques'],
         },
       ],
       videos: [
