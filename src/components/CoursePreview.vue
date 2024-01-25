@@ -56,7 +56,7 @@
       :src="videoSrc"
       title="YouTube video player"
       frameborder="0"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
       allowfullscreen
       class="w-full min-h-52 h-[50vw] max-h-[450px] object-cover"
     ></iframe>
@@ -403,6 +403,8 @@ export default {
       isEditingCurriculum: false,
       isEditingLearnings: false,
       isEditingInstructor: false,
+      showCourseStarting: false,
+      showRemoveConfirmation: false,
       instructor: {},
       course: {},
       youtubeLink: '',

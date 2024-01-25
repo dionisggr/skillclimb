@@ -198,7 +198,7 @@
         <a href="#" class="hover:underline hover:text-blue-500 font-medium">{{
           course.name
         }}</a>
-        <chevron-right size="20" class="mx-1" />
+        <chevron-right :size="20" class="mx-1" />
       </div>
 
       <h2 v-if="!isEditingLessonTitle" class="text-2xl font-bold m-1 mt-4">
@@ -219,7 +219,7 @@
             :src="selectedLesson?.videoUrl"
             title="YouTube video player"
             frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowfullscreen
             class="h-[375px] rounded-xl w-full mb-4 md:mb-0"
             :autoplay="false"
@@ -897,45 +897,90 @@
       </div>
 
       <!-- Student AI Section -->
-  <div class="w-full mb-6 shadow-md rounded-lg p-2" :class="{ 'py-6': studentAIOpen }">
-    <div class="flex justify-between items-center p-3 rounded-md cursor-pointer" @click="toggleStudentAI">
-      <h2 class="text-2xl font-semibold text-gray-800">Student AI</h2>
-      <svg :class="studentAIOpen ? 'transform rotate-180' : ''" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-800" viewBox="0 0 20 20" fill="currentColor">
-        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
-      </svg>
-    </div>
+      <div
+        v-if="isContentCreator"
+        class="w-full mb-6 shadow-md rounded-lg p-2"
+        :class="{ 'py-6': studentAIOpen }"
+      >
+        <div
+          class="flex justify-between items-center p-3 rounded-md cursor-pointer"
+          @click="toggleStudentAI"
+        >
+          <h2 class="text-2xl font-semibold text-gray-800">Student AI</h2>
+          <svg
+            :class="studentAIOpen ? 'transform rotate-180' : ''"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 text-gray-800"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </div>
 
-    <transition name="slide-fade">
-      <div v-if="studentAIOpen" class="mt-2 px-4 bg-white rounded-md">
-        <!-- AI Limiters Subsection -->
-        <div class="mb-4">
-          <h3 class="text-lg font-semibold mb-2">AI Limiters</h3>
-          <div class="space-y-2">
-            <div v-for="(option, index) in aiLimiters" :key="index" class="flex items-center">
-              <input type="checkbox" v-model="option.checked" :id="'limiter-' + index" class="rounded text-blue-600 focus:ring-blue-500">
-              <label :for="'limiter-' + index" class="ml-2 text-gray-700 cursor-pointer">{{ option.label }}</label>
+        <transition name="slide-fade">
+          <div v-if="studentAIOpen" class="mt-2 px-4 bg-white rounded-md">
+            <!-- AI Limiters Subsection -->
+            <div class="mb-4">
+              <h3 class="text-lg font-semibold mb-2">AI Limiters</h3>
+              <div class="space-y-2">
+                <div
+                  v-for="(option, index) in aiLimiters"
+                  :key="index"
+                  class="flex items-center"
+                >
+                  <input
+                    type="checkbox"
+                    v-model="option.checked"
+                    :id="'limiter-' + index"
+                    class="rounded text-blue-600 focus:ring-blue-500"
+                  />
+                  <label
+                    :for="'limiter-' + index"
+                    class="ml-2 text-gray-700 cursor-pointer"
+                    >{{ option.label }}</label
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- Avoid Topics Subsection -->
+            <div>
+              <h3 class="text-lg font-semibold my-2 mt-8">
+                Avoid Content Related To:
+              </h3>
+              <div class="space-y-2">
+                <input
+                  type="text"
+                  v-model="newTopic"
+                  @keyup.enter="addAvoidedTopic"
+                  placeholder="Type and press enter..."
+                  class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <ul>
+                  <li
+                    v-for="(topic, index) in avoidedTopics"
+                    :key="index"
+                    class="flex justify-between items-center"
+                  >
+                    <span>{{ topic }}</span>
+                    <button
+                      @click="removeAvoidedTopic(index)"
+                      class="text-red-500 hover:text-red-700 ml-2"
+                    >
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
-        </div>
-
-        <!-- Avoid Topics Subsection -->
-        <div>
-          <h3 class="text-lg font-semibold my-2 mt-8">Avoid Content Related To:</h3>
-          <div class="space-y-2">
-            <input type="text" v-model="newTopic" @keyup.enter="addAvoidedTopic" placeholder="Type and press enter..." class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <ul>
-              <li v-for="(topic, index) in avoidedTopics" :key="index" class="flex justify-between items-center">
-                <span>{{ topic }}</span>
-                <button @click="removeAvoidedTopic(index)" class="text-red-500 hover:text-red-700 ml-2">
-                  <i class="fas fa-times"></i>
-                </button>
-              </li>
-            </ul>
-          </div>
-        </div>
+        </transition>
       </div>
-    </transition>
-  </div>
 
       <!-- General Information Section -->
       <div
@@ -949,7 +994,6 @@
 
           <!-- Toggle Buttons -->
           <div
-            v-if="!activeSubtopics.length"
             class="space-x-4 overflow-x-auto no-scrollbar lg:overflow-visible flex lg:justify-center ml-auto p-1"
           >
             <button
@@ -1004,7 +1048,22 @@
             </button>
           </div>
 
-          <!-- NEW SECTION -->
+          <!-- Active Subtopics -->
+          <div
+            v-if="activeSubtopics.length"
+            class="flex items-center space-x-2 mt-2"
+          >
+            <!-- text thumbnails -->
+            <div
+              v-for="(subtopic, index) in activeSubtopics?.[
+                selectedInformation
+              ]"
+              :key="subtopic.id"
+              class="relative"
+            >
+              {{ subtopic.title }}
+            </div>
+          </div>
         </div>
 
         <template v-if="showNewToggleButtonOptions">
@@ -1163,6 +1222,7 @@
                   <div
                     v-for="info in subtopic.supplementalInfo"
                     class="p-1 px-2 rounded-lg hover:bg-gray-200 hover:bg-opacity-70 cursor-pointer"
+                    @click="showActiveSubtopic"
                   >
                     <strong>{{ info.title }}</strong>
                     <p>{{ info.content }}</p>
@@ -1195,6 +1255,108 @@
           </p>
         </div>
       </div>
+
+      <!-- Mini Chat Interface -->
+<div v-if="!isContentCreator" class="mt-6 bg-white p-4 rounded-lg shadow-lg">
+  <!-- Chat Header -->
+  <div class="flex items-center justify-between" :class="{ 'border-b border-gray-300 mb-4 pb-2': isChatVisible }">
+    <h5 class="text-2xl font-semibold text-gray-700">
+      Ask SkillClimb AI
+    </h5>
+    <div class="flex items-center">
+      <!-- Clear Chat Yellow Button with Text -->
+      <button
+        @click="clearMessages"
+        class="bg-yellow-500 hover:bg-yellow-600 text-white rounded-full px-3 mx-4 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors duration-200"
+        v-if="messages.length > 0"
+      >
+        Clear
+      </button>
+
+      <!-- Toggle Chat Button -->
+      <button
+        @click="toggleChat"
+        class="text-gray-500 hover:text-gray-700 transition-colors duration-200 focus:outline-none"
+      >
+        <svg
+          v-if="isChatVisible"
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          ></path>
+        </svg>
+        <svg v-else class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M12 2C6.486 2 2 6.486 2 12c0 5.514 4.486 10 10 10 5.514 0 10-4.486 10-10 0-5.514-4.486-10-10-10zm0 18.5a8.5 8.5 0 100-17 8.5 8.5 0 000 17zm0-3.5a5 5 0 100-10 5 5 0 000 10z"
+          ></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div v-if="isChatVisible">
+    <!-- Chat Content -->
+    <div class="overflow-y-auto h-64 mb-4" :style="chatContentStyle">
+      <!-- Introductory Message -->
+      <div v-if="messages.length === 0" class="text-gray-600 px-4 py-2">
+        Hi there! Feel free to ask me anything related to your course material.
+      </div>
+
+      <!-- Messages will be appended here -->
+      <div
+        v-for="message in messages"
+        :class="{
+          'self-end bg-blue-500 text-white': message.sender === 'user',
+          'self-start bg-gray-200': message.sender === 'ai',
+        }"
+        class="max-w-3/4 px-4 py-2 rounded-lg m-2"
+      >
+        {{ message.content }}
+      </div>
+    </div>
+
+    <!-- Chat Input -->
+    <div class="flex items-center">
+      <input
+        v-model="newMessage"
+        @keyup.enter="sendMessage"
+        type="text"
+        placeholder="Type your question..."
+        class="flex-grow border rounded-full px-4 py-2 mr-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <button
+        @click="sendMessage"
+        class="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200"
+      >
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M3 5l19 7-19 7v-14z"
+          ></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
 
       <!-- Practice Section -->
       <div
@@ -1360,9 +1522,18 @@ export default {
       showAssessments: false,
       activeSubtopics: [],
       studentAIOpen: false,
+      messages: [],
+      newMessage: '',
+      isChatVisible: true,
       aiLimiters: [
-        { label: 'Allow AI to provide direct answers to exercises', checked: false },
-        { label: 'Restrict AI to instructor-provided content only', checked: false },
+        {
+          label: 'Allow AI to provide direct answers to exercises',
+          checked: false,
+        },
+        {
+          label: 'Restrict AI to instructor-provided content only',
+          checked: false,
+        },
         // Add more AI limiter options here...
       ],
       avoidedTopics: [],
@@ -1492,6 +1663,8 @@ export default {
       isSupplementalInfoLoading: false,
       toggleButtons: [],
       isPracticeOptionsModalShown: false,
+      isEditingLessonTitle: false,
+      selectedLesson: {},
       selectedTextColors: {
         green: 'text-green-800',
         red: 'text-red-800',
@@ -1524,8 +1697,40 @@ export default {
         note.content.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
     },
+    chatContentStyle() {
+      const baseHeight = 50; // Minimum height in pixels
+      const maxHeight = 300; // Maximum height in pixels
+      const heightPerMessage = 40; // Height increase per message in pixels
+
+      const dynamicHeight = Math.min(
+        baseHeight + this.messages.length * heightPerMessage,
+        maxHeight
+      );
+
+      return {
+        height: `${dynamicHeight}px`,
+      };
+    },
   },
   methods: {
+    sendMessage() {
+      if (this.newMessage.trim() !== '') {
+        this.messages.push({ content: this.newMessage, sender: 'user' });
+        // Placeholder for AI response logic
+        this.newMessage = '';
+      }
+    },
+    toggleChat() {
+      this.isChatVisible = !this.isChatVisible;
+    },
+    clearMessages() {
+      if (confirm('Are you sure you want to clear all messages?')) {
+        this.messages = [];
+      }
+    },
+    showActiveSubtopic() {
+      this.activeSubtopics.push(this.selectedSubtopic);
+    },
     toggleStudentAI() {
       this.studentAIOpen = !this.studentAIOpen;
     },
@@ -2337,8 +2542,7 @@ export default {
                         title: 'How is AI useful to Solutions Engineers?',
                         supplementalInfo: [
                           {
-                            title:
-                              'Intelligent Solutions',
+                            title: 'Intelligent Solutions',
                             content:
                               'Intelligence, within the realm of solutions engineering, can be thought of as the ability to conceptualize, design, and implement complex systems that solve specific problems. Solutions engineers must possess a comprehensive understanding of both the technological and business aspects of a system, ensuring it aligns with organizational goals and client needs. In this context, Artificial Intelligence (AI) can be a powerful tool, enabling the creation of systems that not only automate tasks but also adapt and improve over time. AI can be leveraged to optimize workflows, predict system failures, and provide data-driven insights, making it an indispensable asset for solutions engineers aiming to craft cutting-edge and efficient solutions.',
                           },
@@ -2646,8 +2850,7 @@ export default {
                         title: 'How is AI useful to Solutions Engineers?',
                         supplementalInfo: [
                           {
-                            title:
-                              'Intelligent Solutions',
+                            title: 'Intelligent Solutions',
                             content:
                               'Intelligence, within the realm of solutions engineering, can be thought of as the ability to conceptualize, design, and implement complex systems that solve specific problems. Solutions engineers must possess a comprehensive understanding of both the technological and business aspects of a system, ensuring it aligns with organizational goals and client needs. In this context, Artificial Intelligence (AI) can be a powerful tool, enabling the creation of systems that not only automate tasks but also adapt and improve over time. AI can be leveraged to optimize workflows, predict system failures, and provide data-driven insights, making it an indispensable asset for solutions engineers aiming to craft cutting-edge and efficient solutions.',
                           },
@@ -2955,8 +3158,7 @@ export default {
                         title: 'How is AI useful to Solutions Engineers?',
                         supplementalInfo: [
                           {
-                            title:
-                              'Intelligent Solutions',
+                            title: 'Intelligent Solutions',
                             content:
                               'Intelligence, within the realm of solutions engineering, can be thought of as the ability to conceptualize, design, and implement complex systems that solve specific problems. Solutions engineers must possess a comprehensive understanding of both the technological and business aspects of a system, ensuring it aligns with organizational goals and client needs. In this context, Artificial Intelligence (AI) can be a powerful tool, enabling the creation of systems that not only automate tasks but also adapt and improve over time. AI can be leveraged to optimize workflows, predict system failures, and provide data-driven insights, making it an indispensable asset for solutions engineers aiming to craft cutting-edge and efficient solutions.',
                           },
@@ -3277,8 +3479,7 @@ export default {
                         title: 'How is AI useful to Solutions Engineers?',
                         supplementalInfo: [
                           {
-                            title:
-                              'Intelligent Solutions',
+                            title: 'Intelligent Solutions',
                             content:
                               'Intelligence, within the realm of solutions engineering, can be thought of as the ability to conceptualize, design, and implement complex systems that solve specific problems. Solutions engineers must possess a comprehensive understanding of both the technological and business aspects of a system, ensuring it aligns with organizational goals and client needs. In this context, Artificial Intelligence (AI) can be a powerful tool, enabling the creation of systems that not only automate tasks but also adapt and improve over time. AI can be leveraged to optimize workflows, predict system failures, and provide data-driven insights, making it an indispensable asset for solutions engineers aiming to craft cutting-edge and efficient solutions.',
                           },
@@ -3679,8 +3880,7 @@ export default {
                         title: 'How is AI useful to Solutions Engineers?',
                         supplementalInfo: [
                           {
-                            title:
-                              'Intelligent Solutions',
+                            title: 'Intelligent Solutions',
                             content:
                               'Intelligence, within the realm of solutions engineering, can be thought of as the ability to conceptualize, design, and implement complex systems that solve specific problems. Solutions engineers must possess a comprehensive understanding of both the technological and business aspects of a system, ensuring it aligns with organizational goals and client needs. In this context, Artificial Intelligence (AI) can be a powerful tool, enabling the creation of systems that not only automate tasks but also adapt and improve over time. AI can be leveraged to optimize workflows, predict system failures, and provide data-driven insights, making it an indispensable asset for solutions engineers aiming to craft cutting-edge and efficient solutions.',
                           },
@@ -4081,8 +4281,7 @@ export default {
                         title: 'How is AI useful to Solutions Engineers?',
                         supplementalInfo: [
                           {
-                            title:
-                              'Intelligent Solutions',
+                            title: 'Intelligent Solutions',
                             content:
                               'Intelligence, within the realm of solutions engineering, can be thought of as the ability to conceptualize, design, and implement complex systems that solve specific problems. Solutions engineers must possess a comprehensive understanding of both the technological and business aspects of a system, ensuring it aligns with organizational goals and client needs. In this context, Artificial Intelligence (AI) can be a powerful tool, enabling the creation of systems that not only automate tasks but also adapt and improve over time. AI can be leveraged to optimize workflows, predict system failures, and provide data-driven insights, making it an indispensable asset for solutions engineers aiming to craft cutting-edge and efficient solutions.',
                           },
@@ -5383,8 +5582,7 @@ export default {
               title: 'How is AI useful to Solutions Engineers?',
               supplementalInfo: [
                 {
-                  title:
-                    'Intelligent Solutions',
+                  title: 'Intelligent Solutions',
                   content:
                     'Intelligence, within the realm of solutions engineering, can be thought of as the ability to conceptualize, design, and implement complex systems that solve specific problems. Solutions engineers must possess a comprehensive understanding of both the technological and business aspects of a system, ensuring it aligns with organizational goals and client needs. In this context, Artificial Intelligence (AI) can be a powerful tool, enabling the creation of systems that not only automate tasks but also adapt and improve over time. AI can be leveraged to optimize workflows, predict system failures, and provide data-driven insights, making it an indispensable asset for solutions engineers aiming to craft cutting-edge and efficient solutions.',
                 },
