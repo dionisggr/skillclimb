@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-gray-50">
     <!-- Dashboard Header -->
     <header class="text-center py-8 bg-blue-600 text-white">
-      <h1 class="text-4xl font-bold">[Company] Dashboard</h1>
+      <h1 class="text-4xl font-bold">Synapse AI's Dashboard</h1>
       <p>Empower your team with AI-driven learning</p>
     </header>
 
