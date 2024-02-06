@@ -172,7 +172,7 @@
               >
                 <div
                   v-if="!isEditingCurriculum"
-                  class="flex justify-between my-1 p-2 px-4 pr-4 bg-gray-100 rounded-md hover:shadow-md hover:bg-gray-300 transition-all duration-200 cursor-pointer"
+                  class="flex justify-between my-1 p-2 px-4 pr-6 bg-gray-100 rounded-md hover:shadow-md hover:bg-gray-300 transition-all duration-200 cursor-pointer"
                 >
                   <span>{{ lesson.title }}</span>
                   <span>0:00</span>
@@ -275,7 +275,7 @@
     <!-- Full-Width Redesigned Instructor Info Section -->
     <section class="p-6 mt-6 bg-white rounded-lg shadow-lg overflow-hidden">
       <div class="flex justify-between items-center flex-wrap">
-        <h2 class="text-3xl font-bold text-gray-800 w-full ml-2g sm:w-auto">
+        <h2 class="text-3xl font-bold text-gray-800 w-full ml-2 sm:w-auto">
           Instructor
         </h2>
         <!-- Conditional Edit Button -->

@@ -33,10 +33,16 @@
           <span class="mr-2">Mode:</span>
           <button
             @click="toggleMode"
-            :class="selectedPractice.subtype === 'single-answer' ? 'bg-green-500' : 'bg-yellow-500'"
+            :class="
+              selectedPractice.subtype === 'single-answer'
+                ? 'bg-green-500'
+                : 'bg-yellow-500'
+            "
             class="text-white font-bold py-2 px-4 rounded-xl"
           >
-            {{ selectedPractice.subtype === 'single-answer' ? 'Single' : 'Multi' }}
+            {{
+              selectedPractice.subtype === 'single-answer' ? 'Single' : 'Multi'
+            }}
           </button>
         </div>
       </div>
@@ -120,23 +126,25 @@
     <div v-else class="space-y-4 mt-4">
       <!-- Student View -->
       <div class="flex items-center justify-between">
-      <h2 class="text-xl font-semibold mb-2 px-1">
-        {{ !isContentCreator ? 'Answer the' : null }} Questions
-      </h2>
-      <div class="space-x-2 text-sm">
-        <!-- Start Over button with icon -->
-        <button
-          class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1.5 px-3 rounded-lg mx-2"
-        >
-          <i class="fas fa-redo-alt mr-1"></i> Start Over
-        </button>
-        <button
-          class="bg-green-500 hover:bg-green-700 text-white font-bold py-1.5 px-3 rounded-lg mx-2"
-        >
-          <i class="fas fa-plus mr-1"></i>
-        New AI Exercises
-        </button>
-      </div>
+        <h2 class="text-xl font-semibold mb-2 px-1">
+          {{ !isContentCreator ? 'Answer the' : null }} Questions
+        </h2>
+        <div class="space-x-2 text-sm">
+          <!-- Start Over button with icon -->
+          <button
+            class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1.5 px-3 rounded-lg mx-2"
+            @click="startOver"
+          >
+            <i class="fas fa-redo-alt mr-1"></i> Start Over
+          </button>
+          <button
+            class="bg-green-500 hover:bg-green-700 text-white font-bold py-1.5 px-3 rounded-lg mx-2"
+            @click="generateNewExercises"
+          >
+            <i class="fas fa-plus mr-1"></i>
+            New AI Exercises
+          </button>
+        </div>
       </div>
       <form @submit.prevent="submitAnswers">
         <div
@@ -191,7 +199,7 @@ export default {
   },
   methods: {
     addExercise() {
-      this.$emit('add-exercise')
+      this.$emit('add-exercise');
     },
     removeQuestion(index) {
       if (confirm('Are you sure you want to remove this question?')) {
@@ -199,10 +207,15 @@ export default {
       }
     },
     addOption(questionIndex) {
-      this.selectedPractice?.exercises[questionIndex].options.push({ text: '' });
+      this.selectedPractice?.exercises[questionIndex].options.push({
+        text: '',
+      });
     },
     removeOption(questionIndex, optionIndex) {
-      this.selectedPractice?.exercises[questionIndex].options.splice(optionIndex, 1);
+      this.selectedPractice?.exercises[questionIndex].options.splice(
+        optionIndex,
+        1
+      );
     },
     toggleMode() {
       if (this.selectedPractice.subtype === 'single-answer') {
@@ -253,6 +266,22 @@ export default {
       // Handle answer submission logic here
       alert('Answers submitted!'); // Placeholder action
     },
+    clearAnswers() {
+      this.selectedPractice.exercises.forEach((question) => {
+          question.selected = [];
+        });
+    },
+    startOver() {
+      if (confirm('Are you sure you want to start over?')) {
+        this.clearAnswers();
+      }
+    },
+    generateNewExercises() {
+      if (confirm('Are you sure you want to generate new exercises?')) {
+        this.clearAnswers();
+        this.$emit('generate-new-exercises');
+      }
+    }
   },
 };
 </script>
