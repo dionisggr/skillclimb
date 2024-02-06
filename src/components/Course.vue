@@ -418,7 +418,7 @@
 
                 <!-- Expanded Details Section for the current Video Entry -->
                 <div
-                  v-if="lesson.id === selectedLesson.id"
+                  v-if="lesson.id === selectedLesson.id && selectedLesson.isOpen"
                   class="p-2 bg-gray-50 border rounded-md mx-1"
                 >
                   <p class="text-xs italic">{{ lesson.description }}</p>
@@ -994,6 +994,7 @@
           <h3 class="text-3xl mb-2">General Information</h3>
 
           <!-- Toggle label that says "By AI" or "By Instructor" -->
+          <template v-if="!isContentCreator">
           <span
             v-if="selectedInformation === 'Overview'"
             class="ml-2 text-blue-600 px-2 py-1 text-sm"
@@ -1002,7 +1003,7 @@
           <span v-else class="ml-1 text-yellow-600 px-2 py-1 text-sm"
             >By AI</span
           >
-
+        </template>
           <!-- Toggle Buttons -->
           <div
             class="space-x-4 overflow-x-auto no-scrollbar lg:overflow-visible flex lg:justify-center ml-auto p-1"
@@ -1989,6 +1990,7 @@ export default {
     },
     selectLesson(index) {
       this.selectedLesson = this.selectedModule.lessons[index];
+      this.selectedLesson.isOpen = !this.selectedLesson.isOpen;
       this.selectedTopic = this.selectedLesson.topics[0];
 
       this.$forceUpdate();
@@ -2153,12 +2155,13 @@ export default {
         this.openSubtopics.push(subtopic.id);
       }
     },
-    addSubtopic() {
+    addSubtopic(subtopic = null) {
       const newSubtopic = {
         id: Date.now().toString(),
         title: 'New Subtopic',
         supplementalInfo: 'Lorem ipsum',
         isEditing: true,
+        ...subtopic,
       };
 
       if (!this.selectedTopic?.id) {
@@ -5418,6 +5421,7 @@ export default {
         progress: 0,
         progressText: '0%',
         topics: [],
+        isOpen: true,
       };
 
       this.selectedModule.lessons.push(lesson);
@@ -5515,76 +5519,81 @@ export default {
 
       setTimeout(() => {
         if (!this.selectedLesson.topics?.length) {
-          this.addTopic({ title: 'AI and Large Language Models' });
+          this.addTopic({ title: 'Consectetur Adipiscing Elit' });
+          this.addTopic({ title: 'Sed Do Eiusmod Tempor Incididunt' });
+          this.addTopic({ title: 'Lorem Ipsum Dolor Sit Amet' });
         }
 
-        this.selectedLesson.topics[0].subtopics = {
-          Overview: [
-            {
-              id: 1,
-              title: 'Lorem Ipsum Dolor Sit Amet',
-              supplementalInfo: [
-                {
-                  title: 'Consectetur Adipiscing Elit',
-                  content:
-                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-                },
-                {
-                  title: 'Ut Enim Ad Minim Veniam',
-                  content:
-                    'Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-                },
-                {
-                  title: 'Exercitation Ullamco Laboris',
-                  content:
-                    'Nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.',
-                },
-              ],
-            },
-            {
-              id: 2,
-              title: 'Sed Do Eiusmod Tempor Incididunt',
-              supplementalInfo: [
-                {
-                  title: 'Labore Et Dolore Magna Aliqua',
-                  content:
-                    'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
-                },
-                {
-                  title: 'Duis Aute Irure Dolor',
-                  content:
-                    'In reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.',
-                },
-                {
-                  title: 'Cillum Dolore Eu Fugiat',
-                  content:
-                    'Nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.',
-                },
-              ],
-            },
-            {
-              id: 3,
-              title: 'Consectetur Adipiscing Elit',
-              supplementalInfo: [
-                {
-                  title: 'Lorem Ipsum Dolor Sit Amet',
-                  content:
-                    'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur.',
-                },
-                {
-                  title: 'Ut Enim Ad Minim Veniam',
-                  content:
-                    'Laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur.',
-                },
-                {
-                  title: 'Exercitation Ullamco Laboris',
-                  content:
-                    'Eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.',
-                },
-              ],
-            },
-          ],
-        };
+        const supplementalInfo = [
+          {
+            id: 1,
+            title: 'Lorem Ipsum Dolor Sit Amet',
+            isEditing: false,
+            supplementalInfo: [
+              {
+                title: 'Consectetur Adipiscing Elit',
+                content:
+                  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+              },
+              {
+                title: 'Ut Enim Ad Minim Veniam',
+                content:
+                  'Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+              },
+              {
+                title: 'Exercitation Ullamco Laboris',
+                content:
+                  'Nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.',
+              },
+            ],
+          },
+          {
+            id: 2,
+            title: 'Sed Do Eiusmod Tempor Incididunt',
+            isEditing: false,
+            supplementalInfo: [
+              {
+                title: 'Labore Et Dolore Magna Aliqua',
+                content:
+                  'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
+              },
+              {
+                title: 'Duis Aute Irure Dolor',
+                content:
+                  'In reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.',
+              },
+              {
+                title: 'Cillum Dolore Eu Fugiat',
+                content:
+                  'Nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.',
+              },
+            ],
+          },
+          {
+            id: 3,
+            title: 'Consectetur Adipiscing Elit',
+            isEditing: false,
+            supplementalInfo: [
+              {
+                title: 'Lorem Ipsum Dolor Sit Amet',
+                content:
+                  'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur.',
+              },
+              {
+                title: 'Ut Enim Ad Minim Veniam',
+                content:
+                  'Laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur.',
+              },
+              {
+                title: 'Exercitation Ullamco Laboris',
+                content:
+                  'Eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.',
+              },
+            ],
+          },
+        ];
+
+        supplementalInfo.forEach(this.addSubtopic);
 
         this.isSupplementalInfoLoading = false;
         this.showTopics = true;
