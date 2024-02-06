@@ -15,14 +15,14 @@
       >
         <a
           href="#popular-learning-paths"
-          class="w-full lg:w-auto block px-6 py-3 lg:px-10 lg:py-4 bg-blue-500 text-white rounded-full shadow-md hover:bg-blue-600 transition-colors text-lg cursor-pointer"
+          class="w-full lg:w-auto block px-6 py-3 lg:px-10 lg:py-4 bg-green-500 text-white rounded-full shadow-md hover:bg-green-600 transition-colors text-lg cursor-pointer"
         >
           I'm a Learner
         </a>
         <a
           href="#"
           @click="openDashboard"
-          class="w-full lg:w-auto block mt-4 lg:mt-0 px-6 py-3 lg:px-10 lg:py-4 bg-green-500 text-white rounded-full shadow-md hover:bg-green-600 transition-colors text-lg cursor-pointer"
+          class="w-full lg:w-auto block mt-4 lg:mt-0 px-6 py-3 lg:px-10 lg:py-4 bg-blue-500 text-white rounded-full shadow-md hover:bg-blue-600 transition-colors text-lg cursor-pointer"
         >
           I'm a Content Creator
         </a>
@@ -43,25 +43,60 @@
       <transition name="slide-fade">
         <div
           v-if="showHowItWorks"
-          class="how-it-works-content mt-4 lg:mt-6 lg:mx-auto lg:w-3/4 bg-blue-500 bg-opacity-5 p-4 lg:p-10 rounded-md shadow-md text-gray-700 leading-relaxed text-lg lg:text-xl max-w-4xl"
+          class="how-it-works-content mt-4 lg:mt-6 lg:mx-auto lg:w-3/4 bg-opacity-5 p-4 lg:p-10 rounded-md shadow-md text-gray-700 leading-relaxed text-lg lg:text-xl max-w-4xl relative"
+          :class="
+            activeBenefits === 'students' ? 'bg-green-500' : 'bg-blue-500'
+          "
         >
+          <!-- 2-way toggle button to choose between Student (benefits) or Instructor (benefits) -->
+          <div
+            class="flex justify-center mb-4 absolute top-8 right-5 text-base font-medium"
+          >
+            <button
+              :class="
+                activeBenefits === 'students'
+                  ? 'bg-green-500 text-white'
+                  : 'bg-white text-blue-700'
+              "
+              @click="activeBenefits = 'students'"
+              class="px-4 py-1.5 rounded-l-xl transition-colors"
+            >
+              Students
+            </button>
+
+            <button
+              :class="
+                activeBenefits === 'instructors'
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-white text-green-600'
+              "
+              @click="activeBenefits = 'instructors'"
+              class="px-3 py-1 rounded-r-xl transition-colors"
+            >
+              Instructors
+            </button>
+          </div>
+
           <!-- Header -->
-          <h2 class="text-2xl lg:text-3xl font-bold text-center mb-4 lg:mb-6">
+          <h2 class="text-2xl lg:text-3xl font-bold text-center lg:mb-6">
             What We Offer
           </h2>
 
           <!-- Benefit Items -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-8">
+          <div class="mt-10 grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-8">
             <div
-              v-for="benefit in benefits"
+              v-for="benefit in benefits[activeBenefits]"
               :key="benefit"
               class="flex items-start space-x-2 lg:space-x-4 text-base"
             >
               <!-- Icon (Replace with your actual icons) -->
               <div
-                class="flex-none w-8 lg:w-10 h-8 lg:h-10 bg-blue-200 rounded-full flex items-center justify-center"
+                class="flex-none w-8 lg:w-10 h-8 lg:h-10 rounded-full flex items-center justify-center"
+                :class="
+                  activeBenefits === 'students' ? 'bg-green-200' : 'bg-blue-200'
+                "
               >
-                <span class="text-blue-500 text-xl lg:text-2xl">&#x2714;</span>
+                <span class="text-xl lg:text-2xl">&#x2714;</span>
               </div>
 
               <!-- Text Content -->
@@ -220,13 +255,29 @@ export default {
     return {
       showHowItWorks: false,
       subscriberEmail: '',
-      benefits: [
-        'Structured video course progression with notes and video timestamps.',
-        'AI-generated supplemental information and practice.',
-        'AI-optimized, personalized course selection for maximum adaptive learning.',
-        'Flexible video lesson sets based on chosen difficulty levels.',
-        'Certifications for completing learning paths.',
-      ],
+      activeBenefits: 'students',
+      benefits: {
+        students: [
+          'Personalized AI-generated supplemental materials tailored to your learning needs',
+          'Unlimited, adaptive practice exercises to enhance comprehension and retention',
+          'AI-curated content paths structured for in-depth or breadth exploration',
+          'Real-time conversational AI assistance for explanations and clarifications',
+          'Smart summaries and key points by AI for each video lesson or topic',
+          'Adaptive exercise difficulty levels to keep you engaged and on track',
+          'One-click options to personalize lessons and topics being actively explored',
+          'AI-optimized course recommendations based on your profile',
+        ],
+        instructors: [
+          'One-click transcription of videos into structured written material',
+          'AI-generated supplemental information and exercises for students',
+          'Automatic organization of content into timestamped topics and subtopics',
+          'Dynamic, adaptive practice assessments tailored to student knowledge levels',
+          'Breadth and depth added to courses with AI-generated content in lessons',
+          'AI moderation features to ensure safe and responsible content use by students',
+          'Constrain AI responses to instructor-provided content for increased course alignment',
+          'Empower students with adaptive learning without the usual exhaustion or burnout',
+        ],
+      },
       learningPaths: [
         {
           id: 1,

@@ -6,115 +6,111 @@
       <p class="text-gray-600">Get a glimpse of what you'll learn.</p>
     </div>
 
-   <!-- Conditional Upload Video Button or YouTube Link Input -->
-  <div
-    v-if="isContentCreator && !videoSrc"
-  >
-    <div class="flex flex-col space-y-6 justify-center items-center">
-      <!-- Upload Button with Hover Effect -->
-      <button
-        @click="triggerFileInput"
-        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl transition duration-300"
-      >
-        Upload Video
-      </button>
-      <input
-        type="file"
-        ref="videoInput"
-        class="hidden"
-        @change="handleFileChange"
-        accept="video/*"
-      />
-
-      <!-- Stylish OR Divider -->
-      <div class="mx-4 text-gray-600 font-semibold text-lg">OR</div>
-
-      <div>
-        <!-- YouTube Link Input with Hover Effect -->
-        <input
-          type="text"
-          v-model="youtubeLink"
-          placeholder="Enter YouTube link"
-          class="py-2 px-4 rounded-xl border border-gray-300 shadow-sm leading-3 hover:shadow-md transition duration-300"
-        />
+    <!-- Conditional Upload Video Button or YouTube Link Input -->
+    <div v-if="isContentCreator && !videoSrc">
+      <div class="flex flex-col space-y-6 justify-center items-center">
+        <!-- Upload Button with Hover Effect -->
         <button
-          @click="handleYoutubeLink"
-          class="ml-2 bg-green-500 hover:bg-green-700 text-white font-bold py-1.5 px-2 text-sm rounded-xl transition duration-300"
+          @click="triggerFileInput"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl transition duration-300"
         >
-          Load Video
+          Upload Video
+        </button>
+        <input
+          type="file"
+          ref="videoInput"
+          class="hidden"
+          @change="handleFileChange"
+          accept="video/*"
+        />
+
+        <!-- Stylish OR Divider -->
+        <div class="mx-4 text-gray-600 font-semibold text-lg">OR</div>
+
+        <div>
+          <!-- YouTube Link Input with Hover Effect -->
+          <input
+            type="text"
+            v-model="youtubeLink"
+            placeholder="Enter YouTube link"
+            class="py-2 px-4 rounded-xl border border-gray-300 shadow-sm leading-3 hover:shadow-md transition duration-300"
+          />
+          <button
+            @click="handleYoutubeLink"
+            class="ml-2 bg-green-500 hover:bg-green-700 text-white font-bold py-1.5 px-2 text-sm rounded-xl transition duration-300"
+          >
+            Load Video
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Introductory Video Section with Hover Effect -->
+    <section
+      class="relative block rounded-lg shadow-lg overflow-hidden mx-auto w-full max-w-4xl transition duration-300 transform hover:scale-105 hover:shadow-xl"
+      v-else
+    >
+      <iframe
+        :src="videoSrc"
+        title="YouTube video player"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+        class="w-full min-h-52 h-[50vw] max-h-[450px] object-cover"
+      ></iframe>
+      <!-- Remove Video Button with Hover Effect -->
+      <button
+        v-if="videoSrc && isContentCreator"
+        @click="removeVideo"
+        class="absolute bottom-2 right-2 text-sm bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-300 hover:scale-110"
+      >
+        Remove
+      </button>
+    </section>
+
+    <!-- CTA Section with Hover Effect -->
+    <section
+      class="bg-white rounded-lg p-6 mt-8 text-center transition duration-300"
+    >
+      <h2 v-if="!isContentCreator" class="text-2xl font-bold mb-6">
+        Start Your Journey Now
+      </h2>
+      <p v-if="!isContentCreator" class="text-gray-600 mb-6">
+        Enroll in the "{{ course.title }}" course and begin your learning
+        adventure with {{ instructor.name }} as your guide.
+      </p>
+      <div
+        class="flex flex-col md:flex-row md:justify-center items-center space-y-4 md:space-y-0 md:space-x-4"
+      >
+        <!-- Conditional rendering based on isLoggedIn with Hover Effect -->
+        <button
+          @click="$emit(isNewCourse ? 'create-new-course' : 'open-course')"
+          class="text-white font-semibold rounded-xl py-3 px-8 w-full md:w-auto transition-colors duration-300 ease-in-out focus:outline-none active:outline-none border-blue-700 hover:bg-blue-600 hover:text-white hover:shadow-md transform hover:scale-105"
+          :class="isLoggedIn ? 'bg-green-500' : 'bg-blue-500'"
+        >
+          <!-- Text changes based on isLoggedIn -->
+          {{
+            isContentCreator
+              ? 'Edit Course'
+              : isEnrolled
+              ? 'Continue'
+              : 'Enroll Now'
+          }}
         </button>
       </div>
-    </div>
-  </div>
-
-  <!-- Introductory Video Section with Hover Effect -->
-  <section
-    class="relative block rounded-lg shadow-lg overflow-hidden mx-auto w-full max-w-4xl transition duration-300 transform hover:scale-105 hover:shadow-xl"
-    v-else
-  >
-    <iframe
-      :src="videoSrc"
-      title="YouTube video player"
-      frameborder="0"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-      allowfullscreen
-      class="w-full min-h-52 h-[50vw] max-h-[450px] object-cover"
-    ></iframe>
-    <!-- Remove Video Button with Hover Effect -->
-    <button
-      v-if="videoSrc && isContentCreator"
-      @click="removeVideo"
-      class="absolute bottom-2 right-2 text-sm bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-300 hover:scale-110"
-    >
-      Remove
-    </button>
-  </section>
-
-  <!-- CTA Section with Hover Effect -->
-  <section class="bg-white rounded-lg p-6 mt-8 text-center transition duration-300">
-    <h2 v-if="!isContentCreator" class="text-2xl font-bold mb-6">
-      Start Your Journey Now
-    </h2>
-    <p v-if="!isContentCreator" class="text-gray-600 mb-6">
-      Enroll in the "{{ course.title }}" course and begin your learning
-      adventure with {{ instructor.name }} as your guide.
-    </p>
-    <div
-      class="flex flex-col md:flex-row md:justify-center items-center space-y-4 md:space-y-0 md:space-x-4"
-    >
-      <!-- Conditional rendering based on isLoggedIn with Hover Effect -->
-      <button
-        @click="$emit(isNewCourse ? 'create-new-course' : 'open-course')"
-        class="text-white font-semibold rounded-xl py-3 px-8 w-full md:w-auto transition-colors duration-300 ease-in-out focus:outline-none active:outline-none border-blue-700 hover:bg-blue-600 hover:text-white hover:shadow-md transform hover:scale-105"
-        :class="
-          isLoggedIn
-            ? 'bg-green-500'
-            : 'bg-blue-500'
-        "
+      <div
+        v-if="showCourseStarting"
+        class="mt-6 bg-gray-100 border-t border-gray-300 pt-6 hover:bg-gray-200 transition duration-300"
       >
-        <!-- Text changes based on isLoggedIn -->
-        {{
-          isContentCreator
-            ? 'Edit Course'
-            : isEnrolled
-            ? 'Continue'
-            : 'Enroll Now'
-        }}
-      </button>
-    </div>
-    <div
-      v-if="showCourseStarting"
-      class="mt-6 bg-gray-100 border-t border-gray-300 pt-6 hover:bg-gray-200 transition duration-300"
-    >
-      <h3 class="text-xl font-semibold mb-3">Course Starting...</h3>
-      <div class="relative h-5 w-full bg-gray-300 rounded-lg overflow-hidden">
-        <div
-          class="absolute h-5 bg-green-500 transition-width"
-          :style="{ width: courseStartingProgress + '%' }"
-        ></div>
+        <h3 class="text-xl font-semibold mb-3">Course Starting...</h3>
+        <div class="relative h-5 w-full bg-gray-300 rounded-lg overflow-hidden">
+          <div
+            class="absolute h-5 bg-green-500 transition-width"
+            :style="{ width: courseStartingProgress + '%' }"
+          ></div>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
     <!-- Curriculum Section -->
     <section class="bg-white rounded-lg p-6 shadow-md mt-4 relative">
@@ -132,11 +128,11 @@
         <div
           v-for="(_module, index) in course.modules"
           :key="index"
-          class="mb-4"
+          class="mb-3"
         >
           <div
             :class="[
-              'mb-3 bg-gray-100 rounded-lg p-3 hover:bg-gray-200 transition-all duration-200 cursor-pointer shadow-md',
+              'mb-2 bg-gray-100 rounded-lg p-3 hover:bg-gray-200 transition-all duration-200 cursor-pointer shadow-md',
               index < 2 &&
                 isLoggedIn &&
                 'completed-module bg-green-200 hover:bg-green-300',
@@ -169,16 +165,17 @@
             </div>
           </div>
           <transition name="slide-fade">
-            <div v-if="!_module.hide" class="mt-2 ml-6 md:ml-8 lg:ml-12">
+            <div v-if="!_module.hide" class="mt-2 ml-6 md:ml-8 lg:ml-8">
               <div
                 v-for="(lesson, lessonIndex) in _module.lessons"
                 :key="lessonIndex"
               >
                 <div
                   v-if="!isEditingCurriculum"
-                  class="my-1 p-2 bg-gray-100 rounded hover:shadow-md hover:bg-gray-300 transition-all duration-200 cursor-pointer"
+                  class="flex justify-between my-1 p-2 px-4 pr-4 bg-gray-100 rounded-md hover:shadow-md hover:bg-gray-300 transition-all duration-200 cursor-pointer"
                 >
-                  {{ lesson.title }}
+                  <span>{{ lesson.title }}</span>
+                  <span>0:00</span>
                 </div>
                 <div
                   v-else
@@ -275,37 +272,37 @@
       </button>
     </section>
 
-    <!-- Instructor Info Section -->
-    <section
-      class="bg-gradient-to-r from-blue-500 to-green-400 rounded-lg p-6 mt-4 shadow-lg text-white relative"
-    >
-      <!-- Edit Button -->
-      <button
-        v-if="isContentCreator"
-        @click="toggleInstructorEdit"
-        class="absolute top-2 right-2 text-sm bg-white text-blue-500 font-bold py-2 px-4 rounded"
-      >
-        {{ isEditingInstructor ? 'Finish Editing' : 'Edit' }}
-      </button>
+    <!-- Full-Width Redesigned Instructor Info Section -->
+    <section class="p-6 mt-6 bg-white rounded-lg shadow-lg overflow-hidden">
+      <div class="flex justify-between items-center flex-wrap">
+        <h2 class="text-3xl font-bold text-gray-800 w-full ml-2g sm:w-auto">
+          Instructor
+        </h2>
+        <!-- Conditional Edit Button -->
+        <button
+          v-if="isContentCreator"
+          @click="toggleInstructorEdit"
+          class="mt-4 sm:mt-0 py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition duration-300"
+        >
+          {{ isEditingInstructor ? 'Save' : 'Edit' }}
+        </button>
+      </div>
 
-      <h2 class="text-xl font-bold mb-4">Instructor</h2>
-      <div
-        class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4"
-      >
+      <div class="my-3 flex flex-col md:flex-row">
         <!-- Image Container -->
-        <div class="relative mx-auto sm:mx-0">
+        <div class="flex-none mb-4 md:mb-0 md:mr-4">
           <img
             :src="instructor?.imageUrl"
             alt="Instructor"
-            class="w-24 h-24 rounded-full border-4 border-white"
+            class="rounded-full mx-auto mr-2 mt-2"
           />
-          <!-- Upload Button -->
+          <!-- Upload Button shown only in edit mode -->
           <button
             v-if="isEditingInstructor"
             @click="triggerInstructorImageInput"
-            class="absolute bottom-0 right-0 text-xs bg-white text-blue-500 font-bold py-1 px-2 rounded"
+            class="mt-2 py-1 px-3 bg-gray-200 text-gray-800 text-sm rounded-full mx-auto block hover:bg-gray-300 transition duration-300"
           >
-            Upload
+            Change Photo
           </button>
           <input
             type="file"
@@ -314,38 +311,45 @@
             @change="handleInstructorImageChange"
           />
         </div>
-        <div v-if="!isEditingInstructor" class="text-center sm:text-left">
-          <p class="text-2xl font-semibold">{{ instructor?.name }}</p>
-          <p class="mb-2">{{ instructor?.title }}</p>
-          <p>{{ instructor?.bio }}</p>
-          <a :href="instructor?.website" class="block mt-4 text-sm underline"
-            >Visit Instructor's Website</a
-          >
-        </div>
-        <div v-else class="text-center sm:text-left space-y-2">
-          <input
-            v-model="instructor.name"
-            class="text-xl font-semibold bg-transparent border-b border-white w-full mb-2"
-          />
-          <input
-            v-model="instructor.title"
-            class="mb-2 bg-transparent border-b border-white w-full"
-          />
-          <textarea
-            v-model="instructor.bio"
-            class="bg-transparent border-b border-white w-full"
-          ></textarea>
-          <input
-            type="file"
-            ref="instructorImageInput"
-            class="hidden"
-            @change="handleInstructorImageChange"
-          />
-          <!-- Text input for the instructor website -->
-          <input
-            v-model="instructor.website"
-            class="bg-transparent border-b border-white w-full"
-          />
+
+        <!-- Info Display Section -->
+        <div class="flex-1">
+          <div v-if="!isEditingInstructor">
+            <p class="text-2xl font-semibold text-gray-900">
+              {{ instructor?.name }}
+            </p>
+            <p class="text-gray-600 font-medium mt-1">{{ instructor?.title }}</p>
+            <p class="text-gray-500 py-4 w-11/12">{{ instructor?.bio }}</p>
+            <a
+              :href="instructor?.website"
+              class="text-blue-500 underline hover:text-blue-600 transition duration-300">Visit Website</a
+            >
+          </div>
+
+          <!-- Editable Fields -->
+          <div v-else class="space-y-3">
+            <input
+              v-model="instructor.name"
+              placeholder="Name"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              v-model="instructor.title"
+              placeholder="Title"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <textarea
+              v-model="instructor.bio"
+              placeholder="Bio"
+              rows="4"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            ></textarea>
+            <input
+              v-model="instructor.website"
+              placeholder="Website URL"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
         </div>
       </div>
     </section>
@@ -1582,8 +1586,8 @@ export default {
       this.instructor = {
         id: 'active-instructor',
         name: 'John Doe',
-        title: 'Senior Vue.js Developer',
-        bio: 'A passionate web developer and instructor with over 10 years of experience. John has taught over 50,000 students online and has worked on numerous web projects using Vue.js.',
+        title: 'Sr. Software Engineer',
+        bio: 'A passionate web developer and instructor with over 10 years of experience, John has taught over 50,000 students online and has worked on numerous web projects using Vue.js. He specializes in full-stack development, focusing on creating interactive, user-friendly web applications. John is also a contributor to open-source projects and regularly speaks at web development conferences to share his knowledge and experience with the community.',
         imageUrl: '//placekitten.com/200/200',
         website: 'https://johndoe.com',
       };

@@ -38,114 +38,150 @@
 
       <!-- Course Lists by Category -->
       <div class="space-y-10 mt-10">
-      <div
-        class="mt-10 relative"
-        v-for="subCategory in getFilteredSubCategories()"
-        :key="subCategory"
-      >
-        <h2 class="text-xl md:text-2xl font-bold text-gray-700 mb-4 pl-4">
-          {{ subCategory }}
-        </h2>
+        <div
+          class="mt-10 relative"
+          v-for="subCategory in getFilteredSubCategories()"
+          :key="subCategory"
+        >
+          <h2 class="text-xl md:text-2xl font-bold text-gray-700 mb-4 pl-4">
+            {{ subCategory }}
+          </h2>
 
-        <!-- Scroll Arrows Container -->
-        <div class="absolute top-0 right-0 flex items-center mr-2">
-          <!-- Adjust height as needed -->
-          <button
-            class="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition ease-in-out duration-150 z-10"
-            @click="scrollLeft(subCategory)"
-            aria-label="Scroll Left"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              width="24"
-              height="24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="feather feather-chevron-left"
+          <!-- Scroll Arrows Container -->
+          <div class="absolute top-0 right-0 flex items-center mr-2">
+            <!-- Adjust height as needed -->
+            <button
+              class="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition ease-in-out duration-150 z-10"
+              @click="scrollLeft(subCategory)"
+              aria-label="Scroll Left"
             >
-              <polyline points="15 18 9 12 15 6"></polyline>
-            </svg>
-          </button>
-          <button
-            class="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition ease-in-out duration-150 ml-2 z-10"
-            @click="scrollRight(subCategory)"
-            aria-label="Scroll Right"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              width="24"
-              height="24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="feather feather-chevron-right"
+              <svg
+                viewBox="0 0 24 24"
+                width="24"
+                height="24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="feather feather-chevron-left"
+              >
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+            <button
+              class="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition ease-in-out duration-150 ml-2 z-10"
+              @click="scrollRight(subCategory)"
+              aria-label="Scroll Right"
             >
-              <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-          </button>
-        </div>
+              <svg
+                viewBox="0 0 24 24"
+                width="24"
+                height="24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="feather feather-chevron-right"
+              >
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          </div>
 
-        <div class="flex overflow-x-auto hide-scrollbar">
-          <div
-            v-for="course in getFilteredCourses(subCategory)"
-            :key="course.id"
-            class="flex-none mx-2"
-            style="width: 16rem"
-          >
+          <div class="flex overflow-x-auto hide-scrollbar">
             <div
-              class="relative bg-white rounded-lg shadow hover:shadow-md transition duration-300 ease-in-out transform hover:-translate-y-1 cursor-pointer h-full"
-              @click="$emit('preview-course')"
+              v-for="course in getFilteredCourses(subCategory)"
+              :key="course.id"
+              class="flex-none mx-2"
+              style="width: 16rem"
             >
-              <div class="w-full h-36 bg-gray-200 rounded-t-lg overflow-hidden">
-                <img
-                  :src="course.thumbnail"
-                  alt="Course Thumbnail"
-                  class="w-full h-full object-cover object-center transition-transform duration-300 ease-in-out group-hover:scale-110"
-                />
-              </div>
+              <div
+                class="relative bg-white rounded-lg shadow hover:shadow-md transition duration-300 ease-in-out transform hover:-translate-y-1 cursor-pointer h-full"
+                @click="$emit('preview-course')"
+              >
+                <div
+                  class="w-full h-36 bg-gray-200 rounded-t-lg overflow-hidden"
+                >
+                  <img
+                    :src="course.thumbnail"
+                    alt="Course Thumbnail"
+                    class="w-full h-full object-cover object-center transition-transform duration-300 ease-in-out group-hover:scale-110"
+                  />
+                </div>
 
-              <div class="p-4 pb-16">
-                <!-- Extra padding-bottom to accommodate the absolute positioned author section -->
-                <div class="max-h-14">
-                  <h3 class="font-semibold text-gray-800 line-clamp-2">
+                <!-- New div for rating, reviews, and enrolled students -->
+                <div class="px-3 pt-0.5">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <span class="text-xs text-gray-800"
+                        >★
+                        <span class="font-bold">{{ course.rating }}</span> ({{
+                          course.reviews
+                        }})
+                      </span>
+                    </div>
+                    <div>
+                      <span class="text-xs text-gray-600">
+                        <div class="flex justify-center items-center">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-3 w-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            stroke-width="3"
+                          >
+                            <path
+                              d="M12 14c-3.31 0-6 2.69-6 6 0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2 0-3.31-2.69-6-6-6zm0-10c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"
+                            />
+                          </svg>
+
+                          <span class="mt-0.5 ml-0.5">{{
+                            course.enrolled
+                          }}</span>
+                        </div>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="px-4 pt-0.5 pb-12">
+                  <!-- Extra padding-bottom to accommodate the absolute positioned author section -->
+                  <h3 class="font-semibold text-gray-800 line-clamp-2 mt-2">
                     {{ course.title }}
                   </h3>
+                  <p class="text-sm text-gray-600 mt-2 line-clamp-3">
+                    <!-- Added line-clamp-3 for description -->
+                    {{ course.description }}
+                  </p>
                 </div>
-                <p class="text-sm text-gray-600 mt-2 line-clamp-3">
-                  <!-- Added line-clamp-3 for description -->
-                  {{ course.description }}
-                </p>
-              </div>
-              <div class="absolute bottom-0 left-0 right-0 p-4">
-                <!-- Absolute positioning for author section -->
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center">
+                <div class="absolute bottom-0 left-0 right-0 p-4 py-2">
+                  <!-- Absolute positioning for author section -->
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                      <span
+                        class="inline-block w-8 h-8 bg-blue-500 text-white text-sm rounded-full flex items-center justify-center"
+                      >
+                        {{ course.author[0] }}
+                      </span>
+                      <span class="ml-2 text-sm text-gray-500 truncate">{{
+                        course.author
+                      }}</span>
+                    </div>
                     <span
-                      class="inline-block w-8 h-8 bg-blue-500 text-white text-sm rounded-full flex items-center justify-center"
+                      class="inline-block bg-gray-100 text-gray-800 text-xs py-1 px-3 rounded-full"
                     >
-                      {{ course.author[0] }}
+                      {{ course.duration }}
                     </span>
-                    <span class="ml-2 text-sm text-gray-500 truncate">{{
-                      course.author
-                    }}</span>
                   </div>
-                  <span
-                    class="inline-block bg-gray-100 text-gray-800 text-xs py-1 px-3 rounded-full"
-                  >
-                    {{ course.duration }}
-                  </span>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
     </div>
   </div>
 </template>
@@ -177,6 +213,9 @@ export default {
           author: 'John Doe',
           duration: '1 week',
           tag: 'HTML/CSS Basics',
+          rating: 4.5,
+          reviews: 120,
+          enrolled: 1500,
         },
         {
           id: 2,
@@ -190,6 +229,9 @@ export default {
           author: 'Jane Smith',
           duration: '2 weeks',
           tag: 'Web Development',
+          rating: 4.8,
+          reviews: 90,
+          enrolled: 1200,
         },
         {
           id: 3,
@@ -203,6 +245,9 @@ export default {
           author: 'Jack White',
           duration: '1.5 weeks',
           tag: 'HTML/CSS Basics',
+          rating: 4.6,
+          reviews: 75,
+          enrolled: 1000,
         },
         // Front-End: JavaScript Essentials
         {
@@ -216,6 +261,9 @@ export default {
           author: 'Jane Smith',
           duration: '3 weeks',
           tag: 'JavaScript Essentials',
+          rating: 4.9,
+          reviews: 150,
+          enrolled: 1800,
         },
         {
           id: 5,
@@ -229,6 +277,9 @@ export default {
           author: 'John Doe',
           duration: '2 weeks',
           tag: 'JavaScript Essentials',
+          rating: 4.7,
+          reviews: 100,
+          enrolled: 1400,
         },
         {
           id: 6,
@@ -241,6 +292,9 @@ export default {
           author: 'Jack White',
           duration: '2.5 weeks',
           tag: 'JavaScript Essentials',
+          rating: 4.6,
+          reviews: 80,
+          enrolled: 1100,
         },
         {
           id: 7,
@@ -252,6 +306,9 @@ export default {
           author: 'Alice Blue',
           duration: '3 weeks',
           tag: 'Node.js Fundamentals',
+          rating: 4.8,
+          reviews: 110,
+          enrolled: 1300,
         },
         {
           id: 8,
@@ -263,6 +320,9 @@ export default {
           author: 'Bob Green',
           duration: '2 weeks',
           tag: 'Node.js Fundamentals',
+          rating: 4.7,
+          reviews: 95,
+          enrolled: 1250,
         },
         {
           id: 9,
@@ -274,6 +334,9 @@ export default {
           author: 'Charlie Black',
           duration: '3 weeks',
           tag: 'Node.js Fundamentals',
+          rating: 4.6,
+          reviews: 85,
+          enrolled: 1200,
         },
 
         // DevOps: Docker Essentials
@@ -288,6 +351,9 @@ export default {
           author: 'Daisy Red',
           duration: '2 weeks',
           tag: 'Docker Essentials',
+          rating: 4.9,
+          reviews: 160,
+          enrolled: 1700,
         },
         {
           id: 11,
@@ -300,6 +366,9 @@ export default {
           author: 'Ella Purple',
           duration: '1.5 weeks',
           tag: 'Docker Essentials',
+          rating: 4.8,
+          reviews: 130,
+          enrolled: 1500,
         },
         {
           id: 12,
@@ -311,6 +380,9 @@ export default {
           author: 'Frank White',
           duration: '1 week',
           tag: 'Docker Essentials',
+          rating: 4.7,
+          reviews: 110,
+          enrolled: 1300,
         },
 
         // Full-Stack: MERN Stack Basics
@@ -326,6 +398,9 @@ export default {
           author: 'Grace Yellow',
           duration: '4 weeks',
           tag: 'MERN Stack Basics',
+          rating: 4.9,
+          reviews: 180,
+          enroled: 1900,
         },
         {
           id: 14,
@@ -338,6 +413,9 @@ export default {
           author: 'Hugo Brown',
           duration: '3 weeks',
           tag: 'MERN Stack Basics',
+          rating: 4.8,
+          reviews: 150,
+          enrolled: 1700,
         },
         {
           id: 15,
@@ -350,6 +428,9 @@ export default {
           author: 'Ivy Orange',
           duration: '3.5 weeks',
           tag: 'MERN Stack Basics',
+          rating: 4.7,
+          reviews: 130,
+          enrolled: 1500,
         },
         // Back-End: SQL Basics
         {
@@ -363,6 +444,9 @@ export default {
           author: 'Jacob Teal',
           duration: '2 weeks',
           tag: 'SQL Basics',
+          rating: 4.8,
+          reviews: 140,
+          enrolled: 1600,
         },
         {
           id: 17,
@@ -375,6 +459,9 @@ export default {
           author: 'Kylie Pink',
           duration: '3 weeks',
           tag: 'SQL Basics',
+          rating: 4.7,
+          reviews: 120,
+          enrolled: 1400,
         },
         {
           id: 18,
@@ -386,6 +473,9 @@ export default {
           author: 'Leonard Gray',
           duration: '3 weeks',
           tag: 'SQL Basics',
+          rating: 4.6,
+          reviews: 100,
+          enrolled: 1200,
         },
 
         // DevOps: Kubernetes Basics
@@ -401,6 +491,9 @@ export default {
           author: 'Monica Azure',
           duration: '3 weeks',
           tag: 'Kubernetes Basics',
+          rating: 4.9,
+          reviews: 170,
+          enrolled: 1800,
         },
         {
           id: 20,
@@ -413,6 +506,9 @@ export default {
           author: 'Nolan Violet',
           duration: '3 weeks',
           tag: 'Kubernetes Basics',
+          rating: 4.8,
+          reviews: 150,
+          enrolled: 1600,
         },
         {
           id: 21,
@@ -425,6 +521,9 @@ export default {
           author: 'Olivia Indigo',
           duration: '4 weeks',
           tag: 'Kubernetes Basics',
+          rating: 4.7,
+          reviews: 130,
+          enrolled: 1400,
         },
         {
           id: 22,
@@ -437,6 +536,9 @@ export default {
           author: 'Patty Ruby',
           duration: '1 week',
           tag: 'HTML/CSS Basics',
+          rating: 4.6,
+          reviews: 110,
+          enrolled: 1300,
         },
         {
           id: 23,
@@ -448,6 +550,9 @@ export default {
           author: 'Quincy Quartz',
           duration: '1.5 weeks',
           tag: 'HTML/CSS Basics',
+          rating: 4.5,
+          reviews: 90,
+          enrolled: 1200,
         },
         {
           id: 24,
@@ -459,6 +564,9 @@ export default {
           author: 'Rachel Rose',
           duration: '2 weeks',
           tag: 'HTML/CSS Basics',
+          rating: 4.4,
+          reviews: 70,
+          enrolled: 1000,
         },
 
         // Front-End: JavaScript Essentials
@@ -472,6 +580,9 @@ export default {
           author: 'Steve Silver',
           duration: '2 weeks',
           tag: 'JavaScript Essentials',
+          rating: 4.9,
+          reviews: 160,
+          enrolled: 1700,
         },
         {
           id: 26,
@@ -483,6 +594,9 @@ export default {
           author: 'Tina Teal',
           duration: '3 weeks',
           tag: 'JavaScript Essentials',
+          rating: 4.8,
+          reviews: 140,
+          enrolled: 1500,
         },
         {
           id: 27,
@@ -495,6 +609,9 @@ export default {
           author: 'Ursula Ultramarine',
           duration: '3 weeks',
           tag: 'JavaScript Essentials',
+          rating: 4.7,
+          reviews: 120,
+          enrolled: 1300,
         },
 
         // ... [Existing Back-End, DevOps, and Full-Stack courses]
@@ -511,6 +628,9 @@ export default {
           author: 'Victor Vanilla',
           duration: '3 weeks',
           tag: 'Express.js Fundamentals',
+          rating: 4.8,
+          reviews: 130,
+          enrolled: 1500,
         },
         {
           id: 29,
@@ -522,6 +642,9 @@ export default {
           author: 'Wendy Walnut',
           duration: '3 weeks',
           tag: 'Express.js Fundamentals',
+          rating: 4.7,
+          reviews: 110,
+          enrolled: 1400,
         },
         {
           id: 30,
@@ -534,6 +657,9 @@ export default {
           author: 'Xander Xerox',
           duration: '2 weeks',
           tag: 'Express.js Fundamentals',
+          rating: 4.6,
+          reviews: 90,
+          enrolled: 1300,
         },
 
         // DevOps: CI/CD Basics
@@ -548,6 +674,9 @@ export default {
           author: 'Yasmine Yellow',
           duration: '2 weeks',
           tag: 'CI/CD Basics',
+          rating: 4.9,
+          reviews: 150,
+          enrolled: 1600,
         },
         {
           id: 32,
@@ -560,6 +689,9 @@ export default {
           author: 'Zane Zinc',
           duration: '3 weeks',
           tag: 'CI/CD Basics',
+          rating: 4.8,
+          reviews: 130,
+          enrolled: 1400,
         },
         {
           id: 33,
@@ -572,6 +704,9 @@ export default {
           author: 'Aria Amethyst',
           duration: '3 weeks',
           tag: 'CI/CD Basics',
+          rating: 4.7,
+          reviews: 110,
+          enrolled: 1200,
         },
         {
           id: 34,
@@ -584,6 +719,9 @@ export default {
           author: 'Benjamin Blue',
           duration: '2 weeks',
           tag: 'Node.js Fundamentals',
+          rating: 4.6,
+          reviews: 90,
+          enrolled: 1100,
         },
         {
           id: 35,
@@ -596,6 +734,9 @@ export default {
           author: 'Cassandra Cyan',
           duration: '1.5 weeks',
           tag: 'Node.js Fundamentals',
+          rating: 4.5,
+          reviews: 70,
+          enrolled: 1000,
         },
         {
           id: 36,
@@ -608,6 +749,9 @@ export default {
           author: 'David Denim',
           duration: '2 weeks',
           tag: 'Node.js Fundamentals',
+          rating: 4.4,
+          reviews: 50,
+          enrolled: 900,
         },
 
         // Additional Docker Essentials
@@ -622,6 +766,9 @@ export default {
           author: 'Elena Emerald',
           duration: '1.5 weeks',
           tag: 'Docker Essentials',
+          rating: 4.9,
+          reviews: 160,
+          enrolled: 1800,
         },
         {
           id: 38,
@@ -634,6 +781,9 @@ export default {
           author: 'Felix Fawn',
           duration: '2 weeks',
           tag: 'Docker Essentials',
+          rating: 4.8,
+          reviews: 140,
+          enrolled: 1600,
         },
         {
           id: 39,
@@ -646,6 +796,9 @@ export default {
           author: 'Gina Gold',
           duration: '2 weeks',
           tag: 'Docker Essentials',
+          rating: 4.7,
+          reviews: 120,
+          enrolled: 1400,
         },
 
         // Additional MERN Stack Basics
@@ -660,6 +813,9 @@ export default {
           author: 'Henry Hazel',
           duration: '3 weeks',
           tag: 'MERN Stack Basics',
+          rating: 4.8,
+          reviews: 170,
+          enrolled: 1900,
         },
         {
           id: 41,
@@ -672,6 +828,9 @@ export default {
           author: 'Isabella Ivory',
           duration: '3 weeks',
           tag: 'MERN Stack Basics',
+          rating: 4.7,
+          reviews: 150,
+          enrolled: 1700,
         },
         {
           id: 42,
@@ -684,6 +843,9 @@ export default {
           author: 'Jack Jade',
           duration: '4 weeks',
           tag: 'MERN Stack Basics',
+          rating: 4.6,
+          reviews: 130,
+          enrolled: 1500,
         },
         {
           id: 43,
@@ -695,6 +857,9 @@ export default {
           author: 'Brian Bronze',
           duration: '3 weeks',
           tag: 'SQL Basics',
+          rating: 4.5,
+          reviews: 110,
+          enrolled: 1300,
         },
         {
           id: 44,
@@ -707,6 +872,9 @@ export default {
           author: 'Carla Copper',
           duration: '2.5 weeks',
           tag: 'SQL Basics',
+          rating: 4.4,
+          reviews: 90,
+          enrolled: 1200,
         },
         {
           id: 45,
@@ -719,6 +887,9 @@ export default {
           author: 'Derek Diamond',
           duration: '3 weeks',
           tag: 'SQL Basics',
+          rating: 4.3,
+          reviews: 70,
+          enrolled: 1000,
         },
 
         // Additional courses for 'Kubernetes Basics'
@@ -732,6 +903,9 @@ export default {
           author: 'Elaine Emerald',
           duration: '3 weeks',
           tag: 'Kubernetes Basics',
+          rating: 4.9,
+          reviews: 180,
+          enrolled: 1900,
         },
         {
           id: 47,
@@ -744,6 +918,9 @@ export default {
           author: 'Fiona Fluorite',
           duration: '3 weeks',
           tag: 'Kubernetes Basics',
+          rating: 4.8,
+          reviews: 160,
+          enrolled: 1700,
         },
         {
           id: 48,
@@ -756,6 +933,9 @@ export default {
           author: 'Gary Garnet',
           duration: '2 weeks',
           tag: 'Kubernetes Basics',
+          rating: 4.7,
+          reviews: 140,
+          enrolled: 1500,
         },
 
         // Additional courses for 'Express.js Fundamentals'
@@ -770,6 +950,9 @@ export default {
           author: 'Holly Hematite',
           duration: '2 weeks',
           tag: 'Express.js Fundamentals',
+          rating: 4.8,
+          reviews: 120,
+          enrolled: 1400,
         },
         {
           id: 50,
@@ -781,6 +964,9 @@ export default {
           author: 'Ian Ivory',
           duration: '3 weeks',
           tag: 'Express.js Fundamentals',
+          rating: 4.7,
+          reviews: 100,
+          enrolled: 1300,
         },
         {
           id: 51,
@@ -793,6 +979,9 @@ export default {
           author: 'Jill Jasper',
           duration: '3 weeks',
           tag: 'Express.js Fundamentals',
+          rating: 4.6,
+          reviews: 80,
+          enrolled: 1200,
         },
 
         // Additional courses for 'CI/CD Basics'
@@ -807,6 +996,9 @@ export default {
           author: 'Kyle Kyanite',
           duration: '2 weeks',
           tag: 'CI/CD Basics',
+          rating: 4.9,
+          reviews: 170,
+          enrolled: 1800,
         },
         {
           id: 53,
@@ -819,6 +1011,9 @@ export default {
           author: 'Laura Lapis',
           duration: '2.5 weeks',
           tag: 'CI/CD Basics',
+          rating: 4.8,
+          reviews: 150,
+          enrolled: 1600,
         },
         {
           id: 54,
@@ -831,6 +1026,9 @@ export default {
           author: 'Mike Malachite',
           duration: '3 weeks',
           tag: 'CI/CD Basics',
+          rating: 4.7,
+          reviews: 130,
+          enrolled: 1400,
         },
       ],
     };
