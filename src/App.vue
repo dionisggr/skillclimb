@@ -50,11 +50,78 @@
           </div>
         </div>
         <div class="flex items-center">
-          <input
-            type="text"
-            placeholder="Search platform..."
-            class="hidden lg:block w-80 rounded-xl border p-2 px-4 ml-8"
-          />
+          <div class="relative">
+            <input
+              type="text"
+              v-model="searchQuery"
+              placeholder="Search platform..."
+              class="hidden lg:block w-80 rounded-xl border p-2 px-4 ml-8"
+            />
+
+<!-- Search Results Dropdown -->
+<div
+  v-if="shouldShowSearchResults"
+  class="absolute w-11/12 left-8 top-12 bg-white border border-gray-300 shadow-md rounded-lg overflow-hidden"
+>
+<button
+                v-if="
+                  'Video Platform'
+                    .toLowerCase()
+                    .includes(searchQuery.toLowerCase())
+                "
+                class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+                @click="selectedNavItem = 'video-platform'"
+              >
+                Video Platform
+              </button>
+              <button
+                v-if="
+                  'Learning Path'
+                    .toLowerCase()
+                    .includes(searchQuery.toLowerCase())
+                "
+                class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+                @click="selectedNavItem = 'learning-path'"
+              >
+                Learning Path
+              </button>
+              <button
+                v-if="
+                  'Courses'
+                    .toLowerCase()
+                    .includes(searchQuery.toLowerCase())
+                "
+                class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+                @click="selectedNavItem = 'courses'"
+              >
+                Courses
+              </button>
+              <button
+                v-if="
+                  'Certification'
+                    .toLowerCase()
+                    .includes(searchQuery.toLowerCase())
+                "
+                class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+                @click="selectedNavItem = 'certification'"
+              >
+                Certification
+              </button>
+
+  <!-- Search Courses Button -->
+  <hr class="border-t border-gray-300" />
+  <button
+    class="flex items-center justify-between w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
+    @click="searchCourses"
+  >
+    <span>Search Courses</span>
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+    </svg>
+  </button>
+</div>
+
+          </div>
           <button
             class="rounded-full bg-gray-200 ml-8 mr-6 p-2 hover:shadow-lg transform transition-all duration-200"
             @click="toggleAccountOptions"
@@ -79,17 +146,17 @@
                 My Account
               </button>
               <button
-              class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
-              @click="toggleLoginModal"
+                class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+                @click="toggleLoginModal"
               >
-              Switch User
-            </button>
-            <button
-              class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
-              @click="toggleAiProfile"
-            >
-              AI Profile
-            </button>
+                Switch User
+              </button>
+              <button
+                class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+                @click="toggleAiProfile"
+              >
+                AI Profile
+              </button>
               <button
                 class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
                 @click.stop="logout"
@@ -99,19 +166,18 @@
             </template>
             <template v-else>
               <button
-              class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
-              @click="toggleLoginModal"
-            >
-              Sign Up
-            </button>
+                class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+                @click="toggleLoginModal"
+              >
+                Sign Up
+              </button>
               <button
-              class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
-              @click="toggleLoginModal"
-            >
-              Login As...
-            </button>
+                class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+                @click="toggleLoginModal"
+              >
+                Login As...
+              </button>
             </template>
-
           </div>
         </div>
       </nav>
@@ -189,7 +255,9 @@
 
   <Courses
     v-else-if="selectedNavItem === 'courses'"
+    :searchQuery="searchQuery"
     @preview-course="selectedNavItem = 'course-preview'"
+    @setSearchQuery="searchQuery = $event"
   />
 
   <CoursePreview
@@ -412,7 +480,9 @@
         @click="loginAs(id)"
       >
         <img :src="imageUrl" alt="Avatar" class="rounded-full mb-2" />
-        <span class="capitalize font-medium mt-1">{{ id.replace('-', ' ') }}</span>
+        <span class="capitalize font-medium mt-1">{{
+          id.replace('-', ' ')
+        }}</span>
       </div>
     </div>
   </div>
@@ -702,6 +772,7 @@ export default {
       showAccountOptions: false,
       showAiProfile: false,
       postLoginNavItem: null,
+      searchQuery: '',
       demoUsers: data.users,
     };
   },
@@ -721,8 +792,14 @@ export default {
     currentSupplementalInfo() {
       return this.supplementalInfo;
     },
+    shouldShowSearchResults() {
+      return this.searchQuery.length > 1;
+    },
   },
   methods: {
+    searchCourses() {
+      this.selectedNavItem = 'courses';
+    },
     toggleLoginModal({ nextNavItem = null }) {
       this.showLoginModal = !this.showLoginModal;
       this.showAccountOptions = false;

@@ -37,7 +37,7 @@
       </div>
 
       <!-- Course Lists by Category -->
-      <div class="space-y-10 mt-10">
+      <div v-if="hasResults" class="space-y-10 mt-10">
         <div
           class="mt-10 relative"
           v-for="subCategory in getFilteredSubCategories()"
@@ -182,15 +182,29 @@
           </div>
         </div>
       </div>
+      <div v-else>
+        <p class="text-center text-gray-600 mt-10">
+          No courses found. <br /> Please try another search term.
+        </p>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 export default {
+  props: {
+    searchQuery: {
+      type: String,
+      default: '',
+    },
+  },
+  mounted() {
+    this.$emit('setSearchQuery', '')
+  },
   data() {
     return {
-      searchTerm: '',
+      searchTerm: this.searchQuery,
       selectedCategory: null,
       mainCategories: [
         'Web Development',
@@ -1032,6 +1046,11 @@ export default {
         },
       ],
     };
+  },
+  computed: {
+    hasResults() {
+    return this.getFilteredSubCategories().some(subCategory => this.getFilteredCourses(subCategory).length > 0);
+  },
   },
   methods: {
     searchCourses() {
