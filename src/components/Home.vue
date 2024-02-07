@@ -393,9 +393,9 @@ export default {
       if (this.user?.id.includes('business')) {
         this.$emit('open-business-dashboard');
       } else if (this.user?.id) {
-        this.$emit('open-creator-dashboard');
+        this.$emit('open-instructor-dashboard');
       } else {
-        this.$emit('toggle-login');
+        this.$emit('toggle-login', { nextNavItem: 'dashboard' });
       }
     },
   },

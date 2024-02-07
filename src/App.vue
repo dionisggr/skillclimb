@@ -5,7 +5,6 @@
         class="flex items-center ml-2 cursor-pointer"
         @click="selectedNavItem = 'home'"
       >
-        <!-- Simple SVG ladder icon as a placeholder -->
         <img
           src="/src/assets/skillclimb-logo.png"
           alt="SkillClimb"
@@ -80,11 +79,17 @@
                 My Account
               </button>
               <button
-                class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
-                @click="toggleLoginModal"
+              class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+              @click="toggleLoginModal"
               >
-                Switch User
-              </button>
+              Switch User
+            </button>
+            <button
+              class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+              @click="toggleAiProfile"
+            >
+              AI Profile
+            </button>
               <button
                 class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
                 @click.stop="logout"
@@ -92,13 +97,21 @@
                 Logout
               </button>
             </template>
-            <button
-              v-else
+            <template v-else>
+              <button
+              class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+              @click="toggleLoginModal"
+            >
+              Sign Up
+            </button>
+              <button
               class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
               @click="toggleLoginModal"
             >
               Login As...
             </button>
+            </template>
+
           </div>
         </div>
       </nav>
@@ -168,7 +181,7 @@
     :user="user"
     :subscriberEmail="subscriberEmail"
     @open-learning-path="openLearningPath"
-    @open-creator-dashboard="selectedNavItem = 'creator-dashboard'"
+    @open-instructor-dashboard="selectedNavItem = 'instructor-dashboard'"
     @open-business-dashboard="selectedNavItem = 'business-dashboard'"
     @toggle-login="toggleLoginModal"
     @subscribe-to-newsletter="subscribeToNewsletter"
@@ -222,7 +235,7 @@
   />
 
   <CreatorDashboard
-    v-else-if="selectedNavItem === 'creator-dashboard'"
+    v-else-if="selectedNavItem === 'instructor-dashboard'"
     :user="user"
     @open-course="selectedNavItem = 'course'"
     @create-new-course="createNewCoursePreview"
@@ -399,7 +412,7 @@
         @click="loginAs(id)"
       >
         <img :src="imageUrl" alt="Avatar" class="rounded-full mb-2" />
-        <span class="capitalize">{{ id.replace('-', ' ') }}</span>
+        <span class="capitalize font-medium mt-1">{{ id.replace('-', ' ') }}</span>
       </div>
     </div>
   </div>
@@ -687,6 +700,8 @@ export default {
       selectedNavItem: 'home',
       isSidebarOpen: false,
       showAccountOptions: false,
+      showAiProfile: false,
+      postLoginNavItem: null,
       demoUsers: data.users,
     };
   },
@@ -708,13 +723,26 @@ export default {
     },
   },
   methods: {
-    toggleLoginModal() {
+    toggleLoginModal({ nextNavItem = null }) {
       this.showLoginModal = !this.showLoginModal;
       this.showAccountOptions = false;
+      this.postLoginNavItem = nextNavItem;
+    },
+    toggleAiProfile() {
+      // TO DO
     },
     loginAs(userId) {
       this.user = data.users.find((user) => user.id === userId);
       this.showLoginModal = false;
+
+      if (this.postLoginNavItem === 'dashboard') {
+        const userType = this.user?.id?.split('-')[1];
+
+        this.postLoginNavItem = `${userType}-${this.postLoginNavItem}`;
+      }
+
+      this.selectedNavItem = this.postLoginNavItem;
+      this.postLoginNavItem = null;
 
       this.$forceUpdate();
     },
@@ -774,7 +802,7 @@ export default {
     },
     openCourse() {
       if (!this.user?.id) {
-        this.toggleLoginModal();
+        this.toggleLoginModal({ nextNavItem: 'course' });
       } else {
         this.selectedNavItem = 'course';
       }

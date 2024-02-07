@@ -209,8 +209,10 @@
       <div class="mb-6 flex flex-col md:flex-row mr-2">
         <div
           :class="{
-            'relative block rounded-xl overflow-hidden max-w-4xl md:w-8/12': true,
+            'relative block rounded-xl overflow-hidden': true,
             'shadow-lg': selectedLesson?.videoUrl,
+            'md:w-8/12': hasLessons,
+            'md:w-full': !hasLessons,
           }"
         >
           <!-- Iframe - shown only if selectedLesson.videoUrl is not null -->
@@ -221,7 +223,8 @@
             frameborder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowfullscreen
-            class="h-[375px] rounded-xl w-full mb-4 md:mb-0"
+            class="rounded-xl w-full mb-4 md:mb-0"
+            :class="hasLessons ? 'h-[375px]' : 'h-[70vh]'"
             :autoplay="false"
           ></iframe>
 
@@ -279,6 +282,7 @@
 
         <!-- Right Section: Video Description and Topics -->
         <div
+          v-if="hasLessons"
           class="ml-0 md:ml-4 flex w-4/12 flex-col space-y-4 absolute right-0 top-4"
         >
           <p
@@ -418,7 +422,9 @@
 
                 <!-- Expanded Details Section for the current Video Entry -->
                 <div
-                  v-if="lesson.id === selectedLesson.id && selectedLesson.isOpen"
+                  v-if="
+                    lesson.id === selectedLesson.id && selectedLesson.isOpen
+                  "
                   class="p-2 bg-gray-50 border rounded-md mx-1"
                 >
                   <p class="text-xs italic">{{ lesson.description }}</p>
@@ -896,19 +902,19 @@
         </transition>
       </div>
 
-      <!-- Student AI Section -->
+      <!-- Course Tools -->
       <div
         v-if="isContentCreator"
         class="w-full mb-6 shadow-md rounded-lg p-2"
-        :class="{ 'py-6': studentAIOpen }"
+        :class="{ 'py-6': isCourseToolsOpen }"
       >
         <div
           class="flex justify-between items-center p-3 rounded-md cursor-pointer"
-          @click="toggleStudentAI"
+          @click="toggleCourseTools"
         >
-          <h2 class="text-2xl font-semibold text-gray-800">Student AI</h2>
+          <h2 class="text-2xl font-semibold text-gray-800">Course Tools</h2>
           <svg
-            :class="studentAIOpen ? 'transform rotate-180' : ''"
+            :class="isCourseToolsOpen ? 'transform rotate-180' : ''"
             xmlns="http://www.w3.org/2000/svg"
             class="h-5 w-5 text-gray-800"
             viewBox="0 0 20 20"
@@ -923,7 +929,102 @@
         </div>
 
         <transition name="slide-fade">
-          <div v-if="studentAIOpen" class="mt-2 px-4 bg-white rounded-md">
+          <div v-if="isCourseToolsOpen" class="mt-2 px-4 bg-white rounded-md">
+            <div class="mb-4">
+              <div class="space-y-2">
+                <div class="flex items-center">
+                  <input
+                    type="checkbox"
+                    v-model="hasLessons"
+                    :id="'limiter-' + index"
+                    class="rounded text-blue-600 focus:ring-blue-500"
+                  />
+                  <label
+                    :for="'limiter-' + index"
+                    class="ml-2 text-gray-700 cursor-pointer"
+                    >Add Lessons</label
+                  >
+                </div>
+                <template v-if="hasLessons">
+                  <div class="flex items-center ml-6">
+                    <input
+                      type="checkbox"
+                      v-model="hasTimestamps"
+                      :id="'limiter-' + index"
+                      class="rounded text-blue-600 focus:ring-blue-500"
+                    />
+                    <label
+                      :for="'limiter-' + index"
+                      class="ml-2 text-gray-700 cursor-pointer"
+                      >Add topic timestamps</label
+                    >
+                  </div>
+                </template>
+              </div>
+            </div>
+
+            <!-- Avoid Topics Subsection -->
+            <div>
+              <h3 class="text-lg font-semibold my-2 mt-8">
+                Avoid Content Related To:
+              </h3>
+              <div class="space-y-2">
+                <input
+                  type="text"
+                  v-model="newTopic"
+                  @keyup.enter="addAvoidedTopic"
+                  placeholder="Type and press enter..."
+                  class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <ul>
+                  <li
+                    v-for="(topic, index) in avoidedTopics"
+                    :key="index"
+                    class="flex justify-between items-center"
+                  >
+                    <span>{{ topic }}</span>
+                    <button
+                      @click="removeAvoidedTopic(index)"
+                      class="text-red-500 hover:text-red-700 ml-2"
+                    >
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </transition>
+      </div>
+
+      <!-- Student AI Section -->
+      <div
+        v-if="isContentCreator"
+        class="w-full mb-6 shadow-md rounded-lg p-2"
+        :class="{ 'py-6': isStudentAIOpen }"
+      >
+        <div
+          class="flex justify-between items-center p-3 rounded-md cursor-pointer"
+          @click="toggleStudentAI"
+        >
+          <h2 class="text-2xl font-semibold text-gray-800">Student AI</h2>
+          <svg
+            :class="isStudentAIOpen ? 'transform rotate-180' : ''"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 text-gray-800"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </div>
+
+        <transition name="slide-fade">
+          <div v-if="isStudentAIOpen" class="mt-2 px-4 bg-white rounded-md">
             <!-- AI Limiters Subsection -->
             <div class="mb-4">
               <h3 class="text-lg font-semibold mb-2">AI Limiters</h3>
@@ -982,6 +1083,107 @@
         </transition>
       </div>
 
+      <!-- Student AI Profile -->
+      <div class="w-full mb-6 shadow-md rounded-lg p-2">
+        <div
+          class="flex justify-between items-center p-3 rounded-md cursor-pointer"
+          @click="toggleAiStudentProfile"
+        >
+          <h2 class="text-2xl font-semibold text-gray-800">
+            Student AI Profile
+          </h2>
+          <svg
+            :class="isAiStudentProfileOpen ? 'transform rotate-180' : ''"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 text-gray-800"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </div>
+
+        <transition name="slide-fade">
+          <div
+            v-if="isAiStudentProfileOpen"
+            class="mt-2 px-4 bg-white rounded-md"
+          >
+            <!-- Academic Performance -->
+            <div class="mb-4">
+              <h3 class="text-lg font-semibold mb-2">Academic Performance</h3>
+              <div class="grid grid-cols-2 gap-2">
+                <!-- Single array list, items will automatically split into two columns -->
+                <div
+                  v-for="(item, index) in aiProfileMetrics['performance']"
+                  :key="index"
+                >
+                  <input
+                    type="checkbox"
+                    v-model="item.selected"
+                    :id="`checkbox-${index}`"
+                    class="rounded text-blue-600 focus:ring-blue-500"
+                  />
+                  <label
+                    :for="`checkbox-${index}`"
+                    class="ml-2 text-gray-700 cursor-pointer"
+                    >{{ item.metric }}</label
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- Course Interaction -->
+            <div class="mb-4">
+              <h3 class="text-lg font-semibold mb-2">Course Interaction</h3>
+              <div class="grid grid-cols-2 gap-2">
+                <div
+                  v-for="(item, index) in aiProfileMetrics['interaction']"
+                  :key="`course-interaction-${index}`"
+                >
+                  <input
+                    type="checkbox"
+                    v-model="item.selected"
+                    :id="`course-interaction-${index}`"
+                    class="rounded text-blue-600 focus:ring-blue-500"
+                  />
+                  <label
+                    :for="`course-interaction-${index}`"
+                    class="ml-2 text-gray-700 cursor-pointer"
+                    >{{ item.metric }}</label
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- System Usage & Preferences -->
+            <div class="mb-4">
+              <h3 class="text-lg font-semibold mb-2">
+                System Usage & Preferences
+              </h3>
+              <div class="grid grid-cols-2 gap-2">
+                <div v-for="(item, index) in aiProfileMetrics['usage']">
+                  <input
+                    type="checkbox"
+                    v-model="item.selected"
+                    :id="`system-usage-${index}`"
+                    class="rounded text-blue-600 focus:ring-blue-500"
+                  />
+                  <label
+                    :for="`system-usage-${index}`"
+                    class="ml-2 text-gray-700 cursor-pointer"
+                    >{{ item.metric }}</label
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </transition>
+      </div>
+
       <!-- General Information Section -->
       <div
         v-if="selectedSubtopic?.title || isContentCreator"
@@ -990,20 +1192,31 @@
       >
         <!-- Subtopic Name Wrapper -->
         <div class="flex items-center mb-4 flex-wrap m-2 font-semibold">
-          <!-- Subtopic Name -->
-          <h3 class="text-3xl mb-2">General Information</h3>
+          <div class="flex flex-col items-end">
+            <!-- Subtopic Name -->
+            <h3 class="text-3xl">General Information</h3>
+            <!-- Toggle label that says "By AI" or "By Instructor" -->
+            <template v-if="!isContentCreator">
+              <span
+                v-if="selectedInformation === 'Overview'"
+                class="text-blue-600 px-2 text-sm mr-4"
+                >By Instructor</span
+              >
+              <span v-else class="ml-1 text-yellow-600 px-2 text-sm mr-4"
+                >By AI</span
+              >
+            </template>
+          </div>
 
-          <!-- Toggle label that says "By AI" or "By Instructor" -->
-          <template v-if="!isContentCreator">
-          <span
-            v-if="selectedInformation === 'Overview'"
-            class="ml-2 text-blue-600 px-2 py-1 text-sm"
-            >By Instructor</span
+          <!-- Regenerate Button -->
+          <button
+            v-if="selectedInformation !== 'Overview'"
+            class="ml-auto mr-2 px-3 py-2 bg-orange-200 text-orange-700 rounded-full font-semibold text-sm transition-all duration-300 ease-in-out hover:bg-orange-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50"
+            @click="regenerateSupplementalInfo"
           >
-          <span v-else class="ml-1 text-yellow-600 px-2 py-1 text-sm"
-            >By AI</span
-          >
-        </template>
+            Regenerate
+          </button>
+
           <!-- Toggle Buttons -->
           <div
             class="space-x-4 overflow-x-auto no-scrollbar lg:overflow-visible flex lg:justify-center ml-auto p-1"
@@ -1068,7 +1281,7 @@
           <div
             v-for="(subtopic, subtopicIndex) in selectedTopic?.subtopics?.[
               selectedInformation
-            ]"
+            ].list"
             :key="subtopic.id"
             class="border pl-4 py-6 rounded-lg mb-3 hover:shadow-lg transition-shadow"
           >
@@ -1142,7 +1355,8 @@
               >
                 <div v-if="!subtopic.isEditing" class="space-y-2">
                   <div
-                    v-for="info in subtopic.supplementalInfo"
+                    v-for="info in selectedModule.supplementalInfo ||
+                    subtopic.supplementalInfo"
                     class="p-1 px-2 rounded-lg hover:bg-gray-200 hover:bg-opacity-70 cursor-pointer"
                     @click="showActiveSupplementalInfo(info)"
                   >
@@ -1172,7 +1386,7 @@
 
         <!-- No information yet message -->
         <div v-if="!selectedSubtopic?.title">
-          <p class="text-gray-600 text-center pt-8">
+          <p class="text-gray-600 text-center py-8">
             No supplemental information provided.
           </p>
         </div>
@@ -1503,7 +1717,11 @@ export default {
       showPractice: false,
       showAssessments: false,
       activeSupplementalInfo: [],
-      studentAIOpen: false,
+      isStudentAIOpen: false,
+      isCourseToolsOpen: false,
+      isAiStudentProfileOpen: false,
+      hasLessons: true,
+      hasTimestamps: true,
       messages: [],
       newMessage: '',
       isChatVisible: true,
@@ -1653,6 +1871,80 @@ export default {
         blue: 'text-blue-800',
         yellow: 'text-yellow-900',
       },
+      aiProfileMetrics: {
+        personal: [
+          { metric: 'Resume Uploads', selected: true },
+          { metric: 'Professional Interests', selected: true },
+          { metric: 'Skill Self-Assessment', selected: true },
+          { metric: 'Learning Goals', selected: true },
+          { metric: 'Past Course Enrollments', selected: true },
+          { metric: 'Certifications Achieved', selected: false },
+          { metric: 'Portfolio Links', selected: false },
+          { metric: 'Preferred Language', selected: true },
+          { metric: 'Geographical Location', selected: false },
+          { metric: 'Educational Background', selected: true },
+        ],
+        performance: [
+          { metric: 'Quiz Scores', selected: true },
+          { metric: 'Assessment Scores', selected: true },
+          { metric: 'Quiz Attempts', selected: true },
+          { metric: 'Completion Time for Quizzes', selected: false },
+          { metric: 'Assessment Retakes', selected: false },
+          { metric: 'Progress in Learning Paths', selected: true },
+          { metric: 'Scores Improvement Over Time', selected: false },
+          { metric: 'Completion Rates of Courses', selected: true },
+          { metric: 'Time Taken for Course Completion', selected: false },
+          { metric: 'Correct vs. Incorrect Answers Ratio', selected: false },
+        ],
+        interaction: [
+          { metric: 'Course Views', selected: true },
+          { metric: 'Video Duration Watched', selected: true },
+          { metric: 'Video Replays', selected: true },
+          { metric: 'Video Skips', selected: false },
+          { metric: 'Sections Revisited', selected: false },
+          { metric: 'Notes Taken per Video', selected: false },
+          { metric: 'Downloads of Supplementary Materials', selected: false },
+          { metric: 'Interactive Elements Clicks', selected: false },
+          { metric: 'Time Spent on Each Course Section', selected: true },
+          { metric: 'Use of Course Search Features', selected: false },
+        ],
+        engagement: [
+          { metric: 'Forum Comments Posted', selected: false },
+          { metric: 'Group Projects Participated', selected: false },
+          { metric: 'Peer Responses Liked', selected: false },
+          { metric: 'Collaborative Edits in Projects', selected: false },
+          { metric: 'Threads Started in Forums', selected: false },
+          { metric: 'Replies to Comments', selected: false },
+          { metric: 'Upvotes Given to Peer Content', selected: false },
+          { metric: 'Time Spent in Forums', selected: false },
+          { metric: 'Participation in Polls and Surveys', selected: false },
+          { metric: 'Engagement with AI-Generated Questions', selected: false },
+        ],
+        preferences: [
+          { metric: 'Content Format Preferences', selected: false },
+          { metric: 'Learning Time Preferences', selected: false },
+          { metric: 'Difficulty Adjustments Made', selected: false },
+          { metric: 'Topic Interests Selected', selected: true },
+          { metric: 'Notification Settings', selected: false },
+          { metric: 'AI Interaction Settings', selected: false },
+          { metric: 'Language Preferences for Content', selected: false },
+          { metric: 'Themes and Visual Preferences', selected: false },
+          { metric: 'Preferred Assessment Types', selected: true },
+          { metric: 'Feedback on Content and Features', selected: false },
+        ],
+        usage: [
+          { metric: 'Platform Logins Frequency', selected: true },
+          { metric: 'Feature Usage Patterns', selected: false },
+          { metric: 'Error Reports Submitted', selected: false },
+          { metric: 'Custom Settings Adjustments', selected: false },
+          { metric: 'Browser Types Used', selected: false },
+          { metric: 'Device Types Used', selected: true },
+          { metric: 'Session Duration', selected: true },
+          { metric: 'Help and Support Queries', selected: false },
+          { metric: 'Feedback Submission Instances', selected: false },
+          { metric: 'AI Chat Interactions', selected: true },
+        ],
+      },
     };
   },
   computed: {
@@ -1723,7 +2015,13 @@ export default {
       this.selectedInformation = 'Focus';
     },
     toggleStudentAI() {
-      this.studentAIOpen = !this.studentAIOpen;
+      this.isStudentAIOpen = !this.isStudentAIOpen;
+    },
+    toggleCourseTools() {
+      this.isCourseToolsOpen = !this.isCourseToolsOpen;
+    },
+    toggleAiStudentProfile() {
+      this.isAiStudentProfileOpen = !this.isAiStudentProfileOpen;
     },
     addAvoidedTopic() {
       if (this.newTopic.trim() !== '') {
@@ -2159,7 +2457,7 @@ export default {
       const newSubtopic = {
         id: Date.now().toString(),
         title: 'New Subtopic',
-        supplementalInfo: 'Lorem ipsum',
+        supplementalInfo: [{ title: 'Lorem ipsum', content: '' }],
         isEditing: true,
         ...subtopic,
       };
@@ -2176,7 +2474,7 @@ export default {
           newSubtopic
         );
       } else {
-        this.selectedTopic.subtopics[this.selectedInformation] = [newSubtopic];
+        this.selectedTopic.subtopics[this.selectedInformation] = { list: [newSubtopic] };
       }
       this.openSubtopics?.push(newSubtopic.id);
 
@@ -2194,12 +2492,12 @@ export default {
     },
     removeSubtopic(subtopicIndex) {
       if (confirm('Are you sure you want to delete this subtopic?')) {
-        this.selectedTopic.subtopics.splice(subtopicIndex, 1);
+        this.selectedTopic.subtopics[this.selectedInformation]?.list?.splice(subtopicIndex, 1);
       }
     },
     confirmDeleteSubtopic(subtopicIndex) {
       if (confirm('Are you sure you want to delete this subtopic?')) {
-        this.selectedTopic.subtopics[this.selectedInformation].splice(
+        this.selectedTopic.subtopics[this.selectedInformation]?.list?.splice(
           subtopicIndex,
           1
         );
@@ -2276,7 +2574,7 @@ export default {
 
       this.openSubtopics.push(this.selectedLesson.id);
       this.selectTopic(this.selectedLesson.topics[0]);
-      this.selectSubtopic(this.selectedTopic.subtopics?.[firstKey]?.[0]);
+      this.selectSubtopic(this.selectedTopic.subtopics?.[firstKey]?.list?.[0]);
 
       this.toggleButtons = Object.keys(this.selectedTopic.subtopics || {}).map(
         (key, index) => ({
@@ -2365,7 +2663,9 @@ export default {
                   progress: 100,
                   isSelected: false,
                   subtopics: {
-                    Overview: [
+                    Overview: {
+                      createdBy: 'instructor',
+                      list: [
                       {
                         id: 1,
                         title: 'What is Artificial Intelligence',
@@ -2509,7 +2809,10 @@ export default {
                         ],
                       },
                     ],
-                    Explore: [
+                    },
+                    Explore: {
+                      createdBy: 'ai',
+                      list: [
                       {
                         id: 1,
                         title: 'Innovations in AI and LLM Technology',
@@ -2643,7 +2946,10 @@ export default {
                         ],
                       },
                     ],
-                    Focus: [
+                    },
+                    Focus: {
+                      createdBy: 'ai',
+                      list: [
                       {
                         id: 1,
                         title: 'Lorem Ipsum Dolor Sit Amet',
@@ -2708,7 +3014,10 @@ export default {
                         ],
                       },
                     ],
-                    Personalize: [
+                    },
+                    Personalize: {
+                      createdBy: 'ai',
+                      list: [
                       {
                         id: 1,
                         title:
@@ -2780,6 +3089,7 @@ export default {
                         ],
                       },
                     ],
+                    },
                   },
                 },
                 {
@@ -5594,6 +5904,10 @@ export default {
         ];
 
         supplementalInfo.forEach(this.addSubtopic);
+
+        if (this.hasLessons) {
+          this.selectedModule.supplementalInfo = supplementalInfo;
+        }
 
         this.isSupplementalInfoLoading = false;
         this.showTopics = true;

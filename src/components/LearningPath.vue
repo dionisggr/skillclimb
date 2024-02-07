@@ -19,7 +19,7 @@
               ? 'bg-green-500 hover:bg-green-600 focus:ring-green-300'
               : 'bg-blue-500 hover:bg-blue-600 focus:ring-blue-300'
           "
-          @click="user?.id ? $emit('open-course') : $emit('toggle-login-modal')"
+          @click="user?.id ? $emit('open-course') : $emit('toggle-login-modal', { nextNavItem: 'course' })"
         >
           {{ isEnrolled ? 'Continue' : 'Begin' }} Path
         </button>
