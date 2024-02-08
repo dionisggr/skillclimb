@@ -58,12 +58,12 @@
               class="hidden lg:block w-80 rounded-xl border p-2 px-4 ml-8"
             />
 
-<!-- Search Results Dropdown -->
-<div
-  v-if="shouldShowSearchResults"
-  class="absolute w-11/12 left-8 top-12 bg-white border border-gray-300 shadow-md rounded-lg overflow-hidden"
->
-<button
+            <!-- Search Results Dropdown -->
+            <div
+              v-if="shouldShowSearchResults"
+              class="absolute w-11/12 left-8 top-12 bg-white border border-gray-300 shadow-md rounded-lg overflow-hidden"
+            >
+              <button
                 v-if="
                   'Video Platform'
                     .toLowerCase()
@@ -87,9 +87,7 @@
               </button>
               <button
                 v-if="
-                  'Courses'
-                    .toLowerCase()
-                    .includes(searchQuery.toLowerCase())
+                  'Courses'.toLowerCase().includes(searchQuery.toLowerCase())
                 "
                 class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
                 @click="selectedNavItem = 'courses'"
@@ -108,19 +106,29 @@
                 Certification
               </button>
 
-  <!-- Search Courses Button -->
-  <hr class="border-t border-gray-300" />
-  <button
-    class="flex items-center justify-between w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
-    @click="searchCourses"
-  >
-    <span>Search Courses</span>
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-    </svg>
-  </button>
-</div>
-
+              <!-- Search Courses Button -->
+              <hr class="border-t border-gray-300" />
+              <button
+                class="flex items-center justify-between w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
+                @click="searchCourses"
+              >
+                <span>Search Courses</span>
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  ></path>
+                </svg>
+              </button>
+            </div>
           </div>
           <button
             class="rounded-full bg-gray-200 ml-8 mr-6 p-2 hover:shadow-lg transform transition-all duration-200"
@@ -131,7 +139,7 @@
           <!-- Account Dropdown with User ID Display -->
           <div
             v-if="showAccountOptions"
-            class="absolute top-16 right-8 bg-white border border-gray-300 shadow-md rounded py-2"
+            class="absolute top-16 right-8 bg-white border border-gray-300 shadow-md rounded py-2 w-36"
           >
             <template v-if="user">
               <!-- User ID Display -->
@@ -141,7 +149,8 @@
               <hr class="my-1" />
               <!-- Divider line -->
               <button
-                class="block px-4 py-2 bg-gray-100 text-gray-400 cursor-not-allowed w-full text-left"
+                class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+                @click="selectNavItem('account')"
               >
                 My Account
               </button>
@@ -153,9 +162,9 @@
               </button>
               <button
                 class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
-                @click="toggleAiProfile"
+                @click="openAiProfile"
               >
-                AI Profile
+                AI Settings
               </button>
               <button
                 class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
@@ -167,7 +176,7 @@
             <template v-else>
               <button
                 class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
-                @click="toggleLoginModal"
+                @click="openRegistration"
               >
                 Sign Up
               </button>
@@ -242,16 +251,23 @@
     </div>
   </transition>
 
+  <Registration v-if="isRegistrationOpen" />
+
+  <AiProfile v-if="selectedNavItem === 'ai-profile'" />
+
   <Home
-    v-if="selectedNavItem === 'home'"
+    v-else-if="selectedNavItem === 'home'"
     :user="user"
     :subscriberEmail="subscriberEmail"
     @open-learning-path="openLearningPath"
     @open-instructor-dashboard="selectedNavItem = 'instructor-dashboard'"
     @open-business-dashboard="selectedNavItem = 'business-dashboard'"
+    @select-nav-item="selectNavItem"
     @toggle-login="toggleLoginModal"
     @subscribe-to-newsletter="subscribeToNewsletter"
   />
+
+  <Account v-else-if="selectedNavItem === 'account'"/>
 
   <Courses
     v-else-if="selectedNavItem === 'courses'"
@@ -301,6 +317,8 @@
     v-else-if="selectedNavItem === 'video-platform'"
     @open-course="selectedNavItem = 'course'"
   />
+
+  <StudentDashboard v-else-if="selectedNavItem === 'student-dashboard'" />
 
   <CreatorDashboard
     v-else-if="selectedNavItem === 'instructor-dashboard'"
@@ -492,7 +510,10 @@
 import AccountCircle from 'vue-material-design-icons/AccountCircle.vue';
 import ArrowDown from 'vue-material-design-icons/ArrowDown.vue';
 import ChevronRight from 'vue-material-design-icons/ChevronRight.vue';
+import AiProfile from './components/AiProfile.vue';
+import Registration from './components/Registration.vue';
 import Home from './components/Home.vue';
+import Account from './components/Account.vue';
 import CoursePreview from './components/CoursePreview.vue';
 import Course from './components/Course.vue';
 import Certifications from './components/Certifications.vue';
@@ -501,6 +522,7 @@ import Pricing from './components/Pricing.vue';
 import Courses from './components/Courses.vue';
 import LearningPath from './components/LearningPath.vue';
 import VideoPlatform from './components/VideoPlatform.vue';
+import StudentDashboard from './components/StudentDashboard.vue';
 import CreatorDashboard from './components/CreatorDashboard.vue';
 import BusinessDashboard from './components/BusinessDashboard.vue';
 import ComingSoon from './components/ComingSoon.vue';
@@ -511,7 +533,10 @@ export default {
     AccountCircle,
     ChevronRight,
     ArrowDown,
+    Registration,
+    AiProfile,
     Home,
+    Account,
     CoursePreview,
     Course,
     Certification,
@@ -520,6 +545,7 @@ export default {
     Courses,
     LearningPath,
     VideoPlatform,
+    StudentDashboard,
     CreatorDashboard,
     BusinessDashboard,
     ComingSoon,
@@ -769,9 +795,10 @@ export default {
       selectedLessonIndex: null,
       selectedNavItem: 'home',
       isSidebarOpen: false,
+      isRegistrationOpen: false,
       showAccountOptions: false,
       showAiProfile: false,
-      postLoginNavItem: null,
+      postLoginNavItem: 'home',
       searchQuery: '',
       demoUsers: data.users,
     };
@@ -797,16 +824,21 @@ export default {
     },
   },
   methods: {
+    openAiProfile() {
+      this.selectedNavItem = 'ai-profile';
+      this.showAccountOptions = false;
+    },
     searchCourses() {
       this.selectedNavItem = 'courses';
     },
-    toggleLoginModal({ nextNavItem = null }) {
+    toggleLoginModal({ nextNavItem = 'home' }) {
       this.showLoginModal = !this.showLoginModal;
       this.showAccountOptions = false;
       this.postLoginNavItem = nextNavItem;
     },
-    toggleAiProfile() {
-      // TO DO
+    openRegistration() {
+      this.isRegistrationOpen = true;
+      this.showAccountOptions = false;
     },
     loginAs(userId) {
       this.user = data.users.find((user) => user.id === userId);
@@ -890,6 +922,7 @@ export default {
     },
     selectNavItem(item) {
       this.selectedNavItem = item;
+      this.showAccountOptions = false;
 
       window.scrollTo(0, 0);
     },

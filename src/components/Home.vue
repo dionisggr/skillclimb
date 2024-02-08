@@ -13,19 +13,18 @@
       <div
         class="px-4 mt-8 lg:mt-16 flex flex-wrap justify-center space-x-0 lg:space-x-6 space-y-4 lg:space-y-0"
       >
-        <a
-          href="#popular-learning-paths"
+        <button
           class="w-full lg:w-auto block px-6 py-3 lg:px-10 lg:py-4 bg-green-500 text-white rounded-full shadow-md hover:bg-green-600 transition-colors text-lg cursor-pointer"
+          @click="openStudentDashboard"
         >
           I'm a Learner
-        </a>
-        <a
-          href="#"
-          @click="openDashboard"
+    </button>
+        <button
+          @click="openInstructorDashboard"
           class="w-full lg:w-auto block mt-4 lg:mt-0 px-6 py-3 lg:px-10 lg:py-4 bg-blue-500 text-white rounded-full shadow-md hover:bg-blue-600 transition-colors text-lg cursor-pointer"
         >
           I'm a Content Creator
-        </a>
+  </button>
       </div>
 
       <!-- How It Works link -->
@@ -389,11 +388,18 @@ export default {
 
       this.subscriberEmail = '';
     },
-    openDashboard() {
+    openInstructorDashboard() {
       if (this.user?.id.includes('business')) {
         this.$emit('open-business-dashboard');
       } else if (this.user?.id) {
         this.$emit('open-instructor-dashboard');
+      } else {
+        this.$emit('toggle-login', { nextNavItem: 'dashboard' });
+      }
+    },
+    openStudentDashboard() {
+      if (this.user?.id) {
+        this.$emit('select-nav-item', 'student-');
       } else {
         this.$emit('toggle-login', { nextNavItem: 'dashboard' });
       }

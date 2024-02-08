@@ -2474,7 +2474,9 @@ export default {
           newSubtopic
         );
       } else {
-        this.selectedTopic.subtopics[this.selectedInformation] = { list: [newSubtopic] };
+        this.selectedTopic.subtopics[this.selectedInformation] = {
+          list: [newSubtopic],
+        };
       }
       this.openSubtopics?.push(newSubtopic.id);
 
@@ -2492,7 +2494,10 @@ export default {
     },
     removeSubtopic(subtopicIndex) {
       if (confirm('Are you sure you want to delete this subtopic?')) {
-        this.selectedTopic.subtopics[this.selectedInformation]?.list?.splice(subtopicIndex, 1);
+        this.selectedTopic.subtopics[this.selectedInformation]?.list?.splice(
+          subtopicIndex,
+          1
+        );
       }
     },
     confirmDeleteSubtopic(subtopicIndex) {
@@ -2666,429 +2671,432 @@ export default {
                     Overview: {
                       createdBy: 'instructor',
                       list: [
-                      {
-                        id: 1,
-                        title: 'What is Artificial Intelligence',
-                        supplementalInfo: [
-                          {
-                            title: 'Understanding Intelligence',
-                            content:
-                              'Human Intelligence is the ability to learn, understand, reason, solve problems, and adapt to new situations. Artificial Intelligence seeks to create machines that can mimic some aspects of human intelligence for specific tasks.',
-                          },
-                          {
-                            title: "How Computers 'Learn'",
-                            content:
-                              'Unlike humans, computers recognize patterns in data and make predictions based on these patterns. This subset of AI, where computers learn from data without being explicitly programmed, is called Machine Learning. Examples include recommendation systems on streaming platforms or email spam filters.',
-                          },
-                          {
-                            title: 'Use Cases & Achievements',
-                            content:
-                              'AI has seen a myriad of applications and breakthroughs, from creating art and music, to beating world champions in complex games like Go. The evolution of AI has culminated in the development of advanced models such as Large Language Models, which will be explored in the next lesson.',
-                          },
-                        ],
-                      },
-                      {
-                        id: 2,
-                        title: 'What are Large Language Models?',
-                        supplementalInfo: [
-                          {
-                            title: 'Big Brain for Text',
-                            content:
-                              'Think of LLMs as a big brain that has read tons of books, articles, and websites. It knows a lot about language and can talk about many topics because of all the things it has "read".',
-                          },
-                          {
-                            title: 'Learning from Lots of Examples',
-                            content:
-                              'Just as we learn by reading and experiencing, LLMs learn by processing vast amounts of text from the internet. This helps them to understand context, answer questions, or even help with writing.',
-                          },
-                          {
-                            title: 'Helping in Daily Tasks',
-                            content:
-                              "Imagine having a helper who can write emails, answer queries, or even help you with your homework. That's what LLMs can do! They power chatbots, help authors, and even assist in research by understanding and generating human-like text.",
-                          },
-                        ],
-                      },
-                      {
-                        id: 3,
-                        title: 'OpenAI, GPT and ChatGPT',
-                        supplementalInfo: [
-                          {
-                            title: 'OpenAI: A Leader in AI Research',
-                            content:
-                              "OpenAI is like a top-notch school for artificial intelligence. They've created many smart programs, including one you might have heard of: GPT.",
-                          },
-                          {
-                            title: 'GPT: Getting Smarter Over Time',
-                            content:
-                              'Imagine a phone series where each new version gets better. GPT is like that for AI. Each version can talk better and understands more.',
-                          },
-                          {
-                            title: 'ChatGPT: Like Texting an AI Friend',
-                            content:
-                              "ChatGPT is a special version of GPT. It's great at chatting and can help answer questions or talk about many topics, much like a knowledgeable friend.",
-                          },
-                        ],
-                      },
-                      {
-                        id: 4,
-                        title: "What ChatGPT Can and Can't Do",
-                        supplementalInfo: [
-                          {
-                            title: 'A Smart Conversationalist',
-                            content:
-                              "ChatGPT is like that friend who's great at trivia nights: knowledgeable on many topics. But, it's not perfect.",
-                          },
-                          {
-                            title: "It Doesn't Know Everything",
-                            content:
-                              "While ChatGPT knows a lot, it might not have the latest news or solve super tricky problems. It's best to double-check if something seems off.",
-                          },
-                          {
-                            title: 'A Helper, Not a Decision Maker',
-                            content:
-                              'Remember, ChatGPT is there to help and provide info. But important decisions? Those are best left to humans.',
-                          },
-                        ],
-                      },
-                      {
-                        id: 5,
-                        title: 'General Use Cases',
-                        supplementalInfo: [
-                          {
-                            title: 'Help Desk in Your Pocket',
-                            content:
-                              'With AI, you can have a virtual helper answering common questions, making customer service faster.',
-                          },
-                          {
-                            title: 'Need a Quick Summary or Article?',
-                            content:
-                              "AI can help draft or shorten texts, which is super useful if you're in a hurry or need a concise version.",
-                          },
-                          {
-                            title: 'Speaking Global Languages',
-                            content:
-                              "Imagine a tool that can instantly translate languages or even adapt products to different cultures. That's AI helping businesses go global!",
-                          },
-                        ],
-                      },
-                      {
-                        id: 6,
-                        title: 'GPT 3.5-Turbo vs GPT-4',
-                        supplementalInfo: [
-                          {
-                            title: 'GPT-4: The Newer, Smarter AI',
-                            content:
-                              'Think of GPT-4 as a new model of a smartphone, while GPT-3.5-Turbo is the earlier version. GPT-4 understands and chats even better, but the older version might be more cost-effective for some uses.',
-                          },
-                          {
-                            title: 'Choosing the Best Tool for the Job',
-                            content:
-                              "It's like deciding between a sports car and a family sedan. Both have their strengths, and the best choice depends on what you need: speed, cost, or other factors.",
-                          },
-                        ],
-                      },
-                      {
-                        id: 7,
-                        title: 'Other LLM Options and Tools',
-                        supplementalInfo: [
-                          {
-                            title: "There's More Than Just One AI",
-                            content:
-                              'While OpenAI made GPT, companies like Google and Facebook have their own AIs too. Each has its unique strengths.',
-                          },
-                          {
-                            title: 'Special AIs for Special Jobs',
-                            content:
-                              'Some AIs are like expert chefs, specializing in one thing, be it finance, healthcare, or something else. Knowing them can be handy for specific tasks.',
-                          },
-                          {
-                            title: 'Tools to Make AI Work for You',
-                            content:
-                              'Just as there are many apps to make your phone more useful, there are tools that help you use AI in different ways, making it fit perfectly into your projects.',
-                          },
-                        ],
-                      },
-                    ],
+                        {
+                          id: 1,
+                          title: 'What is Artificial Intelligence',
+                          supplementalInfo: [
+                            {
+                              title: 'Understanding Intelligence',
+                              content:
+                                'Human Intelligence is the ability to learn, understand, reason, solve problems, and adapt to new situations. Artificial Intelligence seeks to create machines that can mimic some aspects of human intelligence for specific tasks.',
+                            },
+                            {
+                              title: "How Computers 'Learn'",
+                              content:
+                                'Unlike humans, computers recognize patterns in data and make predictions based on these patterns. This subset of AI, where computers learn from data without being explicitly programmed, is called Machine Learning. Examples include recommendation systems on streaming platforms or email spam filters.',
+                            },
+                            {
+                              title: 'Use Cases & Achievements',
+                              content:
+                                'AI has seen a myriad of applications and breakthroughs, from creating art and music, to beating world champions in complex games like Go. The evolution of AI has culminated in the development of advanced models such as Large Language Models, which will be explored in the next lesson.',
+                            },
+                          ],
+                        },
+                        {
+                          id: 2,
+                          title: 'What are Large Language Models?',
+                          supplementalInfo: [
+                            {
+                              title: 'Big Brain for Text',
+                              content:
+                                'Think of LLMs as a big brain that has read tons of books, articles, and websites. It knows a lot about language and can talk about many topics because of all the things it has "read".',
+                            },
+                            {
+                              title: 'Learning from Lots of Examples',
+                              content:
+                                'Just as we learn by reading and experiencing, LLMs learn by processing vast amounts of text from the internet. This helps them to understand context, answer questions, or even help with writing.',
+                            },
+                            {
+                              title: 'Helping in Daily Tasks',
+                              content:
+                                "Imagine having a helper who can write emails, answer queries, or even help you with your homework. That's what LLMs can do! They power chatbots, help authors, and even assist in research by understanding and generating human-like text.",
+                            },
+                          ],
+                        },
+                        {
+                          id: 3,
+                          title: 'OpenAI, GPT and ChatGPT',
+                          supplementalInfo: [
+                            {
+                              title: 'OpenAI: A Leader in AI Research',
+                              content:
+                                "OpenAI is like a top-notch school for artificial intelligence. They've created many smart programs, including one you might have heard of: GPT.",
+                            },
+                            {
+                              title: 'GPT: Getting Smarter Over Time',
+                              content:
+                                'Imagine a phone series where each new version gets better. GPT is like that for AI. Each version can talk better and understands more.',
+                            },
+                            {
+                              title: 'ChatGPT: Like Texting an AI Friend',
+                              content:
+                                "ChatGPT is a special version of GPT. It's great at chatting and can help answer questions or talk about many topics, much like a knowledgeable friend.",
+                            },
+                          ],
+                        },
+                        {
+                          id: 4,
+                          title: "What ChatGPT Can and Can't Do",
+                          supplementalInfo: [
+                            {
+                              title: 'A Smart Conversationalist',
+                              content:
+                                "ChatGPT is like that friend who's great at trivia nights: knowledgeable on many topics. But, it's not perfect.",
+                            },
+                            {
+                              title: "It Doesn't Know Everything",
+                              content:
+                                "While ChatGPT knows a lot, it might not have the latest news or solve super tricky problems. It's best to double-check if something seems off.",
+                            },
+                            {
+                              title: 'A Helper, Not a Decision Maker',
+                              content:
+                                'Remember, ChatGPT is there to help and provide info. But important decisions? Those are best left to humans.',
+                            },
+                          ],
+                        },
+                        {
+                          id: 5,
+                          title: 'General Use Cases',
+                          supplementalInfo: [
+                            {
+                              title: 'Help Desk in Your Pocket',
+                              content:
+                                'With AI, you can have a virtual helper answering common questions, making customer service faster.',
+                            },
+                            {
+                              title: 'Need a Quick Summary or Article?',
+                              content:
+                                "AI can help draft or shorten texts, which is super useful if you're in a hurry or need a concise version.",
+                            },
+                            {
+                              title: 'Speaking Global Languages',
+                              content:
+                                "Imagine a tool that can instantly translate languages or even adapt products to different cultures. That's AI helping businesses go global!",
+                            },
+                          ],
+                        },
+                        {
+                          id: 6,
+                          title: 'GPT 3.5-Turbo vs GPT-4',
+                          supplementalInfo: [
+                            {
+                              title: 'GPT-4: The Newer, Smarter AI',
+                              content:
+                                'Think of GPT-4 as a new model of a smartphone, while GPT-3.5-Turbo is the earlier version. GPT-4 understands and chats even better, but the older version might be more cost-effective for some uses.',
+                            },
+                            {
+                              title: 'Choosing the Best Tool for the Job',
+                              content:
+                                "It's like deciding between a sports car and a family sedan. Both have their strengths, and the best choice depends on what you need: speed, cost, or other factors.",
+                            },
+                          ],
+                        },
+                        {
+                          id: 7,
+                          title: 'Other LLM Options and Tools',
+                          supplementalInfo: [
+                            {
+                              title: "There's More Than Just One AI",
+                              content:
+                                'While OpenAI made GPT, companies like Google and Facebook have their own AIs too. Each has its unique strengths.',
+                            },
+                            {
+                              title: 'Special AIs for Special Jobs',
+                              content:
+                                'Some AIs are like expert chefs, specializing in one thing, be it finance, healthcare, or something else. Knowing them can be handy for specific tasks.',
+                            },
+                            {
+                              title: 'Tools to Make AI Work for You',
+                              content:
+                                'Just as there are many apps to make your phone more useful, there are tools that help you use AI in different ways, making it fit perfectly into your projects.',
+                            },
+                          ],
+                        },
+                      ],
                     },
                     Explore: {
                       createdBy: 'ai',
                       list: [
-                      {
-                        id: 1,
-                        title: 'Innovations in AI and LLM Technology',
-                        supplementalInfo: [
-                          {
-                            title: 'AI in Urban Planning and Smart Cities',
-                            content:
-                              'Explore how AI is revolutionizing urban planning and the development of smart cities, enhancing sustainability and efficiency through intelligent traffic management and infrastructure maintenance.',
-                          },
-                          {
-                            title:
-                              'Breakthroughs in AI-powered Healthcare Diagnostics',
-                            content:
-                              "Delve into AI's transformative impact on healthcare diagnostics, highlighting how advancements in image recognition and algorithms predict patient outcomes and personalize treatments.",
-                          },
-                          {
-                            title:
-                              "AI's Influence on Educational Methodologies",
-                            content:
-                              "Examine AI's role in reshaping educational practices, offering personalized learning paths and AI tutors for real-time feedback, revolutionizing teaching and learning engagement.",
-                          },
-                        ],
-                      },
-                      {
-                        id: 2,
-                        title: 'Challenges and Solutions in AI Implementation',
-                        supplementalInfo: [
-                          {
-                            title: 'Overcoming Language Barriers with AI',
-                            content:
-                              'Discuss the development of AI systems for real-time translation and interpretation, facilitating cross-cultural communication and global understanding.',
-                          },
-                          {
-                            title: 'AI and the Future of Agriculture',
-                            content:
-                              'Investigate AI applications in agriculture for optimizing crop yields and supporting sustainable farming practices, addressing food security and environmental sustainability.',
-                          },
-                          {
-                            title: 'Ethical AI in Entertainment and Media',
-                            content:
-                              'Explore ethical considerations of AI in entertainment and media, addressing deepfake concerns, copyright issues, and responsible content creation.',
-                          },
-                        ],
-                      },
-                      {
-                        id: 3,
-                        title: 'Privacy, Ethics, and Society in the Age of AI',
-                        supplementalInfo: [
-                          {
-                            title: 'AI and Digital Identity Security',
-                            content:
-                              "Analyze AI's role in enhancing or compromising digital identity security, focusing on biometric systems and the balance between convenience and privacy.",
-                          },
-                          {
-                            title:
-                              'The Societal Impact of AI-driven Automation',
-                            content:
-                              'Consider the broad implications of AI-driven automation on society, including economic shifts, labor market changes, and the redistribution of wealth.',
-                          },
-                          {
-                            title:
-                              'AI, Ethics, and the Preservation of Cultural Heritage',
-                            content:
-                              "Delve into AI's role in preserving cultural heritage, digitizing ancient texts, and creating virtual reconstructions while ensuring ethical representation.",
-                          },
-                        ],
-                      },
-                      {
-                        id: 4,
-                        title: 'Frontiers of AI in Environmental Conservation',
-                        supplementalInfo: [
-                          {
-                            title: 'AI for Wildlife Protection',
-                            content:
-                              'Discover how AI technologies are being deployed for wildlife monitoring and protection, using pattern recognition to track animal populations and detect poaching activities in real-time.',
-                          },
-                          {
-                            title: 'Predictive Analytics in Climate Science',
-                            content:
-                              'Examine the application of AI in climate science, where predictive models analyze vast datasets to forecast weather patterns, climate change impacts, and inform policy decisions.',
-                          },
-                          {
-                            title: 'Sustainable Resource Management',
-                            content:
-                              'Explore the use of AI in managing natural resources, from optimizing water usage in agriculture to smart energy grids that adapt to consumption patterns, promoting environmental sustainability.',
-                          },
-                        ],
-                      },
-                      {
-                        id: 5,
-                        title: 'AI Empowering Inclusive Societies',
-                        supplementalInfo: [
-                          {
-                            title: 'AI-Driven Assistive Technologies',
-                            content:
-                              'Discuss how AI is creating more inclusive environments through assistive technologies that enhance accessibility for people with disabilities, from AI-powered prosthetics to accessible web interfaces.',
-                          },
-                          {
-                            title: 'Bridging the Educational Gap',
-                            content:
-                              "Investigate AI's potential to democratize education by providing personalized learning experiences to underserved communities, leveraging technology to bridge the educational divide.",
-                          },
-                          {
-                            title: 'AI in Elderly Care and Well-being',
-                            content:
-                              'Examine the role of AI in supporting the elderly, through monitoring systems that ensure safety and well-being, and social robots that provide companionship and cognitive engagement.',
-                          },
-                        ],
-                      },
-                      {
-                        id: 6,
-                        title:
-                          'The Convergence of AI and Blockchain Technology',
-                        supplementalInfo: [
-                          {
-                            title:
-                              'Enhancing Data Security with AI and Blockchain',
-                            content:
-                              'Explore the synergy between AI and blockchain in enhancing data security, where blockchain provides immutable data records and AI offers predictive threat detection.',
-                          },
-                          {
-                            title: 'Decentralized AI Marketplaces',
-                            content:
-                              'Delve into how blockchain technology is facilitating the creation of decentralized AI marketplaces, enabling secure and transparent access to AI services and data.',
-                          },
-                          {
-                            title: 'Trust and Transparency in AI Systems',
-                            content:
-                              'Discuss the role of blockchain in building trust and transparency in AI systems, ensuring the traceability of AI decisions and fostering greater accountability in AI applications.',
-                          },
-                        ],
-                      },
-                    ],
+                        {
+                          id: 1,
+                          title: 'Innovations in AI and LLM Technology',
+                          supplementalInfo: [
+                            {
+                              title: 'AI in Urban Planning and Smart Cities',
+                              content:
+                                'Explore how AI is revolutionizing urban planning and the development of smart cities, enhancing sustainability and efficiency through intelligent traffic management and infrastructure maintenance.',
+                            },
+                            {
+                              title:
+                                'Breakthroughs in AI-powered Healthcare Diagnostics',
+                              content:
+                                "Delve into AI's transformative impact on healthcare diagnostics, highlighting how advancements in image recognition and algorithms predict patient outcomes and personalize treatments.",
+                            },
+                            {
+                              title:
+                                "AI's Influence on Educational Methodologies",
+                              content:
+                                "Examine AI's role in reshaping educational practices, offering personalized learning paths and AI tutors for real-time feedback, revolutionizing teaching and learning engagement.",
+                            },
+                          ],
+                        },
+                        {
+                          id: 2,
+                          title:
+                            'Challenges and Solutions in AI Implementation',
+                          supplementalInfo: [
+                            {
+                              title: 'Overcoming Language Barriers with AI',
+                              content:
+                                'Discuss the development of AI systems for real-time translation and interpretation, facilitating cross-cultural communication and global understanding.',
+                            },
+                            {
+                              title: 'AI and the Future of Agriculture',
+                              content:
+                                'Investigate AI applications in agriculture for optimizing crop yields and supporting sustainable farming practices, addressing food security and environmental sustainability.',
+                            },
+                            {
+                              title: 'Ethical AI in Entertainment and Media',
+                              content:
+                                'Explore ethical considerations of AI in entertainment and media, addressing deepfake concerns, copyright issues, and responsible content creation.',
+                            },
+                          ],
+                        },
+                        {
+                          id: 3,
+                          title:
+                            'Privacy, Ethics, and Society in the Age of AI',
+                          supplementalInfo: [
+                            {
+                              title: 'AI and Digital Identity Security',
+                              content:
+                                "Analyze AI's role in enhancing or compromising digital identity security, focusing on biometric systems and the balance between convenience and privacy.",
+                            },
+                            {
+                              title:
+                                'The Societal Impact of AI-driven Automation',
+                              content:
+                                'Consider the broad implications of AI-driven automation on society, including economic shifts, labor market changes, and the redistribution of wealth.',
+                            },
+                            {
+                              title:
+                                'AI, Ethics, and the Preservation of Cultural Heritage',
+                              content:
+                                "Delve into AI's role in preserving cultural heritage, digitizing ancient texts, and creating virtual reconstructions while ensuring ethical representation.",
+                            },
+                          ],
+                        },
+                        {
+                          id: 4,
+                          title:
+                            'Frontiers of AI in Environmental Conservation',
+                          supplementalInfo: [
+                            {
+                              title: 'AI for Wildlife Protection',
+                              content:
+                                'Discover how AI technologies are being deployed for wildlife monitoring and protection, using pattern recognition to track animal populations and detect poaching activities in real-time.',
+                            },
+                            {
+                              title: 'Predictive Analytics in Climate Science',
+                              content:
+                                'Examine the application of AI in climate science, where predictive models analyze vast datasets to forecast weather patterns, climate change impacts, and inform policy decisions.',
+                            },
+                            {
+                              title: 'Sustainable Resource Management',
+                              content:
+                                'Explore the use of AI in managing natural resources, from optimizing water usage in agriculture to smart energy grids that adapt to consumption patterns, promoting environmental sustainability.',
+                            },
+                          ],
+                        },
+                        {
+                          id: 5,
+                          title: 'AI Empowering Inclusive Societies',
+                          supplementalInfo: [
+                            {
+                              title: 'AI-Driven Assistive Technologies',
+                              content:
+                                'Discuss how AI is creating more inclusive environments through assistive technologies that enhance accessibility for people with disabilities, from AI-powered prosthetics to accessible web interfaces.',
+                            },
+                            {
+                              title: 'Bridging the Educational Gap',
+                              content:
+                                "Investigate AI's potential to democratize education by providing personalized learning experiences to underserved communities, leveraging technology to bridge the educational divide.",
+                            },
+                            {
+                              title: 'AI in Elderly Care and Well-being',
+                              content:
+                                'Examine the role of AI in supporting the elderly, through monitoring systems that ensure safety and well-being, and social robots that provide companionship and cognitive engagement.',
+                            },
+                          ],
+                        },
+                        {
+                          id: 6,
+                          title:
+                            'The Convergence of AI and Blockchain Technology',
+                          supplementalInfo: [
+                            {
+                              title:
+                                'Enhancing Data Security with AI and Blockchain',
+                              content:
+                                'Explore the synergy between AI and blockchain in enhancing data security, where blockchain provides immutable data records and AI offers predictive threat detection.',
+                            },
+                            {
+                              title: 'Decentralized AI Marketplaces',
+                              content:
+                                'Delve into how blockchain technology is facilitating the creation of decentralized AI marketplaces, enabling secure and transparent access to AI services and data.',
+                            },
+                            {
+                              title: 'Trust and Transparency in AI Systems',
+                              content:
+                                'Discuss the role of blockchain in building trust and transparency in AI systems, ensuring the traceability of AI decisions and fostering greater accountability in AI applications.',
+                            },
+                          ],
+                        },
+                      ],
                     },
                     Focus: {
                       createdBy: 'ai',
                       list: [
-                      {
-                        id: 1,
-                        title: 'Lorem Ipsum Dolor Sit Amet',
-                        supplementalInfo: [
-                          {
-                            title: 'Consectetur Adipiscing Elit',
-                            content:
-                              'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-                          },
-                          {
-                            title: 'Ut Enim Ad Minim Veniam',
-                            content:
-                              'Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-                          },
-                          {
-                            title: 'Exercitation Ullamco Laboris',
-                            content:
-                              'Nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.',
-                          },
-                        ],
-                      },
-                      {
-                        id: 2,
-                        title: 'Sed Do Eiusmod Tempor Incididunt',
-                        supplementalInfo: [
-                          {
-                            title: 'Labore Et Dolore Magna Aliqua',
-                            content:
-                              'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
-                          },
-                          {
-                            title: 'Duis Aute Irure Dolor',
-                            content:
-                              'In reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.',
-                          },
-                          {
-                            title: 'Cillum Dolore Eu Fugiat',
-                            content:
-                              'Nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.',
-                          },
-                        ],
-                      },
-                      {
-                        id: 3,
-                        title: 'Consectetur Adipiscing Elit',
-                        supplementalInfo: [
-                          {
-                            title: 'Lorem Ipsum Dolor Sit Amet',
-                            content:
-                              'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur.',
-                          },
-                          {
-                            title: 'Ut Enim Ad Minim Veniam',
-                            content:
-                              'Laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur.',
-                          },
-                          {
-                            title: 'Exercitation Ullamco Laboris',
-                            content:
-                              'Eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.',
-                          },
-                        ],
-                      },
-                    ],
+                        {
+                          id: 1,
+                          title: 'Lorem Ipsum Dolor Sit Amet',
+                          supplementalInfo: [
+                            {
+                              title: 'Consectetur Adipiscing Elit',
+                              content:
+                                'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+                            },
+                            {
+                              title: 'Ut Enim Ad Minim Veniam',
+                              content:
+                                'Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+                            },
+                            {
+                              title: 'Exercitation Ullamco Laboris',
+                              content:
+                                'Nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.',
+                            },
+                          ],
+                        },
+                        {
+                          id: 2,
+                          title: 'Sed Do Eiusmod Tempor Incididunt',
+                          supplementalInfo: [
+                            {
+                              title: 'Labore Et Dolore Magna Aliqua',
+                              content:
+                                'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
+                            },
+                            {
+                              title: 'Duis Aute Irure Dolor',
+                              content:
+                                'In reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.',
+                            },
+                            {
+                              title: 'Cillum Dolore Eu Fugiat',
+                              content:
+                                'Nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.',
+                            },
+                          ],
+                        },
+                        {
+                          id: 3,
+                          title: 'Consectetur Adipiscing Elit',
+                          supplementalInfo: [
+                            {
+                              title: 'Lorem Ipsum Dolor Sit Amet',
+                              content:
+                                'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur.',
+                            },
+                            {
+                              title: 'Ut Enim Ad Minim Veniam',
+                              content:
+                                'Laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur.',
+                            },
+                            {
+                              title: 'Exercitation Ullamco Laboris',
+                              content:
+                                'Eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.',
+                            },
+                          ],
+                        },
+                      ],
                     },
                     Personalize: {
                       createdBy: 'ai',
                       list: [
-                      {
-                        id: 1,
-                        title:
-                          'Unleashing the Power of LLMs in Your Coding Journey',
-                        supplementalInfo: [
-                          {
-                            title: 'Unlocking the LLM Advantage',
-                            content:
-                              'As a budding software engineer, understanding Large Language Models (LLMs) is paramount. These models, like ChatGPT, are revolutionizing coding practices. They possess the ability to comprehend and generate human-like text, making them invaluable resources for developers.',
-                          },
-                          {
-                            title: 'From Syntax to Solutions: LLMs in Coding',
-                            content:
-                              'Explore how LLMs can bridge the gap between understanding syntax and crafting solutions. Learn how they assist in generating code snippets, offering coding suggestions, and even debugging, elevating your coding proficiency.',
-                          },
-                          {
-                            title: 'Setting Realistic Expectations with LLMs',
-                            content:
-                              "While LLMs are powerful tools, it's crucial to recognize their limitations. They excel in routine tasks, but intricate problem-solving may require human intervention. Discover how to strike the right balance between leveraging LLMs for efficiency and applying your expertise to tackle complex coding challenges.",
-                          },
-                        ],
-                      },
-                      {
-                        id: 2,
-                        title:
-                          "Decoding Biases: Sharpening Your AI-Savvy Developer's Eye",
-                        supplementalInfo: [
-                          {
-                            title:
-                              'Spotting Biases in AI: A Critical Skill for Developers',
-                            content:
-                              "In your journey to integrate AI into your projects, it's vital to be aware of inherent biases in AI outputs. Develop the skill to critically evaluate AI suggestions, ensuring your software solutions are inclusive and equitable.",
-                          },
-                          {
-                            title:
-                              "Correcting AI's Course: Ensuring Accuracy in Your Projects",
-                            content:
-                              'Harness strategies to detect and rectify inaccuracies in AI-generated code. Emphasize the importance of manual review and adherence to best coding practices, ensuring AI enhances rather than compromises the quality of your work.',
-                          },
-                          {
-                            title: 'Balancing AI in Your Coding Practice',
-                            content:
-                              "As you integrate AI tools into your coding workflow, it's essential to strike a balance between leveraging their capabilities and maintaining code quality. Explore strategies for efficiently incorporating AI assistance, managing the integration process, and optimizing your coding practice.",
-                          },
-                        ],
-                      },
-                      {
-                        id: 3,
-                        title:
-                          'Ethics & Privacy in AI: Building Trustworthy Software with ChatGPT',
-                        supplementalInfo: [
-                          {
-                            title: "Ethical AI Use: A Developer's Guide",
-                            content:
-                              'Dive into the ethical implications of AI in software development, focusing on how AI-driven decisions can impact your code and end-users. Engage with real-world scenarios that underscore the need for ethical considerations in AI applications.',
-                          },
-                          {
-                            title:
-                              'Safeguarding Privacy with AI in Development',
-                            content:
-                              'Grasp the privacy challenges associated with using AI tools like ChatGPT, particularly in handling sensitive data. Implement best practices to ensure data protection and compliance with privacy regulations in your AI-assisted projects.',
-                          },
-                          {
-                            title:
-                              'Earning User Trust in AI-powered Applications',
-                            content:
-                              "As you create AI-enhanced software, prioritize user trust by being transparent about AI's role, ensuring user data privacy, and clearly communicating the benefits and limitations of AI in your applications.",
-                          },
-                        ],
-                      },
-                    ],
+                        {
+                          id: 1,
+                          title:
+                            'Unleashing the Power of LLMs in Your Coding Journey',
+                          supplementalInfo: [
+                            {
+                              title: 'Unlocking the LLM Advantage',
+                              content:
+                                'As a budding software engineer, understanding Large Language Models (LLMs) is paramount. These models, like ChatGPT, are revolutionizing coding practices. They possess the ability to comprehend and generate human-like text, making them invaluable resources for developers.',
+                            },
+                            {
+                              title: 'From Syntax to Solutions: LLMs in Coding',
+                              content:
+                                'Explore how LLMs can bridge the gap between understanding syntax and crafting solutions. Learn how they assist in generating code snippets, offering coding suggestions, and even debugging, elevating your coding proficiency.',
+                            },
+                            {
+                              title: 'Setting Realistic Expectations with LLMs',
+                              content:
+                                "While LLMs are powerful tools, it's crucial to recognize their limitations. They excel in routine tasks, but intricate problem-solving may require human intervention. Discover how to strike the right balance between leveraging LLMs for efficiency and applying your expertise to tackle complex coding challenges.",
+                            },
+                          ],
+                        },
+                        {
+                          id: 2,
+                          title:
+                            "Decoding Biases: Sharpening Your AI-Savvy Developer's Eye",
+                          supplementalInfo: [
+                            {
+                              title:
+                                'Spotting Biases in AI: A Critical Skill for Developers',
+                              content:
+                                "In your journey to integrate AI into your projects, it's vital to be aware of inherent biases in AI outputs. Develop the skill to critically evaluate AI suggestions, ensuring your software solutions are inclusive and equitable.",
+                            },
+                            {
+                              title:
+                                "Correcting AI's Course: Ensuring Accuracy in Your Projects",
+                              content:
+                                'Harness strategies to detect and rectify inaccuracies in AI-generated code. Emphasize the importance of manual review and adherence to best coding practices, ensuring AI enhances rather than compromises the quality of your work.',
+                            },
+                            {
+                              title: 'Balancing AI in Your Coding Practice',
+                              content:
+                                "As you integrate AI tools into your coding workflow, it's essential to strike a balance between leveraging their capabilities and maintaining code quality. Explore strategies for efficiently incorporating AI assistance, managing the integration process, and optimizing your coding practice.",
+                            },
+                          ],
+                        },
+                        {
+                          id: 3,
+                          title:
+                            'Ethics & Privacy in AI: Building Trustworthy Software with ChatGPT',
+                          supplementalInfo: [
+                            {
+                              title: "Ethical AI Use: A Developer's Guide",
+                              content:
+                                'Dive into the ethical implications of AI in software development, focusing on how AI-driven decisions can impact your code and end-users. Engage with real-world scenarios that underscore the need for ethical considerations in AI applications.',
+                            },
+                            {
+                              title:
+                                'Safeguarding Privacy with AI in Development',
+                              content:
+                                'Grasp the privacy challenges associated with using AI tools like ChatGPT, particularly in handling sensitive data. Implement best practices to ensure data protection and compliance with privacy regulations in your AI-assisted projects.',
+                            },
+                            {
+                              title:
+                                'Earning User Trust in AI-powered Applications',
+                              content:
+                                "As you create AI-enhanced software, prioritize user trust by being transparent about AI's role, ensuring user data privacy, and clearly communicating the benefits and limitations of AI in your applications.",
+                            },
+                          ],
+                        },
+                      ],
                     },
                   },
                 },
