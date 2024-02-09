@@ -251,7 +251,7 @@
     </div>
   </transition>
 
-  <Registration v-if="isRegistrationOpen" />
+  <Registration v-if="isRegistrationOpen" @close-registration="isRegistrationOpen = false" />
 
   <AiProfile v-if="selectedNavItem === 'ai-profile'" />
 

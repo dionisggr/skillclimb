@@ -10,30 +10,38 @@
         <div
           @click="activeTab = 'personalInfo'"
           class="px-4 py-2 text-sm font-medium text-gray-600 cursor-pointer hover:text-blue-500 hover:bg-gray-100"
+          :class="
+            activeTab === 'personalInfo' &&
+            'border-b-2 bg-gray-100 border-blue-500'
+          "
         >
-          Personal Information
+          Profile Information
         </div>
         <div
           @click="activeTab = 'studentSettings'"
           class="px-4 py-2 text-sm font-medium text-gray-600 cursor-pointer hover:text-blue-500 hover:bg-gray-100"
+          :class="
+            activeTab === 'studentSettings' &&
+            'border-b-2 bg-gray-100 border-blue-500'
+          "
         >
-          Student Settings
-        </div>
-        <div
-          @click="activeTab = 'instructorSettings'"
-          class="px-4 py-2 text-sm font-medium text-gray-600 cursor-pointer hover:text-blue-500 hover:bg-gray-100"
-        >
-          Instructor Settings
+          Preferences
         </div>
         <div
           @click="activeTab = 'payments'"
           class="px-4 py-2 text-sm font-medium text-gray-600 cursor-pointer hover:text-blue-500 hover:bg-gray-100"
+          :class="
+            activeTab === 'payments' && 'border-b-2 bg-gray-100 border-blue-500'
+          "
         >
           Payments
         </div>
         <div
           @click="activeTab = 'revenue'"
           class="px-4 py-2 text-sm font-medium text-gray-600 cursor-pointer hover:text-blue-500 hover:bg-gray-100"
+          :class="
+            activeTab === 'revenue' && 'border-b-2 bg-gray-100 border-blue-500'
+          "
         >
           Revenue
         </div>
@@ -107,26 +115,80 @@
           </div>
         </div>
 
-        <!-- Student Settings Section -->
-        <div v-if="activeTab === 'studentSettings'">
-          <h2 class="text-xl font-semibold mb-4">Student Settings</h2>
-          <p class="text-gray-600">Customize your learning experience.</p>
-          <!-- Example setting -->
-          <div class="flex items-center mt-4">
-            <input type="checkbox" id="emailNotifications" class="mr-2" />
-            <label for="emailNotifications">Email Notifications</label>
-          </div>
+        <!-- Settings Section -->
+        <div class="space-y-12 mt-2" v-if="activeTab === 'studentSettings'">
+<!-- Student Settings -->
+<div>
+  <h2 class="text-xl font-semibold mb-4">Student Settings</h2>
+  <div class="space-y-4">
+    <!-- Learning Pace and Content Depth -->
+    <div class="flex justify-between">
+      <!-- Learning Pace -->
+      <div class="w-1/2 mr-2">
+        <p class="font-medium mb-2">Learning Pace:</p>
+        <div class="flex flex-wrap">
+          <button v-for="pace in ['Slow', 'Moderate', 'Fast']" :key="pace" @click="studentSettings.learningPace = pace" :class="buttonClass(studentSettings.learningPace === pace)">
+            {{ pace }}
+          </button>
         </div>
+      </div>
 
-        <!-- Instructor Settings Section -->
-        <div v-if="activeTab === 'instructorSettings'">
-          <h2 class="text-xl font-semibold mb-4">Instructor Settings</h2>
-          <p class="text-gray-600">Manage your courses and engagements.</p>
-          <!-- Example setting -->
-          <div class="flex items-center mt-4">
-            <input type="checkbox" id="publicProfile" class="mr-2" />
-            <label for="publicProfile">Public Profile</label>
-          </div>
+                    <!-- Practice Exercises -->
+                    <div class="col-span-2">
+                <p class="font-medium mb-2">Practice Exercises Importance:</p>
+                <input
+                  type="range"
+                  min="1"
+                  max="10"
+                  v-model="studentSettings.exerciseImportance"
+                  class="w-full"
+                />
+                <div class="flex justify-between text-xs mt-1">
+                  <span>Low</span>
+                  <span>High</span>
+                </div>
+              </div>
+
+
+    </div>
+
+    <!-- AI Interaction and Supplemental Info -->
+    <div class="flex justify-between">
+            <!-- Content Depth -->
+            <div class="w-1/2 ml-2">
+        <p class="font-medium mb-2">Content Depth:</p>
+        <div class="flex flex-wrap">
+          <button v-for="depth in ['Breadth', 'Depth']" :key="depth" @click="studentSettings.contentDepth = depth" :class="buttonClass(studentSettings.contentDepth === depth)">
+            {{ depth }}
+          </button>
+        </div>
+      </div>
+
+      <!-- AI Interaction -->
+      <div class="w-1/2 mr-2">
+        <p class="font-medium mb-2">AI Interaction:</p>
+        <div class="flex flex-wrap">
+          <button v-for="interaction in ['Conversational', 'Concise', 'Creative', 'Thought-Provoking']" :key="interaction" @click="studentSettings.aiInteraction = interaction" :class="buttonClass(studentSettings.aiInteraction === interaction)">
+            {{ interaction }}
+          </button>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</div>
+
+      <!-- Supplemental Info -->
+      <div class="w-1/2 ml-2">
+        <p class="font-medium mb-2">Supplemental Info:</p>
+        <div class="flex flex-wrap">
+          <button v-for="material in ['Summary Notes', 'Detailed Explanations', 'Real-World Connections', 'Study Questions']" :key="material" @click="studentSettings.supplementalMaterial = material" :class="buttonClass(studentSettings.supplementalMaterial === material)">
+            {{ material }}
+          </button>
+        </div>
+      </div>
+
         </div>
 
         <!-- Payments Section -->
@@ -375,9 +437,6 @@ export default {
       studentSettings: {
         emailNotifications: true,
       },
-      instructorSettings: {
-        publicProfile: false,
-      },
       creditCards: [
         {
           id: 1,
@@ -511,6 +570,22 @@ export default {
       } else {
         alert('Please fill out all fields.');
       }
+    },
+    toggleEngagementMethod(method) {
+      const index = this.instructorSettings?.engagementMethods?.indexOf(method);
+      if (index > -1) {
+        this.instructorSettings?.engagementMethods?.splice(index, 1);
+      } else {
+        this.instructorSettings?.engagementMethods?.push(method);
+      }
+    },
+    buttonClass(isActive) {
+      return [
+        'px-3 py-1 border rounded-lg transition',
+        isActive
+          ? 'bg-blue-500 text-white hover:bg-blue-600'
+          : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+      ];
     },
   },
 };

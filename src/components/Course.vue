@@ -194,6 +194,7 @@
     <section
       class="w-full md:w-3/4 rounded bg-white p-5 pb-0 shadow-md relative lg:pl-5"
     >
+    
       <div class="flex items-center text-sm mb-2">
         <a href="#" class="hover:underline hover:text-blue-500 font-medium">{{
           course.name
@@ -279,6 +280,8 @@
             Remove
           </button>
         </div>
+        
+        
 
         <!-- Right Section: Video Description and Topics -->
         <div
@@ -1283,7 +1286,7 @@
               selectedInformation
             ].list"
             :key="subtopic.id"
-            class="border pl-4 py-6 rounded-lg mb-3 hover:shadow-lg transition-shadow"
+            class="border pl-4 py-6 rounded-lg mb-3 hover:shadow-lg transition-shadow relative"
           >
             <!-- Collapsible Header -->
             <div
@@ -1345,6 +1348,26 @@
                   </button>
                 </div>
               </div>
+            </div>
+
+            <div class="absolute right-0 top-4">
+              <!-- Thumbs Up Icon -->
+              <button
+                class="absolute top-2 right-14 text-gray-500 hover:text-green-700"
+                :class="{ 'text-green-500': subtopic.rating === 'like' }"
+                @click.stop="subtopic.rating = 'like'"
+              >
+                <i class="mdi mdi-thumb-up-outline"></i>
+              </button>
+
+              <!-- Thumbs Down Icon -->
+              <button
+                class="absolute top-2 right-6 text-gray-500 hover:text-red-700"
+                :class="{ 'text-red-500': subtopic.rating === 'dislike' }"
+                @click.stop="subtopic.rating = 'dislike'"
+              >
+                <i class="mdi mdi-thumb-down-outline"></i>
+              </button>
             </div>
 
             <!-- Collapsible Content -->
